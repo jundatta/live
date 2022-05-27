@@ -1,26 +1,28 @@
 // https://openprocessing.org/sketch/1369981
 
-function setup() {
-  createCanvas(1112, 834, WEBGL);
+void setup() {
+  size(1112, 834, P3D);
   background(100);
   noStroke();
 }
 
-function draw() {
+void draw() {
   background(180, 220, 255);
   lights();
   push();                    // ground
   fill(50, 200, 50);
   translate(0, 200, 0);
-  rotateX(PI/2);
-  plane(width*2.4, height*2);
+  rotateX(PI/2.0f);
+  //  plane(width*2.4, height*2);
+  box(width*2.4, height*2, 1);
   pop();
-  orbitControl();
+  //  orbitControl();
   translate(0, -100, -50);
-  rotateY(frameCount/100);
+  rotateY(frameCount/100.0f);
 
   rotateX(PI/2.5);
-  ellipsoid(130, 130, 50);
+  //  ellipsoid(130, 130, 50);
+  sphere(130);
   push();                   // drone camera
   translate(-140, 0, -20);
   specularMaterial(0);
@@ -28,21 +30,21 @@ function draw() {
   translate(20, 0, 0);
   box(40, 24, 4);
   translate(-30, 0, 0);
-  rotateX(PI/2);
-  rotateZ(PI/2);
+  rotateX(PI/2.0f);
+  rotateZ(PI/2.0f);
   cylinder(5, 10);
   pop();
   push();
   translate(0, 0, -20);
   push();
-  rotate(PI/4);
+  rotate(PI/4.0f);
   box(600, 20, 10);
-  rotate(PI/2);
+  rotate(PI/2.0f);
   box(600, 20, 10);
   pop();
   push();
   translate(-215, -215, -10);
-  rotateX(PI/2);
+  rotateX(PI/2.0f);
   cylinder(30, 30);
   cylinder(4, 45);
   translate(0, -40, 0);
