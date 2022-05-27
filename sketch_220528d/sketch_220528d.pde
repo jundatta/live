@@ -1,9 +1,13 @@
 // https://openprocessing.org/sketch/1369981
 
+PShape cylinder5_10;
+
 void setup() {
   size(1112, 834, P3D);
   background(100);
   noStroke();
+
+  cylinder5_10 = createCan(5, 10);
 }
 
 void draw() {
@@ -25,14 +29,15 @@ void draw() {
   sphere(130);
   push();                   // drone camera
   translate(-140, 0, -20);
-  specularMaterial(0);
+  //  specularMaterial(0);
   box(20);
   translate(20, 0, 0);
   box(40, 24, 4);
   translate(-30, 0, 0);
   rotateX(PI/2.0f);
   rotateZ(PI/2.0f);
-  cylinder(5, 10);
+  //  cylinder(5, 10);
+  shape(cylinder5_10);
   pop();
   push();
   translate(0, 0, -20);

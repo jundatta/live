@@ -17,6 +17,9 @@ PShape createCan(float r, float h, int detail) {
   sh.endShape();
   return sh;
 }
+PShape createCan(float r, float h) {
+  return createCan(r, h, 24);
+}
 // ふたつき缶（PC-8001さんありがとう）
 PShape createCan(float radius, float height, int detail, boolean bottomCap, boolean topCap) {
   textureMode(NORMAL);
