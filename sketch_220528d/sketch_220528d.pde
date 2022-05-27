@@ -51,9 +51,9 @@ void draw() {
   rotateX(PI);
   cone(15, 60);
   cylinder(5, 60);
-  pop()
-    pop()
-    translate(-200, -200);
+  pop();
+  pop();
+  translate(-200, -200);
   push();
   fill(255, 20);
   noStroke();
@@ -70,8 +70,8 @@ void draw() {
   rotateX(PI);
   cone(15, 60);
   cylinder(5, 60);
-  pop()
-    push();
+  pop();
+  push();
   fill(255, 20);
   noStroke();
   ellipsoid(140, 140, 3);
@@ -81,14 +81,14 @@ void draw() {
   push();
   translate(10, 10, -30);
   rotateX(PI/2);
-  cylinder(30, 30)
-    cylinder(4, 45);
+  cylinder(30, 30);
+  cylinder(4, 45);
   translate(0, -40, 0);
   rotateX(PI);
   cone(15, 60);
   cylinder(5, 60);
-  pop()
-    push();
+  pop();
+  push();
   fill(255, 30);
   noStroke();
   ellipsoid(140, 140, 3);
@@ -104,8 +104,8 @@ void draw() {
   rotateX(PI);
   cone(15, 60);
   cylinder(5, 60);
-  pop()
-    push();
+  pop();
+  push();
   fill(255, 30);
   noStroke();
   ellipsoid(140, 140, 3);
