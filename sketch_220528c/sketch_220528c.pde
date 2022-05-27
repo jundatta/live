@@ -11,7 +11,7 @@ void preload() {
 
 void setup() {
   preload();
-  size(1112, 874);
+  size(1112, 834);
   image(img, 0, 0, width, height);
 }
 

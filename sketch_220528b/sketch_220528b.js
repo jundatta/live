@@ -11,6 +11,8 @@ function preload() {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  console.log(windowWidth);
+  console.log(windowHeight);
   image(img, 0, 0, width, height);
 }
 
