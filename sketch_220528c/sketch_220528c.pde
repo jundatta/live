@@ -1,37 +1,38 @@
 // https://neort.io/art/c84clgs3p9f3k6tgvq4g
 
-var img;
-var size;
-var x_num = 1;
-var y_num = 1;
+PImage img;
+float size;
+float x_num = 1;
+float y_num = 1;
 
-function preload() {
-  img = loadImage("https://stat.neort.io/externalResource/c84cksk3p9f3k6tgvq3g.png");
+void preload() {
+  img = loadImage("c84cksk3p9f3k6tgvq3g.png");
 }
 
-function setup() {
-  createCanvas(windowWidth, windowHeight);
+void setup() {
+  preload();
+  size(1112, 874);
   image(img, 0, 0, width, height);
 }
 
-function draw() {
-  var x_size = width / x_num;
-  var y_size = height / y_num;
+void draw() {
+  float x_size = width / x_num;
+  float y_size = height / y_num;
 
-  for (var i = 0; i < width; i += x_size) {
-    for (var j = 0; j < height; j += y_size) {
+  for (float i = 0; i < width; i += x_size) {
+    for (float j = 0; j < height; j += y_size) {
       image(img, i, j, x_size, y_size);
     }
   }
 
   if (x_num < 100) {
-    x_num += x_num * x_num * 0.002
+    x_num += x_num * x_num * 0.002;
   } else {
     x_num = 1;
   }
 
   if (y_num < 1000) {
-    y_num += y_num * y_num * 0.002
+    y_num += y_num * y_num * 0.002;
   } else {
     y_num = 1;
   }
