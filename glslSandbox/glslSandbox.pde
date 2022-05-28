@@ -1,4 +1,4 @@
-// https://glslsandbox.com/e#78336.0
+// https://neort.io/art/bin7d8k3p9f9psc9od10
 
 PShader s;
 
@@ -11,7 +11,7 @@ void setup() {
 }
 
 void draw() {
-  s.set("backbuffer", getGraphics());
+//  s.set("backbuffer", getGraphics());
   s.set("time", millis() / 1000.0f);
   s.set("mouse", (float)mouseX / (float)width, (float)mouseY / (float)height);
   shader(s);
