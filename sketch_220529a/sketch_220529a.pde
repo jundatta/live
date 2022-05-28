@@ -1,5 +1,11 @@
 // https://junkiyoshi.com/2022/02/09/
 
+ArrayList<PVector> location_list;
+ArrayList<ArrayList<int>> next_index_list;
+ArrayList<int> destination_list;
+
+ArrayList<Actor> actor_list;
+
 //--------------------------------------------------------------
 class Actor {
   int select_index;
@@ -10,7 +16,7 @@ class Actor {
   color col;
 
   Actor(ArrayList<PVector> location_list, ArrayList<ArrayList<Integer>> next_index_list, ArrayList<Integer> destination_list) {
-    this.select_index = ofRandom(location_list.size());
+    this.select_index = random(0, location_list.size());
     while (true) {
       auto itr = find(destination_list.begin(), destination_list.end(), this.select_index);
       if (itr == destination_list.end()) {
@@ -30,7 +36,7 @@ class Actor {
       auto tmp_index = this.select_index;
       this.select_index = this.next_index;
       int retry = next_index_list[this.select_index].size();
-      this.next_index = next_index_list[this.select_index][(int)ofRandom(next_index_list[this.select_index].size())];
+      this.next_index = next_index_list[this.select_index][(int)random(0, next_index_list[this.select_index].size())];
       while (--retry > 0) {
         auto destination_itr = find(destination_list.begin(), destination_list.end(), this.next_index);
         if (destination_itr == destination_list.end()) {
@@ -80,57 +86,43 @@ class Actor {
 }
 
 //--------------------------------------------------------------
-void ofApp::setup() {
+void setup() {
+  //  ofSetFrameRate(30);
 
-  ofSetFrameRate(30);
-  ofSetWindowTitle("openFrameworks");
-
-  ofBackground(255);
+  background(255);
 
   auto span = 40;
   for (int x = -280; x <= 280; x += span) {
-
     for (int y = -280; y <= 280; y += span) {
-
-      this->location_list.push_back(glm::vec3(x, y, 0));
+      this.location_list.push_back(new PVector(x, y, 0));
     }
   }
 
   auto param = span * sqrt(3);
-  for (auto& location : this->location_list) {
-
-    vector<int> next_index = vector<int>();
+  for (auto location : location_list) {
+    ArrayList<int> next_index = new ArrayList();
     int index = -1;
-    for (auto& other : this->location_list) {
-
+    for (auto other : location_list) {
       index++;
       if (location == other) {
         continue;
       }
 
-      float distance = glm::distance(location, other);
+      float distance = distance(location, other);
       if (distance <= param) {
-
         next_index.push_back(index);
       }
     }
 
-    this->next_index_list.push_back(next_index);
+    next_index_list.push_back(next_index);
   }
 
-  ofColor color;
-  vector<int> hex_list = { 0xef476f, 0xffd166, 0x06d6a0, 0x118ab2, 0x073b4c };
-  vector<ofColor> base_color_list;
-  for (auto hex : hex_list) {
-
-    color.setHex(hex);
-    base_color_list.push_back(color);
-  }
+  color col;
+  color[] base_color_list = { #ef476f, #ffd166, #06d6a0, #118ab2, #073b4c };
 
   for (int i = 0; i < 180; i++) {
-
-    this->actor_list.push_back(make_unique<Actor>(this->location_list, this->next_index_list, this->destination_list));
-    this->actor_list.back()->setColor(base_color_list[(int)ofRandom(base_color_list.size())]);
+    actor_list.push_back(new Actor(location_list, next_index_list, destination_list));
+    actor_list.back().setColor(base_color_list[(int)random(0, base_color_list.size())]);
   }
 }
 
