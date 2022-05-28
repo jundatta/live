@@ -2,6 +2,13 @@
 
 //--------------------------------------------------------------
 class Actor {
+  int select_index;
+  int next_index;
+
+  PVector location;
+  ArrayList<PVector> log;
+  color col;
+
   Actor(ArrayList<PVector> location_list, ArrayList<ArrayList<Integer>> next_index_list, ArrayList<Integer> destination_list) {
     this->select_index = ofRandom(location_list.size());
     while (true) {
