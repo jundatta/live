@@ -181,19 +181,20 @@ void draw() {
   stroke(0, 128);
   strokeWeight(1);
   fill(0, 128);
-  for (auto location : location_list) {
-    circle(location, 5);
+  for (var location : location_list) {
+    circle(location.x, location.y, 5);
   }
 
   strokeWeight(3);
-  for (auto actor : actor_list) {
+  for (var actor : actor_list) {
     fill(actor.getColor());
-    circle(actor.getLocation(), 6);
+    PVector location = actor.getLocation();
+    circle(location.x, location.y, 6);
     noFill();
 
     beginShape();
-    for (auto l : actor.getLog()) {
-      vertex(l);
+    for (var l : actor.getLog()) {
+      vertex(l.x, l.y);
     }
     endShape();
   }
