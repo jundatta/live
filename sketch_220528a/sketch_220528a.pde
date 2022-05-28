@@ -28,6 +28,14 @@ void draw() {
   for (Cell c : prev)c.show();
   for (Cell c : prev) {
     for (int i = 0; i < 4; i++) {
+      int ix = c.x + dx[i];
+      if (ix < 0 || cols <= ix) {
+        continue;
+      }
+      int iy = c.y + dy[i];
+      if (iy < 0 || rows <= iy) {
+        continue;
+      }
       if (valid(c.x + dx[i], c.y + dy[i])) {
         next.add(new Cell(c.x + dx[i], c.y + dy[i]));
         map[c.x + dx[i]][c.y + dy[i]] = 1;
@@ -41,6 +49,14 @@ void draw() {
 boolean valid(int x, int y) {
   int vecini = 0;
   for (int i = 0; i < 4; i++) {
+    int ix = x + dx[i];
+    if (ix < 0 || cols <= ix) {
+      continue;
+    }
+    int iy = y + dy[i];
+    if (iy < 0 || rows <= iy) {
+      continue;
+    }
     if (map[x + dx[i]][y + dy[i]] == 1)vecini++;
     if (vecini == 2)return false;
   }
