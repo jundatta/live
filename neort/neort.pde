@@ -1,4 +1,4 @@
-// https://neort.io/art/c7r35ks3p9fclnodut9g
+// https://neort.io/art/bin7d8k3p9f9psc9od10
 
 <T> T P5JSrandom(T... args) {
   return args[int(random(args.length))];
