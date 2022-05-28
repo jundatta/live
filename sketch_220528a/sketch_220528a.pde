@@ -24,6 +24,7 @@ void setup() {
 }
 
 void draw() {
+  background(0);
   next = new ArrayList<Cell>();
   fill(col, 255, 255);
   for (Cell c : prev)c.show();
