@@ -87,6 +87,8 @@ class Actor {
 
 //--------------------------------------------------------------
 void setup() {
+  size(720, 720);
+  
   //  ofSetFrameRate(30);
 
   background(255);
@@ -127,62 +129,47 @@ void setup() {
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
-
+void update() {
   int frame_span = 10;
   int prev_index_size = 0;
 
   if (ofGetFrameNum() % frame_span == 0) {
-
-    prev_index_size = this->destination_list.size();
+    prev_index_size = destination_list.size();
   }
 
-  for (auto& actor : this->actor_list) {
-
-    actor->update(frame_span, this->location_list, this->next_index_list, this->destination_list);
+  for (auto actor : actor_list) {
+    actor.update(frame_span, location_list, next_index_list, destination_list);
   }
 
   if (prev_index_size != 0) {
-
-    this->destination_list.erase(this->destination_list.begin(), this->destination_list.begin() + prev_index_size);
+    destination_list.erase(destination_list.begin(), destination_list.begin() + prev_index_size);
   }
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
+  
+  //  ofTranslate(ofGetWindowSize() * 0.5);
+  translate(width/2, height/2);
 
-  ofTranslate(ofGetWindowSize() * 0.5);
-
-  ofSetColor(0, 128);
-  ofSetLineWidth(1);
-  for (auto& location : this->location_list) {
-
-    ofDrawCircle(location, 5);
+  stroke(0, 128);
+  strokeWeight(1);
+  fill(0, 128);
+  for (auto location : location_list) {
+    circle(location, 5);
   }
 
-  ofSetLineWidth(3);
-  for (auto& actor : this->actor_list) {
+  strokeWeight(3);
+  for (auto actor : actor_list) {
+    fill(actor.getColor());
+    circle(actor.getLocation(), 6);
+    noFill();
 
-    ofSetColor(actor->getColor());
-
-    ofFill();
-    ofDrawCircle(actor->getLocation(), 6);
-
-    ofNoFill();
-
-    ofBeginShape();
-    for (auto& l : actor->getLog()) {
-
-      ofVertex(l);
+    beginShape();
+    for (auto l : actor.getLog()) {
+      vertex(l);
     }
-    ofEndShape();
+    endShape();
   }
-}
-
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
