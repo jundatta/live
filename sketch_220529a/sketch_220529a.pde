@@ -153,16 +153,21 @@ void update() {
   int frame_span = 10;
   int prev_index_size = 0;
 
-  if (ofGetFrameNum() % frame_span == 0) {
+  if (frameCount % frame_span == 0) {
     prev_index_size = destination_list.size();
   }
 
-  for (auto actor : actor_list) {
+  for (var actor : actor_list) {
     actor.update(frame_span, location_list, next_index_list, destination_list);
   }
 
   if (prev_index_size != 0) {
-    destination_list.erase(destination_list.begin(), destination_list.begin() + prev_index_size);
+    //destination_list.erase(destination_list.begin(), destination_list.begin() + prev_index_size);
+    ArrayList<Integer> newDestnationList = new ArrayList();
+    for (int i = 0; i < prev_index_size; i++) {
+      newDestnationList.add(destination_list.get(i));
+    }
+    destination_list = newDestnationList;
   }
 }
 
