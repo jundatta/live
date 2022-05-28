@@ -98,7 +98,9 @@ PShape createCone(float r, float h, int detail) {
   sh.endShape();
   return sh;
 }
-
+PShape createCone(float r, float h) {
+  return createCone(r, h, 24);
+}
 PShape createTorus(float outerRad, float innerRad, int numc, int numt) {
   PShape sh = createShape();
   sh.beginShape(TRIANGLE_STRIP);

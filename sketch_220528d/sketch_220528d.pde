@@ -1,6 +1,9 @@
 // https://openprocessing.org/sketch/1369981
 
 PShape cylinder5_10;
+PShape cylinder30_30;
+PShape cylinder4_45;
+PShape cone15_60;
 
 void setup() {
   size(1112, 834, P3D);
@@ -8,6 +11,9 @@ void setup() {
   noStroke();
 
   cylinder5_10 = createCan(5, 10);
+  cylinder30_30 = createCan(30, 30);
+  cylinder4_45 = createCan(4, 45);
+  cone15_60 = createCone(15, 60);
 }
 
 void draw() {
@@ -50,11 +56,14 @@ void draw() {
   push();
   translate(-215, -215, -10);
   rotateX(PI/2.0f);
-  cylinder(30, 30);
-  cylinder(4, 45);
+  //  cylinder(30, 30);
+  shape(cylinder30_30);
+  //  cylinder(4, 45);
+  shape(cylinder4_45);
   translate(0, -40, 0);
   rotateX(PI);
-  cone(15, 60);
+  //  cone(15, 60);
+  shape(cone15_60);
   cylinder(5, 60);
   pop();
   pop();
