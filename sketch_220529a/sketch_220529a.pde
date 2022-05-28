@@ -113,38 +113,38 @@ void setup() {
 
   background(255);
 
-  auto span = 40;
+  var span = 40;
   for (int x = -280; x <= 280; x += span) {
     for (int y = -280; y <= 280; y += span) {
-      this.location_list.push_back(new PVector(x, y, 0));
+      this.location_list.add(new PVector(x, y, 0));
     }
   }
 
-  auto param = span * sqrt(3);
-  for (auto location : location_list) {
+  var param = span * sqrt(3);
+  for (var location : location_list) {
     ArrayList<Integer> next_index = new ArrayList();
     int index = -1;
-    for (auto other : location_list) {
+    for (var other : location_list) {
       index++;
       if (location == other) {
         continue;
       }
 
-      float distance = distance(location, other);
+      float distance = PVector.dist(location, other);
       if (distance <= param) {
-        next_index.push_back(index);
+        next_index.add(index);
       }
     }
 
-    next_index_list.push_back(next_index);
+    next_index_list.add(next_index);
   }
 
-  color col;
   color[] base_color_list = { #ef476f, #ffd166, #06d6a0, #118ab2, #073b4c };
 
   for (int i = 0; i < 180; i++) {
-    actor_list.push_back(new Actor(location_list, destination_list));
-    actor_list.back().setColor(base_color_list[(int)random(0, base_color_list.size())]);
+    Actor actor = new Actor(location_list, destination_list);
+    actor.setColor(base_color_list[(int)random(0, base_color_list.length)]);
+    actor_list.add(actor);
   }
 }
 
