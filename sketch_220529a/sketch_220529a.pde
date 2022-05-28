@@ -15,7 +15,7 @@ class Actor {
   ArrayList<PVector> log;
   color col;
 
-  Actor(ArrayList<PVector> location_list, ArrayList<ArrayList<Integer>> next_index_list, ArrayList<Integer> destination_list) {
+  Actor(ArrayList<PVector> location_list, ArrayList<Integer> destination_list) {
     this.select_index = (int)random(0, location_list.size());
     while (true) {
       //var itr = find(destination_list.begin(), destination_list.end(), this.select_index);
@@ -45,29 +45,42 @@ class Actor {
       int retry = nextIndexArray.size();
       this.next_index = nextIndexArray.get((int)random(0, next_index_list.get(this.select_index).size()));
       while (--retry > 0) {
-        var destination_itr = find(destination_list.begin(), destination_list.end(), this.next_index);
-        if (destination_itr == destination_list.end()) {
+        //var destination_itr = find(destination_list.begin(), destination_list.end(), this.next_index);
+        //if (destination_itr == destination_list.end()) {
+        //  if (tmp_index != this.next_index) {
+        //    destination_list.push_back(this.next_index);
+        //    break;
+        //  }
+        //}
+        int destinationSize = destination_list.size();
+        int destination = destination_list.get(destinationSize - 1);
+        if (destination == this.next_index) {
           if (tmp_index != this.next_index) {
-            destination_list.push_back(this.next_index);
+            destination_list.add(this.next_index);
             break;
           }
         }
 
-        this.next_index = next_index_list[this.select_index][(this.next_index + 1) % next_index_list[this.select_index].size()];
+        ArrayList<Integer> nextIndex = next_index_list.get(this.select_index);
+        this.next_index = nextIndex.get((this.next_index + 1) % nextIndex.size());
       }
       if (retry <= 0) {
-        destination_list.push_back(this.select_index);
+        destination_list.add(this.select_index);
         this.next_index = this.select_index;
       }
     }
 
-    auto param = ofGetFrameNum() % frame_span;
-    auto distance = location_list[this.next_index] - location_list[this.select_index];
-    this.location = location_list[this.select_index] + distance / frame_span * param;
+    var param = frameCount % frame_span;
+    PVector nextLocation = location_list.get(this.next_index);
+    PVector selectLocation = location_list.get(this.select_index);
+    var distance = nextLocation.sub(selectLocation);
+    distance = distance.div(frame_span);
+    distance = distance.mult(param);
+    this.location = selectLocation.add(distance);
 
-    this.log.push_front(this.location);
+    this.log.add(0, this.location);
     while (this.log.size() > 20) {
-      this.log.pop_back();
+      this.log.remove(this.log.size()-1);
     }
   }
 
@@ -130,7 +143,7 @@ void setup() {
   color[] base_color_list = { #ef476f, #ffd166, #06d6a0, #118ab2, #073b4c };
 
   for (int i = 0; i < 180; i++) {
-    actor_list.push_back(new Actor(location_list, next_index_list, destination_list));
+    actor_list.push_back(new Actor(location_list, destination_list));
     actor_list.back().setColor(base_color_list[(int)random(0, base_color_list.size())]);
   }
 }
