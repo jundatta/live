@@ -4,8 +4,8 @@ ArrayList<Cell> prev, next;
 int[] dx = {-1, 0, 1, 0};
 int[] dy = {0, 1, 0, -1};
 int[][] map;
-int rez, cols, rows, run = 1;
-float col;
+int rez, cols, rows;
+float col = 0.0f;
 
 void setup() {
   size(1112, 834);
@@ -23,26 +23,20 @@ void setup() {
 }
 
 void draw() {
-  if (run == 1) {
-    next = new ArrayList<Cell>();
-    fill(col, 255, 255);
-    for (Cell c : prev)c.show();
-    for (Cell c : prev) {
-      for (int i = 0; i < 4; i++) {
-        if (c.y > rows - 10) {
-          //run = 0;
-          //break;
-        }
-        if (valid(c.x + dx[i], c.y + dy[i])) {
-          next.add(new Cell(c.x + dx[i], c.y + dy[i]));
-          map[c.x + dx[i]][c.y + dy[i]] = 1;
-        }
+  next = new ArrayList<Cell>();
+  fill(col, 255, 255);
+  for (Cell c : prev)c.show();
+  for (Cell c : prev) {
+    for (int i = 0; i < 4; i++) {
+      if (valid(c.x + dx[i], c.y + dy[i])) {
+        next.add(new Cell(c.x + dx[i], c.y + dy[i]));
+        map[c.x + dx[i]][c.y + dy[i]] = 1;
       }
     }
-    col = random(255);
-    prev.clear();
-    prev.addAll(next);
   }
+  col = random(255);
+  prev.clear();
+  prev.addAll(next);
 }
 boolean valid(int x, int y) {
   int vecini = 0;
@@ -52,10 +46,6 @@ boolean valid(int x, int y) {
   }
   return true;
 }
-
-/*void mousePressed() {
- save('pix.jpg');
- }*/
 
 class Cell {
   int x, y;
