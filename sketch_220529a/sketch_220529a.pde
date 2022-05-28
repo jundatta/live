@@ -1,90 +1,77 @@
-#include "ofApp.h"
-
-  // https://junkiyoshi.com/2022/02/09/
-
-  //--------------------------------------------------------------
-  Actor::Actor(vector<glm::vec3>& location_list, vector<vector<int>>& next_index_list, vector<int>& destination_list) {
-
-  this->select_index = ofRandom(location_list.size());
-  while (true) {
-
-    auto itr = find(destination_list.begin(), destination_list.end(), this->select_index);
-    if (itr == destination_list.end()) {
-
-      destination_list.push_back(this->select_index);
-      break;
-    }
-
-    this->select_index = (this->select_index + 1) % location_list.size();
-  }
-
-  this->next_index = this->select_index;
-}
+// https://junkiyoshi.com/2022/02/09/
 
 //--------------------------------------------------------------
-void Actor::update(const int& frame_span, vector<glm::vec3>& location_list, vector<vector<int>>& next_index_list, vector<int>& destination_list) {
-
-  if (ofGetFrameNum() % frame_span == 0) {
-
-    auto tmp_index = this->select_index;
-    this->select_index = this->next_index;
-    int retry = next_index_list[this->select_index].size();
-    this->next_index = next_index_list[this->select_index][(int)ofRandom(next_index_list[this->select_index].size())];
-    while (--retry > 0) {
-
-      auto destination_itr = find(destination_list.begin(), destination_list.end(), this->next_index);
-      if (destination_itr == destination_list.end()) {
-
-        if (tmp_index != this->next_index) {
-
-          destination_list.push_back(this->next_index);
-          break;
-        }
+class Actor {
+  Actor(ArrayList<PVector> location_list, ArrayList<ArrayList<Integer>> next_index_list, ArrayList<Integer> destination_list) {
+    this->select_index = ofRandom(location_list.size());
+    while (true) {
+      auto itr = find(destination_list.begin(), destination_list.end(), this->select_index);
+      if (itr == destination_list.end()) {
+        destination_list.push_back(this->select_index);
+        break;
       }
 
-      this->next_index = next_index_list[this->select_index][(this->next_index + 1) % next_index_list[this->select_index].size()];
+      this->select_index = (this->select_index + 1) % location_list.size();
     }
-    if (retry <= 0) {
 
-      destination_list.push_back(this->select_index);
-      this->next_index = this->select_index;
+    this->next_index = this->select_index;
+  }
+
+  //--------------------------------------------------------------
+  void update(int frame_span, ArrayList<PVector> location_list, ArrayList<ArrayList<Integer>> next_index_list, ArrayList<Integer> destination_list) {
+    if (ofGetFrameNum() % frame_span == 0) {
+      auto tmp_index = this->select_index;
+      this->select_index = this->next_index;
+      int retry = next_index_list[this->select_index].size();
+      this->next_index = next_index_list[this->select_index][(int)ofRandom(next_index_list[this->select_index].size())];
+      while (--retry > 0) {
+        auto destination_itr = find(destination_list.begin(), destination_list.end(), this->next_index);
+        if (destination_itr == destination_list.end()) {
+
+          if (tmp_index != this->next_index) {
+            destination_list.push_back(this->next_index);
+            break;
+          }
+        }
+
+        this->next_index = next_index_list[this->select_index][(this->next_index + 1) % next_index_list[this->select_index].size()];
+      }
+      if (retry <= 0) {
+        destination_list.push_back(this->select_index);
+        this->next_index = this->select_index;
+      }
+    }
+
+    auto param = ofGetFrameNum() % frame_span;
+    auto distance = location_list[this->next_index] - location_list[this->select_index];
+    this->location = location_list[this->select_index] + distance / frame_span * param;
+
+    this->log.push_front(this->location);
+    while (this->log.size() > 20) {
+      this->log.pop_back();
     }
   }
 
-  auto param = ofGetFrameNum() % frame_span;
-  auto distance = location_list[this->next_index] - location_list[this->select_index];
-  this->location = location_list[this->select_index] + distance / frame_span * param;
+  //--------------------------------------------------------------
+  PVector getLocation() {
+    return this->location;
+  }
 
-  this->log.push_front(this->location);
-  while (this->log.size() > 20) {
-    this->log.pop_back();
+  //--------------------------------------------------------------
+  ArrayList<PVector> getLog() {
+    return this->log;
+  }
+
+  //--------------------------------------------------------------
+  void setColor(color col) {
+    this->col = col;
+  }
+
+  //--------------------------------------------------------------
+  color getColor() {
+    return this->col;
   }
 }
-
-//--------------------------------------------------------------
-glm::vec3 Actor::getLocation() {
-
-  return this->location;
-}
-
-//--------------------------------------------------------------
-deque<glm::vec3> Actor::getLog() {
-
-  return this->log;
-}
-
-//--------------------------------------------------------------
-void Actor::setColor(ofColor color) {
-
-  this->color = color;
-}
-
-//--------------------------------------------------------------
-ofColor Actor::getColor() {
-
-  return this->color;
-}
-
 
 //--------------------------------------------------------------
 void ofApp::setup() {
