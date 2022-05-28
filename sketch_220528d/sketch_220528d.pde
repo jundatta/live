@@ -44,6 +44,7 @@ void draw() {
   push();                   // drone camera
   translate(-140, 0, -20);
   //  specularMaterial(0);
+  specular(0);
   box(20);
   translate(20, 0, 0);
   box(40, 24, 4);
