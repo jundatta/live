@@ -1,8 +1,8 @@
 // https://junkiyoshi.com/2022/02/09/
 
 ArrayList<PVector> location_list;
-ArrayList<ArrayList<int>> next_index_list;
-ArrayList<int> destination_list;
+ArrayList<ArrayList<Integer>> next_index_list;
+ArrayList<Integer> destination_list;
 
 ArrayList<Actor> actor_list;
 
@@ -16,11 +16,17 @@ class Actor {
   color col;
 
   Actor(ArrayList<PVector> location_list, ArrayList<ArrayList<Integer>> next_index_list, ArrayList<Integer> destination_list) {
-    this.select_index = random(0, location_list.size());
+    this.select_index = (int)random(0, location_list.size());
     while (true) {
-      auto itr = find(destination_list.begin(), destination_list.end(), this.select_index);
-      if (itr == destination_list.end()) {
-        destination_list.push_back(this.select_index);
+      //var itr = find(destination_list.begin(), destination_list.end(), this.select_index);
+      //if (itr == destination_list.end()) {
+      //  destination_list.push_back(this.select_index);
+      //  break;
+      //}
+      int destinationSize = destination_list.size();
+      int destination = destination_list.get(destinationSize - 1);
+      if (destination == this.select_index) {
+        destination_list.add(this.select_index);
         break;
       }
 
@@ -32,13 +38,14 @@ class Actor {
 
   //--------------------------------------------------------------
   void update(int frame_span, ArrayList<PVector> location_list, ArrayList<ArrayList<Integer>> next_index_list, ArrayList<Integer> destination_list) {
-    if (ofGetFrameNum() % frame_span == 0) {
-      auto tmp_index = this.select_index;
+    if (frameCount % frame_span == 0) {
+      var tmp_index = this.select_index;
       this.select_index = this.next_index;
-      int retry = next_index_list[this.select_index].size();
-      this.next_index = next_index_list[this.select_index][(int)random(0, next_index_list[this.select_index].size())];
+      ArrayList<Integer> nextIndexArray = next_index_list.get(this.select_index);
+      int retry = nextIndexArray.size();
+      this.next_index = nextIndexArray.get((int)random(0, next_index_list.get(this.select_index).size()));
       while (--retry > 0) {
-        auto destination_itr = find(destination_list.begin(), destination_list.end(), this.next_index);
+        var destination_itr = find(destination_list.begin(), destination_list.end(), this.next_index);
         if (destination_itr == destination_list.end()) {
           if (tmp_index != this.next_index) {
             destination_list.push_back(this.next_index);
@@ -88,7 +95,7 @@ class Actor {
 //--------------------------------------------------------------
 void setup() {
   size(720, 720);
-  
+
   //  ofSetFrameRate(30);
 
   background(255);
@@ -102,7 +109,7 @@ void setup() {
 
   auto param = span * sqrt(3);
   for (auto location : location_list) {
-    ArrayList<int> next_index = new ArrayList();
+    ArrayList<Integer> next_index = new ArrayList();
     int index = -1;
     for (auto other : location_list) {
       index++;
@@ -149,7 +156,7 @@ void update() {
 //--------------------------------------------------------------
 void draw() {
   update();
-  
+
   //  ofTranslate(ofGetWindowSize() * 0.5);
   translate(width/2, height/2);
 
