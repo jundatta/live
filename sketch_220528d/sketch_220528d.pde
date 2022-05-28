@@ -37,7 +37,10 @@ void draw() {
 
   rotateX(PI/2.5);
   //  ellipsoid(130, 130, 50);
+  push();
+  scale(1.0f, 1.0f, 50.0f/130.0f);
   sphere(130);
+  pop();
   push();                   // drone camera
   translate(-140, 0, -20);
   //  specularMaterial(0);
@@ -78,7 +81,10 @@ void draw() {
   fill(255, 20);
   noStroke();
   //  ellipsoid(140, 140, 3);
+  push();
+  scale(1.0f, 1.0f, 3.0f/140.0f);
   sphere(140);
+  pop();
   pop();
   //  torus(160, 10);
   shape(torus160_10);
@@ -101,7 +107,10 @@ void draw() {
   fill(255, 20);
   noStroke();
   //  ellipsoid(140, 140, 3);
+  push();
+  scale(1.0f, 1.0f, 3.0f/140.0f);
   sphere(140);
+  pop();
   pop();
   //  torus(160, 10);
   shape(torus160_10);
@@ -124,7 +133,10 @@ void draw() {
   fill(255, 30);
   noStroke();
   //  ellipsoid(140, 140, 3);
+  push();
+  scale(1.0f, 1.0f, 3.0f/140.0f);
   sphere(140);
+  pop();
   pop();
   //  torus(160, 10);
   shape(torus160_10);
@@ -146,9 +158,12 @@ void draw() {
   push();
   fill(255, 30);
   noStroke();
-//  ellipsoid(140, 140, 3);
+  //  ellipsoid(140, 140, 3);
+  push();
+  scale(1.0f, 1.0f, 3.0f/140.0f);
   sphere(140);
   pop();
-//  torus(160, 10);
+  pop();
+  //  torus(160, 10);
   shape(torus160_10);
 }
