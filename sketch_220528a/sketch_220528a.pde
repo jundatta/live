@@ -3,12 +3,13 @@
 ArrayList<Cell> prev, next;
 int[] dx = {-1, 0, 1, 0};
 int[] dy = {0, 1, 0, -1};
-int[][] map;
+boolean[][] map;
 int rez, cols, rows;
 float col = 0.0f;
 
 void setup() {
   size(1112, 834);
+  //size(500, 800, P3D);
   background(0);
   noStroke();
   colorMode(HSB);
@@ -17,9 +18,9 @@ void setup() {
   rows = height / rez;
   prev = new ArrayList<Cell>();
   next = new ArrayList<Cell>();
-  map = new int[cols][rows];
+  map = new boolean[cols][rows];
   prev.add(new Cell(cols / 2, rows / 2));
-  map[cols / 2][rows / 2] = 1;
+  map[cols / 2][rows / 2] = true;
 }
 
 void draw() {
@@ -38,7 +39,7 @@ void draw() {
       }
       if (valid(c.x + dx[i], c.y + dy[i])) {
         next.add(new Cell(c.x + dx[i], c.y + dy[i]));
-        map[c.x + dx[i]][c.y + dy[i]] = 1;
+        map[c.x + dx[i]][c.y + dy[i]] = true;
       }
     }
   }
@@ -57,7 +58,7 @@ boolean valid(int x, int y) {
     if (iy < 0 || rows <= iy) {
       continue;
     }
-    if (map[x + dx[i]][y + dy[i]] == 1)vecini++;
+    if (map[x + dx[i]][y + dy[i]])vecini++;
     if (vecini == 2)return false;
   }
   return true;
