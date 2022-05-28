@@ -141,6 +141,9 @@ PShape createTorus(float outerRad, float innerRad, int numc, int numt) {
   sh.endShape();
   return sh;
 }
+PShape createTorus(float outerRad, float innerRad) {
+  return createTorus(outerRad, innerRad, 24, 16);
+}
 PShape createTorus(float outerRad, float innerRad, int numc, int numt,
   color strokeColor) {
   PShape sh = createShape();
