@@ -12,12 +12,13 @@ void setup() {
   background(100);
   noStroke();
 
-  cylinder5_10 = createCan(5, 10);
-  cylinder30_30 = createCan(30, 30);
-  cylinder4_45 = createCan(4, 45);
+  cylinder5_10 = createCan(5, 10, 24, true, true);
+  cylinder5_10.setFill(#ff0000);
+  cylinder30_30 = createCan(30, 30, 24, true, true);
+  cylinder4_45 = createCan(4, 45, 24, true, true);
   cone15_60 = createCone(15, 60);
-  cylinder5_60 = createCan(5, 60);
-  torus160_10 = createTorus(160, 10);
+  cylinder5_60 = createCan(5, 60, 24, true, true);
+  torus160_10 = createTorus(160, 10, 24, 24);
 }
 
 void draw() {
@@ -44,7 +45,7 @@ void draw() {
   push();                   // drone camera
   translate(-140, 0, -20);
   //  specularMaterial(0);
-  specular(0);
+  fill(255,0,0);
   box(20);
   translate(20, 0, 0);
   box(40, 24, 4);
