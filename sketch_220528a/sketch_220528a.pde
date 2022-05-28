@@ -7,12 +7,7 @@ boolean[][] map;
 int rez, cols, rows;
 float col = 0.0f;
 
-void setup() {
-  size(1112, 834);
-  //size(500, 800, P3D);
-  background(0);
-  noStroke();
-  colorMode(HSB);
+void restart() {
   rez = 2;
   cols = width / rez;
   rows = height / rez;
@@ -22,9 +17,17 @@ void setup() {
   prev.add(new Cell(cols / 2, rows / 2));
   map[cols / 2][rows / 2] = true;
 }
+void setup() {
+  size(1112, 834);
+  //size(500, 800, P3D);
+  background(0);
+  noStroke();
+  colorMode(HSB);
+
+  restart();
+}
 
 void draw() {
-  background(0);
   next = new ArrayList<Cell>();
   fill(col, 255, 255);
   for (Cell c : prev)c.show();
@@ -47,6 +50,10 @@ void draw() {
   col = random(255);
   prev.clear();
   prev.addAll(next);
+  if (prev.size() == 0) {
+    restart();
+    background(0);
+  }
 }
 boolean valid(int x, int y) {
   int vecini = 0;
