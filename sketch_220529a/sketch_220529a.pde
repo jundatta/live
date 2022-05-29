@@ -172,7 +172,7 @@ void update() {
   if (prev_index_size != 0) {
     //destination_list.erase(destination_list.begin(), destination_list.begin() + prev_index_size);
     ArrayList<Integer> newDestnationList = new ArrayList();
-    for (int i = 0; i < prev_index_size; i++) {
+    for (int i = prev_index_size; i < destination_list.size(); i++) {
       newDestnationList.add(destination_list.get(i));
     }
     destination_list = newDestnationList;
