@@ -50,7 +50,7 @@ function draw() {
   specularMaterial(20);
   orient.x = PI / 8 + PI / 8 * sin(tip);
   rotateX(orient.x);
-  box(img.width, img.height, 10)
+  box(img.width, img.height, 10);
     translate(0, 0, 5.1);
   texture(txt);
   if (tipping) tip += 0.01;

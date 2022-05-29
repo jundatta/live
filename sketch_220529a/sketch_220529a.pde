@@ -9,6 +9,8 @@ PVector orient;
 float zoom = 1;
 float ztarget = 1;
 
+PShape box;
+
 void preload() {
   img = loadImage("seurat.jpg");
 }
@@ -22,11 +24,15 @@ void setup() {
   mouse = new PVector(mouseX, mouseY);
   laggymouse = new PVector(width, height);
   orient = new PVector(0, 0, 0);
+
+  box = createShape(BOX, img.width, img.height, 10);
+  box.setTexture(txt);
+  box.setStrokeWeight(0);
 }
 
 void draw() {
   translate(width/2, height/2);
-  
+
   scale(zoom);
   zoom = lerp(zoom, ztarget, 0.1);
   push();
@@ -58,9 +64,10 @@ void draw() {
   specular(20);
   orient.x = PI / 8 + PI / 8 * sin(tip);
   rotateX(orient.x);
-  box(img.width, img.height, 10);
-  translate(0, 0, 5.1);
-  texture(txt);
+  //box(img.width, img.height, 10);
+  //translate(0, 0, 5.1);
+  //texture(txt);
+  shape(box);
   if (tipping) tip += 0.01;
 
   noStroke();
