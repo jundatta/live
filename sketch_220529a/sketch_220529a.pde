@@ -1,6 +1,6 @@
 // https://junkiyoshi.com/2022/02/09/
 
-ArrayList<PVector> location_list;
+ArrayList<PVector> glocation_list;
 ArrayList<ArrayList<Integer>> next_index_list;
 ArrayList<Integer> destination_list;
 
@@ -45,7 +45,7 @@ class Actor {
   }
 
   //--------------------------------------------------------------
-  void update(int frame_span, ArrayList<PVector> location_list, ArrayList<ArrayList<Integer>> next_index_list, ArrayList<Integer> destination_list) {
+  void update(int frame_span, final ArrayList<PVector> location_list, ArrayList<ArrayList<Integer>> next_index_list, ArrayList<Integer> destination_list) {
     if (frameCount % frame_span == 0) {
       var tmp_index = this.select_index;
       this.select_index = this.next_index;
@@ -79,10 +79,10 @@ class Actor {
     var param = frameCount % frame_span;
     PVector nextLocation = location_list.get(this.next_index);
     PVector selectLocation = location_list.get(this.select_index);
-    var distance = nextLocation.sub(selectLocation);
+    var distance = PVector.sub(nextLocation, selectLocation);
     distance = distance.div(frame_span);
     distance = distance.mult(param);
-    this.location = selectLocation.add(distance);
+    this.location = PVector.add(selectLocation, distance);
 
     this.log.add(0, this.location);
     while (this.log.size() > 20) {
@@ -117,21 +117,20 @@ void setup() {
 
   //  ofSetFrameRate(30);
 
-  location_list = new ArrayList();
+  glocation_list = new ArrayList();
   var span = 40;
   for (int x = -280; x <= 280; x += span) {
     for (int y = -280; y <= 280; y += span) {
-      this.location_list.add(new PVector(x, y, 0));
+      glocation_list.add(new PVector(x, y, 0));
     }
   }
-  println(location_list.get(100));
 
   next_index_list = new ArrayList();
   var param = span * sqrt(3);
-  for (var location : location_list) {
+  for (var location : glocation_list) {
     ArrayList<Integer> next_index = new ArrayList();
     int index = -1;
-    for (var other : location_list) {
+    for (var other : glocation_list) {
       index++;
       if (location == other) {
         continue;
@@ -151,10 +150,11 @@ void setup() {
   destination_list = new ArrayList();
   actor_list = new ArrayList();
   for (int i = 0; i < 180; i++) {
-    Actor actor = new Actor(location_list, destination_list);
+    Actor actor = new Actor(glocation_list, destination_list);
     actor.setColor(base_color_list[(int)random(0, base_color_list.length)]);
     actor_list.add(actor);
   }
+  println(glocation_list);
 }
 
 //--------------------------------------------------------------
@@ -167,7 +167,7 @@ void update() {
   }
 
   for (var actor : actor_list) {
-    actor.update(frame_span, location_list, next_index_list, destination_list);
+    actor.update(frame_span, glocation_list, next_index_list, destination_list);
   }
 
   if (prev_index_size != 0) {
@@ -193,8 +193,7 @@ void draw() {
   stroke(c);
   strokeWeight(1);
   fill(c);
-  println(location_list.get(0).x);
-  for (var location : location_list) {
+  for (var location : glocation_list) {
     circle(location.x, location.y, 5);
   }
 
