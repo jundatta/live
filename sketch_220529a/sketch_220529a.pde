@@ -6,6 +6,8 @@ ArrayList<Integer> destination_list;
 
 ArrayList<Actor> actor_list;
 
+PGraphics pg;
+
 //--------------------------------------------------------------
 class Actor {
   int select_index;
@@ -113,7 +115,8 @@ class Actor {
 
 //--------------------------------------------------------------
 void setup() {
-  size(720, 720);
+  size(720, 720, P3D);
+  pg = createGraphics(width, height);
 
   //  ofSetFrameRate(30);
 
@@ -183,31 +186,34 @@ void update() {
 void draw() {
   update();
 
-  background(255);
+  pg.beginDraw();
+  pg.background(255);
 
   //  ofTranslate(ofGetWindowSize() * 0.5);
-  translate(width/2, height/2);
+  pg.translate(width/2, height/2);
 
   color baseColor = color(0, 0, 0, 128);
-  stroke(baseColor);
-  strokeWeight(1);
+  pg.stroke(baseColor);
+  pg.strokeWeight(1);
   for (var location : glocation_list) {
-    circle(location.x, location.y, 6+(3*0.5f));  // いい感じに微調整させて頂きました
+    pg.circle(location.x, location.y, 6+(3*0.5f));  // いい感じに微調整させて頂きました
   }
 
-  strokeWeight(3);
+  pg.strokeWeight(3);
   for (var actor : actor_list) {
     color actorColor = actor.getColor();
-    stroke(actorColor);
-    fill(actorColor);
+    pg.stroke(actorColor);
+    pg.fill(actorColor);
     PVector location = actor.getLocation();
-    circle(location.x, location.y, 6);
-    noFill();
+    pg.circle(location.x, location.y, 6);
+    pg.noFill();
 
-    beginShape();
+    pg.beginShape();
     for (var l : actor.getLog()) {
-      vertex(l.x, l.y);
+      pg.vertex(l.x, l.y);
     }
-    endShape();
+    pg.endShape();
   }
+  pg.endDraw();
+  image(pg, 0, 0);
 }
