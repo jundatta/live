@@ -191,9 +191,8 @@ void draw() {
   color baseColor = color(0, 0, 0, 128);
   stroke(baseColor);
   strokeWeight(1);
-  fill(baseColor);
   for (var location : glocation_list) {
-    circle(location.x, location.y, 5);
+    circle(location.x, location.y, 6+(3*0.5f));  // いい感じに微調整させて頂きました
   }
 
   strokeWeight(3);
