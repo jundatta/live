@@ -25,7 +25,7 @@ class Actor {
   }
   Actor(ArrayList<PVector> location_list, ArrayList<Integer> destination_list) {
     this.log = new ArrayList();
-    
+
     this.select_index = (int)random(0, location_list.size());
     while (true) {
       //var itr = find(destination_list.begin(), destination_list.end(), this.select_index);
@@ -117,8 +117,6 @@ void setup() {
 
   //  ofSetFrameRate(30);
 
-  background(255);
-
   location_list = new ArrayList();
   var span = 40;
   for (int x = -280; x <= 280; x += span) {
@@ -126,6 +124,7 @@ void setup() {
       this.location_list.add(new PVector(x, y, 0));
     }
   }
+  println(location_list.get(100));
 
   next_index_list = new ArrayList();
   var param = span * sqrt(3);
@@ -185,27 +184,31 @@ void update() {
 void draw() {
   update();
 
+  background(255);
+
   //  ofTranslate(ofGetWindowSize() * 0.5);
   translate(width/2, height/2);
 
-  stroke(0, 128);
+  color c = color(0, 0, 0, 128);
+  stroke(c);
   strokeWeight(1);
-  fill(0, 128);
+  fill(c);
+  println(location_list.get(0).x);
   for (var location : location_list) {
     circle(location.x, location.y, 5);
   }
 
   strokeWeight(3);
-  for (var actor : actor_list) {
-    fill(actor.getColor());
-    PVector location = actor.getLocation();
-    circle(location.x, location.y, 6);
-    noFill();
+  //for (var actor : actor_list) {
+  //  fill(actor.getColor());
+  //  PVector location = actor.getLocation();
+  //  circle(location.x, location.y, 6);
+  //  noFill();
 
-    beginShape();
-    for (var l : actor.getLog()) {
-      vertex(l.x, l.y);
-    }
-    endShape();
-  }
+  //  beginShape();
+  //  for (var l : actor.getLog()) {
+  //    vertex(l.x, l.y);
+  //  }
+  //  endShape();
+  //}
 }
