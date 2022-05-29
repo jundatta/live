@@ -92,5 +92,5 @@ void keyPressed() {
 }
 
 void mouseDragged() {
-  ztarget += (pmouseY - mouseY) / 1000;
+  ztarget += (pmouseY - mouseY) / 1000.0f;
 }
