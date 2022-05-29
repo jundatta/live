@@ -15,7 +15,17 @@ class Actor {
   ArrayList<PVector> log;
   color col;
 
+  boolean findDestination(ArrayList<Integer> destination_list, int index) {
+    for (int destination : destination_list) {
+      if (destination == index) {
+        return true;
+      }
+    }
+    return false;
+  }
   Actor(ArrayList<PVector> location_list, ArrayList<Integer> destination_list) {
+    this.log = new ArrayList();
+    
     this.select_index = (int)random(0, location_list.size());
     while (true) {
       //var itr = find(destination_list.begin(), destination_list.end(), this.select_index);
@@ -23,9 +33,7 @@ class Actor {
       //  destination_list.push_back(this.select_index);
       //  break;
       //}
-      int destinationSize = destination_list.size();
-      int destination = destination_list.get(destinationSize - 1);
-      if (destination == this.select_index) {
+      if (!findDestination(destination_list, this.select_index)) {
         destination_list.add(this.select_index);
         break;
       }
@@ -52,9 +60,7 @@ class Actor {
         //    break;
         //  }
         //}
-        int destinationSize = destination_list.size();
-        int destination = destination_list.get(destinationSize - 1);
-        if (destination == this.next_index) {
+        if (!findDestination(destination_list, this.next_index)) {
           if (tmp_index != this.next_index) {
             destination_list.add(this.next_index);
             break;
@@ -113,6 +119,7 @@ void setup() {
 
   background(255);
 
+  location_list = new ArrayList();
   var span = 40;
   for (int x = -280; x <= 280; x += span) {
     for (int y = -280; y <= 280; y += span) {
@@ -120,6 +127,7 @@ void setup() {
     }
   }
 
+  next_index_list = new ArrayList();
   var param = span * sqrt(3);
   for (var location : location_list) {
     ArrayList<Integer> next_index = new ArrayList();
@@ -141,6 +149,8 @@ void setup() {
 
   color[] base_color_list = { #ef476f, #ffd166, #06d6a0, #118ab2, #073b4c };
 
+  destination_list = new ArrayList();
+  actor_list = new ArrayList();
   for (int i = 0; i < 180; i++) {
     Actor actor = new Actor(location_list, destination_list);
     actor.setColor(base_color_list[(int)random(0, base_color_list.length)]);
