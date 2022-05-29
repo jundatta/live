@@ -20,6 +20,11 @@ void setup() {
   size(1112, 834, P3D);
   img.resize(0, height);
   txt = createGraphics(img.width, img.height);
+  txt.beginDraw();
+  txt.fill(0);
+  txt.noStroke();
+  txt.rect(0,0,txt.width, txt.height);
+  txt.endDraw();
   background(0);
   mouse = new PVector(mouseX, mouseY);
   laggymouse = new PVector(width, height);
@@ -38,7 +43,8 @@ void draw() {
   zoom = lerp(zoom, ztarget, 0.1);
   push();
   translate(width / 2 - img.width / 2, 0);
-  mouse.x = mouseX;
+  //mouse.x = mouseX;
+  mouse.x = map(mouseX, 0, width, width, 0);
   mouse.y = mouseY;
   mouse.x = constrain(mouse.x, width / 2 - (img.width / 2) + 50, width / 2 + (img.width / 2) - 50);
   mouse.y = constrain(mouse.y, 50, height-50);
