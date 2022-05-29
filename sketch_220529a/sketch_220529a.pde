@@ -25,6 +25,8 @@ void setup() {
 }
 
 void draw() {
+  translate(width/2, height/2);
+  
   scale(zoom);
   zoom = lerp(zoom, ztarget, 0.1);
   push();
