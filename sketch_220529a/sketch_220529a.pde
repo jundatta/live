@@ -188,17 +188,19 @@ void draw() {
   //  ofTranslate(ofGetWindowSize() * 0.5);
   translate(width/2, height/2);
 
-  color c = color(0, 0, 0, 128);
-  stroke(c);
+  color baseColor = color(0, 0, 0, 128);
+  stroke(baseColor);
   strokeWeight(1);
-  fill(c);
+  fill(baseColor);
   for (var location : glocation_list) {
     circle(location.x, location.y, 5);
   }
 
   strokeWeight(3);
   for (var actor : actor_list) {
-    fill(actor.getColor());
+    color actorColor = actor.getColor();
+    stroke(actorColor);
+    fill(actorColor);
     PVector location = actor.getLocation();
     circle(location.x, location.y, 6);
     noFill();
