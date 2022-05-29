@@ -31,6 +31,7 @@ void setup() {
 }
 
 void draw() {
+  lights();
   translate(width/2, height/2);
 
   scale(zoom);
