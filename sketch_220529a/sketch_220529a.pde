@@ -10,10 +10,11 @@ float zoom = 1;
 float ztarget = 1;
 
 void preload() {
-  img = loadImage("seurat.jp");
+  img = loadImage("seurat.jpg");
 }
 
 void setup() {
+  preload();
   size(1112, 834, P3D);
   img.resize(0, height);
   txt = createGraphics(img.width, img.height);
@@ -35,6 +36,7 @@ void draw() {
 
   laggymouse.lerp(mouse, 0.1);
   var r = 15 + abs(PVector.dist(laggymouse, mouse)) / 5.0f;
+  txt.beginDraw();
   for (int i = 0; i < 150; i++) {
     var v1 = PVector.random2D();
     var x = laggymouse.x - (width / 2 - img.width / 2) + random(-r, r) * v1.x;
@@ -45,6 +47,7 @@ void draw() {
     else txt.fill(c);
     txt.ellipse(x, y, 2, 2);
   }
+  txt.endDraw();
 
   pop();
   background(0);
