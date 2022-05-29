@@ -63,15 +63,15 @@ void draw() {
   box(img.width, img.height, 1);
 }
 
-function mousePressed() {
+void mousePressed() {
   tipping = !tipping;
 }
 
-function keyPressed() {
-  if (keyCode == UP_ARROW) ztarget += 0.1;
-  if (keyCode == DOWN_ARROW) ztarget -= 0.1;
+void keyPressed() {
+  if (keyCode == UP) ztarget += 0.1;
+  if (keyCode == DOWN) ztarget -= 0.1;
 }
 
-function mouseDragged() {
+void mouseDragged() {
   ztarget += (pmouseY - mouseY) / 1000;
 }
