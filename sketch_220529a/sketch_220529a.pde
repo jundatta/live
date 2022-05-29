@@ -154,7 +154,6 @@ void setup() {
     actor.setColor(base_color_list[(int)random(0, base_color_list.length)]);
     actor_list.add(actor);
   }
-  println(glocation_list);
 }
 
 //--------------------------------------------------------------
@@ -198,16 +197,16 @@ void draw() {
   }
 
   strokeWeight(3);
-  //for (var actor : actor_list) {
-  //  fill(actor.getColor());
-  //  PVector location = actor.getLocation();
-  //  circle(location.x, location.y, 6);
-  //  noFill();
+  for (var actor : actor_list) {
+    fill(actor.getColor());
+    PVector location = actor.getLocation();
+    circle(location.x, location.y, 6);
+    noFill();
 
-  //  beginShape();
-  //  for (var l : actor.getLog()) {
-  //    vertex(l.x, l.y);
-  //  }
-  //  endShape();
-  //}
+    beginShape();
+    for (var l : actor.getLog()) {
+      vertex(l.x, l.y);
+    }
+    endShape();
+  }
 }
