@@ -9,18 +9,18 @@ PVector orient;
 float zoom = 1;
 float ztarget = 1;
 
-function preload() {
-  img = loadImage('seurat.jpg');
+void preload() {
+  img = loadImage("seurat.jp");
 }
 
-function setup() {
-  createCanvas(windowWidth, windowHeight, WEBGL);
+void setup() {
+  size(1112, 834, P3D);
   img.resize(0, height);
   txt = createGraphics(img.width, img.height);
   background(0);
-  mouse = createVector(mouseX, mouseY);
-  laggymouse = createVector(width, height);
-  orient = createVector(0, 0, 0);
+  mouse = new PVector(mouseX, mouseY);
+  laggymouse = new PVector(width, height);
+  orient = new PVector(0, 0, 0);
 }
 
 function draw() {
