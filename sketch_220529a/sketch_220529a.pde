@@ -1,12 +1,13 @@
 // https://openprocessing.org/sketch/1332672
 
-let img, txt;
-let mouse, laggymouse;
-let tipping = true;
-let tip = 0;
-let orient;
-let zoom = 1;
-let ztarget = 1;
+PImage img;
+PGraphics txt;
+PVector mouse, laggymouse;
+boolean tipping = true;
+float tip = 0;
+PVector orient;
+float zoom = 1;
+float ztarget = 1;
 
 function preload() {
   img = loadImage('seurat.jpg');
@@ -52,7 +53,7 @@ function draw() {
   specularMaterial(20);
   orient.x = PI / 8 + PI / 8 * sin(tip);
   rotateX(orient.x);
-  box(img.width, img.height, 10)
+  box(img.width, img.height, 10);
     translate(0, 0, 5.1);
   texture(txt);
   if (tipping) tip += 0.01;
