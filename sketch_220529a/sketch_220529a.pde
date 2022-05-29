@@ -25,9 +25,19 @@ void setup() {
   laggymouse = new PVector(width, height);
   orient = new PVector(0, 0, 0);
 
-  box = createShape(BOX, img.width, img.height, 10);
+  //box = createShape(BOX, img.width, img.height, 10);
+  //box.setTexture(txt);
+  //box.setStroke(false);
+  box = createShape();
+  box.beginShape();
+  box.vertex(0, 0, 0, 0.0f, 0.0f);
+  box.vertex(0, img.height, 0, 0.0f, 1.0f);
+  box.vertex(img.width, img.height, 0, 1.0f, 1.0f);
+  box.vertex(img.width, 0, 0, 0.0f, 0.0f);
+  box.endShape(CLOSE);
+  box.textureMode(NORMAL);
   box.setTexture(txt);
-  box.setStrokeWeight(0);
+  box.setStroke(false);
 }
 
 void draw() {
