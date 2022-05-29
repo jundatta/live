@@ -23,7 +23,7 @@ void setup() {
   orient = new PVector(0, 0, 0);
 }
 
-function draw() {
+void draw() {
   scale(zoom);
   zoom = lerp(zoom, ztarget, 0.1);
   push();
@@ -34,12 +34,12 @@ function draw() {
   mouse.y = constrain(mouse.y, 50, height-50);
 
   laggymouse.lerp(mouse, 0.1);
-  let r = 15 + abs(p5.Vector.dist(laggymouse, mouse)) / 5;
-  for (let i = 0; i < 150; i++) {
-    let v1 = p5.Vector.random2D();
-    let x = laggymouse.x - (width / 2 - img.width / 2) + random(-r, r) * v1.x;
-    let y = laggymouse.y + random(-r, r) * v1.y;
-    let c = img.get(x, y);
+  var r = 15 + abs(PVector.dist(laggymouse, mouse)) / 5.0f;
+  for (int i = 0; i < 150; i++) {
+    var v1 = PVector.random2D();
+    var x = laggymouse.x - (width / 2 - img.width / 2) + random(-r, r) * v1.x;
+    var y = laggymouse.y + random(-r, r) * v1.y;
+    var c = img.get((int)x, (int)y);
     txt.noStroke();
     if (i % 50 == 0) txt.fill(255);
     else txt.fill(c);
@@ -48,18 +48,19 @@ function draw() {
 
   pop();
   background(0);
-  ambientLight(155);
+  ambient(155);
   pointLight(100, 100, 100, 0, -height, height);
-  specularMaterial(20);
+  specular(20);
   orient.x = PI / 8 + PI / 8 * sin(tip);
   rotateX(orient.x);
   box(img.width, img.height, 10);
-    translate(0, 0, 5.1);
+  translate(0, 0, 5.1);
   texture(txt);
   if (tipping) tip += 0.01;
 
   noStroke();
-  plane(img.width, img.height);
+  //  plane(img.width, img.height);
+  box(img.width, img.height, 1);
 }
 
 function mousePressed() {
