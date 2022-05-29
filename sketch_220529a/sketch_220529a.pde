@@ -30,7 +30,7 @@ void setup() {
   laggymouse = new PVector(width, height);
   orient = new PVector(0, 0, 0);
 
-  box = createShape(BOX, img.width, img.height, 100);
+  box = createShape(BOX, img.width, img.height, 10);
   box.setTexture(txt);
   box.setStroke(false);
 }
