@@ -38,7 +38,7 @@ static class openFrameworks {
   };
 
   static int OFNOISE_FASTFLOOR(float x) {
-    //  return (x>0.0f) ? (int)x : (int)x-1;
+    //return (x>0.0f) ? (int)x : (int)x-1;
     // 結果がマイナスの場合は0を返すように変える
     int r = (x>0.0f) ? (int)x : (int)x-1;
     if (r < 0) {

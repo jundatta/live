@@ -7,7 +7,7 @@ void setup() {
 
 //--------------------------------------------------------------
 void update() {
-//  randomSeed(39);
+  //  randomSeed(39);
 }
 
 //--------------------------------------------------------------
@@ -20,12 +20,14 @@ void draw() {
 
   var radius = 150;
   var span = 1;
-  for (var deg = 0; deg < 360; deg += 6) {
+  for (var deg = 0; deg < 360; deg += 36) {
     var location = new PVector(radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD));
     var left = new PVector(radius * cos((deg + span * 0.5) * DEG_TO_RAD), radius * sin((deg + span * 0.5) * DEG_TO_RAD));
     var right = new PVector(radius * cos((deg - span * 0.5) * DEG_TO_RAD), radius * sin((deg - span * 0.5) * DEG_TO_RAD));
-    var noise_radius = map(openFrameworks.ofNoise(location.x * 0.1, location.y * 0.1, frameCount * 0.025),
+    var noise = openFrameworks.ofNoise(location.x * 0.1, location.y * 0.1, frameCount * 0.025);
+    var noise_radius = map(noise,
       0, 1, radius * 0.2, radius * 0.8);
+    println(deg + ":" + noise_radius + " [" + noise + "] " + location + ", " + radius * 0.2 + "～" + radius * 0.8);
     var noise_location = new PVector(noise_radius * cos(deg * DEG_TO_RAD), noise_radius * sin(deg * DEG_TO_RAD));
 
     stroke(255);
@@ -47,4 +49,5 @@ void draw() {
     stroke(255, alpha);
     circle(circle_radius * cos(deg * DEG_TO_RAD), circle_radius * sin(deg * DEG_TO_RAD), 2);
   }
+  println();
 }
