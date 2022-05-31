@@ -1,54 +1,49 @@
 // https://junkiyoshi.com/2022/02/11/
 
-#include "ofApp.h"
-
-  //--------------------------------------------------------------
-  void ofApp::setup() {
-
-  ofSetFrameRate(30);
-  ofSetWindowTitle("openframeworks");
-
-  ofBackground(0);
+//--------------------------------------------------------------
+void setup() {
+  size(720, 720);
+  noFill();
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
-
-  ofSeedRandom(39);
+void update() {
+  randomSeed(39);
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
 
-  ofTranslate(ofGetWindowSize() * 0.5);
+  background(0);
 
-  auto radius = 150;
-  auto span = 1;
-  for (auto deg = 0; deg < 360; deg += 6) {
+  translate(width/2, height/2);
 
-    auto location = glm::vec2(radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD));
-    auto left = glm::vec2(radius * cos((deg + span * 0.5) * DEG_TO_RAD), radius * sin((deg + span * 0.5) * DEG_TO_RAD));
-    auto right = glm::vec2(radius * cos((deg - span * 0.5) * DEG_TO_RAD), radius * sin((deg - span * 0.5) * DEG_TO_RAD));
-    auto noise_radius = ofMap(ofNoise(glm::vec3(location * 0.1, ofGetFrameNum() * 0.025)), 0, 1, radius * 0.2, radius * 0.8);
-    auto noise_location = glm::vec2(noise_radius * cos(deg * DEG_TO_RAD), noise_radius * sin(deg * DEG_TO_RAD));
+  var radius = 150;
+  var span = 1;
+  for (var deg = 0; deg < 360; deg += 6) {
 
-    ofSetColor(255);
+    var location = new PVector(radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD));
+    var left = new PVector(radius * cos((deg + span * 0.5) * DEG_TO_RAD), radius * sin((deg + span * 0.5) * DEG_TO_RAD));
+    var right = new PVector(radius * cos((deg - span * 0.5) * DEG_TO_RAD), radius * sin((deg - span * 0.5) * DEG_TO_RAD));
+    var noise_radius = map(ofNoise(new PVector(location * 0.1, frameCount * 0.025)), 0, 1, radius * 0.2, radius * 0.8);
+    var noise_location = new PVector(noise_radius * cos(deg * DEG_TO_RAD), noise_radius * sin(deg * DEG_TO_RAD));
 
-    ofBeginShape();
+    stroke(255);
 
-    ofVertex(left);
-    ofVertex(noise_location + left);
-    ofVertex(noise_location + right);
-    ofVertex(right);
+    beginShape();
+    vertex(left);
+    vertex(noise_location + left);
+    vertex(noise_location + right);
+    vertex(right);
+    endShape();
 
-    ofEndShape(true);
+    var circle_radius = map(ofNoise(new PVector(location * 0.1, ofGetFrameNum() * 0.025)), 0, 1, 0, radius * 0.8);
+    var prev_circle_radius = map(ofNoise(new PVector(location * 0.1, (ofGetFrameNum() - 3) * 0.025)), 0, 1, 0, radius * 0.8);
+    var gap = abs(prev_circle_radius - circle_radius);
+    var alpha = gap < 0.5 ? 0 : map(gap, 0.5, 6, 0, 255);
 
-    auto circle_radius = ofMap(ofNoise(glm::vec3(location * 0.1, ofGetFrameNum() * 0.025)), 0, 1, 0, radius * 0.8);
-    auto prev_circle_radius = ofMap(ofNoise(glm::vec3(location * 0.1, (ofGetFrameNum() - 3) * 0.025)), 0, 1, 0, radius * 0.8);
-    auto gap = abs(prev_circle_radius - circle_radius);
-    auto alpha = gap < 0.5 ? 0 : ofMap(gap, 0.5, 6, 0, 255);
-
-    ofSetColor(255, alpha);
-    ofDrawCircle(glm::vec2(circle_radius * cos(deg * DEG_TO_RAD), circle_radius * sin(deg * DEG_TO_RAD)), 2);
+    stroke(255, alpha);
+    circle(new PVector(circle_radius * cos(deg * DEG_TO_RAD), circle_radius * sin(deg * DEG_TO_RAD)), 2);
   }
 }
