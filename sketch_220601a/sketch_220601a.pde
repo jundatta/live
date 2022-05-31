@@ -3,7 +3,6 @@
 //--------------------------------------------------------------
 void setup() {
   size(720, 720);
-  noFill();
 }
 
 //--------------------------------------------------------------
@@ -36,7 +35,7 @@ void draw() {
     vertex(noise_location.x + left.x, noise_location.y + left.y);
     vertex(noise_location.x + right.x, noise_location.y + right.y);
     vertex(right.x, right.y);
-    endShape();
+    endShape(CLOSE);
 
     var circle_radius = map(openFrameworks.ofNoise(location.x * 0.1, location.y * 0.1, frameCount * 0.025),
       0, 1, 0, radius * 0.8);
