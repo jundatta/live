@@ -25,13 +25,11 @@ void draw() {
     var left = new PVector(radius * cos((deg + span * 0.5) * DEG_TO_RAD), radius * sin((deg + span * 0.5) * DEG_TO_RAD));
     var right = new PVector(radius * cos((deg - span * 0.5) * DEG_TO_RAD), radius * sin((deg - span * 0.5) * DEG_TO_RAD));
     var loc3 = new PVector(location.x * 0.1, location.y * 0.1, frameCount * 0.025);
-    loc3.x = (loc3.x < 0) ? -loc3.x: loc3.x;
-    loc3.y = (loc3.y < 0) ? -loc3.y: loc3.y;
-    loc3.z = (loc3.z < 0) ? -loc3.z: loc3.z;
-    var noise = openFrameworks.ofNoise(loc3.x, loc3.y, loc3.z);
+    float noise = openFrameworks.ofNoise(loc3.x, loc3.y, loc3.z);
+    //println(noise);
     var noise_radius = map(noise,
       0, 1, radius * 0.2, radius * 0.8);
-    println(deg + ":" + noise_radius + " [" + noise + "] " + loc3 + ", " + frameCount);
+    //println(deg + ":" + noise_radius + " [" + noise + "] " + loc3 + ", " + frameCount);
     var noise_location = new PVector(noise_radius * cos(deg * DEG_TO_RAD), noise_radius * sin(deg * DEG_TO_RAD));
 
     stroke(255);
@@ -53,5 +51,5 @@ void draw() {
     stroke(255, alpha);
     circle(circle_radius * cos(deg * DEG_TO_RAD), circle_radius * sin(deg * DEG_TO_RAD), 2);
   }
-  println();
+  //println();
 }
