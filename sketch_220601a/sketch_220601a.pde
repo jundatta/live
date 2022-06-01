@@ -24,10 +24,11 @@ void draw() {
     var location = new PVector(radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD));
     var left = new PVector(radius * cos((deg + span * 0.5) * DEG_TO_RAD), radius * sin((deg + span * 0.5) * DEG_TO_RAD));
     var right = new PVector(radius * cos((deg - span * 0.5) * DEG_TO_RAD), radius * sin((deg - span * 0.5) * DEG_TO_RAD));
-    var noise = openFrameworks.ofNoise(location.x * 0.1, location.y * 0.1, frameCount * 0.025);
+    var loc3 = new PVector(location.x * 0.1, location.y * 0.1, frameCount * 0.025);
+    var noise = openFrameworks.ofNoise(loc3.x, loc3.y, loc3.z);
     var noise_radius = map(noise,
       0, 1, radius * 0.2, radius * 0.8);
-    println(deg + ":" + noise_radius + " [" + noise + "] " + location + ", " + radius * 0.2 + "～" + radius * 0.8);
+    println(deg + ":" + noise_radius + " [" + noise + "] " + loc3 + ", " + frameCount);
     var noise_location = new PVector(noise_radius * cos(deg * DEG_TO_RAD), noise_radius * sin(deg * DEG_TO_RAD));
 
     stroke(255);
