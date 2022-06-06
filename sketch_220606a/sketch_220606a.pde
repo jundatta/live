@@ -7,7 +7,7 @@ Car[] cars = new Car[numcars];
 float wSize;
 float av = 0;
 float swing = 5;
-float starget = 0;
+int starget = 0;
 float zoom = 1;
 float ztarget = 1;
 
@@ -24,7 +24,7 @@ void setup() {
   }
 }
 
-function draw() {
+void draw() {
   background(0);
   translate(width / 2, height / 2);
   scale(zoom);
@@ -32,12 +32,12 @@ function draw() {
   ztarget = map(mouseY, height, 0, 0.5, 2);
   swing = lerp(swing, 1 + starget, 0.05);
   zoom = lerp(zoom, ztarget, 0.05);
-  for (let c of cars) {
+  for (Car c : cars) {
     c.show();
     c.move();
   }
 }
 
-function mousePressed() {
+void mousePressed() {
   starget = (starget + 1) % 13;
 }
