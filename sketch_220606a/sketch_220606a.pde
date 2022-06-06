@@ -19,8 +19,8 @@ void setup() {
 
   for (int i = 0; i < numcars; i += 1) {
     float a = i * TWO_PI / (float)numcars;
-    int c = i*(360/(float)numcars);
-    cars[i] = new Car(a, wSize, i, c);
+    int c = (int)(i*(360/(float)numcars));
+    cars[i] = new Car(a, wSize, i, numcars, c);
   }
 }
 
