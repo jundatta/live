@@ -12,7 +12,7 @@ float zoom = 1;
 float ztarget = 1;
 
 void setup() {
-  size(1112, 834);
+  size(1112, 834, P3D);
   wSize = height / 5.0f;
   rectMode(CENTER);
   colorMode(HSB, 360);
