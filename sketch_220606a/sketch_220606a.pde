@@ -4,23 +4,23 @@
 
 int numcars = 36;
 Car[] cars = new Car[numcars];
-float size;
+float wSize;
 float av = 0;
 float swing = 5;
 float starget = 0;
 float zoom = 1;
 float ztarget = 1;
 
-function setup() {
-  createCanvas(windowWidth, windowHeight);
-  size = height / 5;
+void setup() {
+  size(1112, 834);
+  wSize = height / 5.0f;
   rectMode(CENTER);
   colorMode(HSB, 360);
 
-  for (let i = 0; i < numcars; i += 1) {
-    a = i * TWO_PI / numcars;
-    let c = i*(360/numcars);
-    cars[i] = new Car(a, size, i, c);
+  for (int i = 0; i < numcars; i += 1) {
+    float a = i * TWO_PI / (float)numcars;
+    int c = i*(360/(float)numcars);
+    cars[i] = new Car(a, wSize, i, c);
   }
 }
 
