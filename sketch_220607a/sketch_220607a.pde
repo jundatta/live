@@ -22,29 +22,8 @@ void draw() {
     translate(0, 0, z);
     rotate(map(openFrameworks.ofNoise((z + 300) * 0.0035 + frameCount * 0.01), 0, 1, -360, 360));
 
-    noStroke();
-    fill(0);
-
-    beginShape();
-
-    vertex(width * -0.5, height * -0.5);
-    vertex(width * 0.5, height * -0.5);
-    vertex(width * 0.5, height * 0.5);
-    vertex(width * -0.5, height * 0.5);
-
-    //    ofNextContour(true);
-
-    beginContour();
-    vertex(width * -0.5 + len, height * -0.5 + len);
-    vertex(width * -0.5 + len, height * 0.5 - len);
-    vertex(width * 0.5 - len, height * 0.5 - len);
-    vertex(width * 0.5 - len, height * -0.5 + len);
-    endContour();
-
-    endShape(CLOSE);
-
     stroke(255);
-    noFill();
+    fill(0);
 
     beginShape();
 
