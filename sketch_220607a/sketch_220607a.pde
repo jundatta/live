@@ -2,85 +2,46 @@
 // 【作品名】Seesaw. Draw by openFrameworks
 // https://junkiyoshi.com/2022/02/13/
 
-#include "ofApp.h"
-
-  //--------------------------------------------------------------
-  void ofApp::setup() {
-
-  ofSetFrameRate(30);
-  ofSetWindowTitle("openframeworks");
-
-  ofBackground(0);
-
-  ofEnableDepthTest();
-  ofSetLineWidth(3);
+//--------------------------------------------------------------
+void setup() {
+  size(720, 720);
+  strokeWeight(3);
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
-}
-
 //--------------------------------------------------------------
-void ofApp::draw() {
-
-  this->cam.begin();
+void draw() {
+  translate(width/2, height/2);
+  background(0);
 
   int width = 500;
   int height = 150;
   int len = 15;
   for (int z = -300; z <= 300; z += 10) {
+    push();
+    translate(0, 0, z);
+    rotate(map(openFrameworks.ofNoise((z + 300) * 0.0035 + frameCount * 0.01), 0, 1, -360, 360));
 
-    ofPushMatrix();
-    ofTranslate(0, 0, z);
-    ofRotate(ofMap(ofNoise((z + 300) * 0.0035 + ofGetFrameNum() * 0.01), 0, 1, -360, 360));
+    fill(0);
+    stroke(255);
 
-    ofFill();
-    ofSetColor(0);
+    beginShape();
 
-    ofBeginShape();
+    vertex(width * -0.5, height * -0.5);
+    vertex(width * 0.5, height * -0.5);
+    vertex(width * 0.5, height * 0.5);
+    vertex(width * -0.5, height * 0.5);
 
-    ofVertex(glm::vec2(width * -0.5, height * -0.5));
-    ofVertex(glm::vec2(width * 0.5, height * -0.5));
-    ofVertex(glm::vec2(width * 0.5, height * 0.5));
-    ofVertex(glm::vec2(width * -0.5, height * 0.5));
+    //    ofNextContour(true);
 
-    ofNextContour(true);
+    beginContour();
+    vertex(width * -0.5 + len, height * -0.5 + len);
+    vertex(width * -0.5 + len, height * 0.5 - len);
+    vertex(width * 0.5 - len, height * 0.5 - len);
+    vertex(width * 0.5 - len, height * -0.5 + len);
+    endContour();
 
-    ofVertex(glm::vec2(width * -0.5 + len, height * -0.5 + len));
-    ofVertex(glm::vec2(width * 0.5 - len, height * -0.5 + len));
-    ofVertex(glm::vec2(width * 0.5 - len, height * 0.5 - len));
-    ofVertex(glm::vec2(width * -0.5 + len, height * 0.5 - len));
-
-    ofEndShape(true);
-
-    ofNoFill();
-    ofSetColor(255);
-
-    ofBeginShape();
-
-    ofVertex(glm::vec2(width * -0.5, height * -0.5));
-    ofVertex(glm::vec2(width * 0.5, height * -0.5));
-    ofVertex(glm::vec2(width * 0.5, height * 0.5));
-    ofVertex(glm::vec2(width * -0.5, height * 0.5));
-
-    ofNextContour(true);
-
-    ofVertex(glm::vec2(width * -0.5 + len, height * -0.5 + len));
-    ofVertex(glm::vec2(width * 0.5 - len, height * -0.5 + len));
-    ofVertex(glm::vec2(width * 0.5 - len, height * 0.5 - len));
-    ofVertex(glm::vec2(width * -0.5 + len, height * 0.5 - len));
-
-    ofEndShape(true);
-
-    ofPopMatrix();
+    endShape(CLOSE);
+    pop();
   }
-
-  this->cam.end();
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
