@@ -3,30 +3,20 @@
 // https://openprocessing.org/sketch/1427621
 
 PShape shark1, shark2;
+PGraphics pg;
+float C = 0;
 
 void preload() {
   shark1 = loadShape("Shark_LP.obj");
   shark2 = loadShape("Shark_LP.obj");
-  PGraphics pg = createGraphics(640, 480);
-  pg.beginDraw();
-  pg.background(255);
-  pg.noStroke();
-  float C = 0.0005;
-  float size = pg.width / 60;
-  for (int y = 0; y < 60; y++) {
-    for (int x = 0; x < 60; x++) {
-      int n = int(noise(mag(x, y) / width, C) * pow(2, 24));
-      pg.fill(red(n), green(n), blue(n));
-      pg.rect(x * size, y * size, size * 10.0 / 12.0, size * 10.0 / 12.0);
-    }
-  }
-  pg.endDraw();
+  pg = createGraphics(120, 120);
   shark2.setTexture(pg);
 }
 
 void setup() {
   preload();
   size(1112, 834, P3D);
+  hint(DISABLE_DEPTH_TEST);
 }
 
 void draw() {
@@ -38,7 +28,6 @@ void draw() {
   rotateY(PI/2 + frameCount * 0.01);
   for (var i=20; i > 1; i -= 1) {
     push();
-    hint(DISABLE_DEPTH_TEST);
     scale(i * 1.4);
     colorMode(HSB, 20);
     //emissive(12, 10, (20-i) * 0.5);
@@ -62,7 +51,23 @@ void draw() {
   //  glContext.clear(glContext.DEPTH_BUFFER_BIT);
   pop();
 
-  scale(10);
+  lights();
+  ambientLight(255, 255, 255);
+  ambientLight(255, 255, 255);
+  scale(3);
   //  normalMaterial(); // For effect
+  pg.beginDraw();
+  pg.background(255);
+  pg.noStroke();
+  C += 0.0005;
+  float size = pg.width / 30;
+  for (int y = 0; y < 30; y++) {
+    for (int x = 0; x < 30; x++) {
+      int n = int(noise(mag(x, y) / width, C) * pow(2, 24));
+      pg.fill(red(n), green(n), blue(n));
+      pg.rect(x * size, y * size, size * 10.0 / 12.0, size * 10.0 / 12.0);
+    }
+  }
+  pg.endDraw();
   shape(shark2);
 }
