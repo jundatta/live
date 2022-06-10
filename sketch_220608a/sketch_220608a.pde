@@ -9,6 +9,7 @@ void preload() {
   shark2 = loadShape("Shark_LP.obj");
   PGraphics pg = createGraphics(640, 480);
   pg.beginDraw();
+  pg.background(255);
   pg.noStroke();
   float C = 0.0005;
   float size = pg.width / 60;
@@ -61,7 +62,7 @@ void draw() {
   //  glContext.clear(glContext.DEPTH_BUFFER_BIT);
   pop();
 
-  scale(3);
+  scale(10);
   //  normalMaterial(); // For effect
   shape(shark2);
 }
