@@ -2,10 +2,25 @@
 // 【作品名】Shark 3D（Shark test）
 // https://openprocessing.org/sketch/1427621
 
-PShape shark1;
+PShape shark1, shark2;
 
 void preload() {
   shark1 = loadShape("Shark_LP.obj");
+  shark2 = loadShape("Shark_LP.obj");
+  PGraphics pg = createGraphics(640, 480);
+  pg.beginDraw();
+  pg.noStroke();
+  float C = 0.0005;
+  float size = pg.width / 60;
+  for (int y = 0; y < 60; y++) {
+    for (int x = 0; x < 60; x++) {
+      int n = int(noise(mag(x, y) / width, C) * pow(2, 24));
+      pg.fill(red(n), green(n), blue(n));
+      pg.rect(x * size, y * size, size * 10.0 / 12.0, size * 10.0 / 12.0);
+    }
+  }
+  pg.endDraw();
+  shark2.setTexture(pg);
 }
 
 void setup() {
@@ -33,20 +48,20 @@ void draw() {
     pop();
   }
 
-    push();
-    colorMode(RGB);
-    //emissive(255);
-    color rgb = color(255);
-    shark1.setFill(rgb);
-    scale(2); //scale(2.08);
-    noFill();
-    //stroke(255);
-    strokeWeight(5);
-    shape(shark1);
+  push();
+  colorMode(RGB);
+  //emissive(255);
+  color rgb = color(255);
+  shark1.setFill(rgb);
+  scale(2); //scale(2.08);
+  noFill();
+  //stroke(255);
+  strokeWeight(5);
+  shape(shark1);
   //  glContext.clear(glContext.DEPTH_BUFFER_BIT);
-    pop();
+  pop();
 
   scale(3);
   //  normalMaterial(); // For effect
-  shape(shark1);
+  shape(shark2);
 }
