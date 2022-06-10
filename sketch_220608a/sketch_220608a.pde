@@ -33,16 +33,18 @@ void draw() {
     pop();
   }
 
-  //  push();
-  //  colorMode(RGB);
-  //  emissive(255);
-  //  scale(2); //scale(2.08);
-  //  noFill();
-  //  //stroke(255);
-  //  strokeWeight(5);
-  //  shape(shark1);
-  ////  glContext.clear(glContext.DEPTH_BUFFER_BIT);
-  //  pop();
+    push();
+    colorMode(RGB);
+    //emissive(255);
+    color rgb = color(255);
+    shark1.setFill(rgb);
+    scale(2); //scale(2.08);
+    noFill();
+    //stroke(255);
+    strokeWeight(5);
+    shape(shark1);
+  //  glContext.clear(glContext.DEPTH_BUFFER_BIT);
+    pop();
 
   scale(3);
   //  normalMaterial(); // For effect
