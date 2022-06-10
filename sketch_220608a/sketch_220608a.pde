@@ -51,6 +51,7 @@ void draw() {
   //  glContext.clear(glContext.DEPTH_BUFFER_BIT);
   pop();
 
+  // だいぶオリジナルからかけ離れてしまいましたにゃ＼(^_^)／
   lights();
   ambientLight(255, 255, 255);
   ambientLight(255, 255, 255);
