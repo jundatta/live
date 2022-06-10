@@ -18,17 +18,20 @@ void draw() {
   scale(50);
 
   background(0);
-    rotateX(PI);
-    rotateY(PI/2 + frameCount * 0.01);
-  //  for (var i=20; i > 1; i -= 1) {
-  //    push();
-  //    scale(i * 1.4);
-  //    colorMode(HSB, 20);
-  //    emissive(12, 10, (20-i) * 0.5);
-  //    shape(shark1);
-  ////    glContext.clear(glContext.DEPTH_BUFFER_BIT);
-  //    pop();
-  //  }
+  rotateX(PI);
+  rotateY(PI/2 + frameCount * 0.01);
+  for (var i=20; i > 1; i -= 1) {
+    push();
+    hint(DISABLE_DEPTH_TEST);
+    scale(i * 1.4);
+    colorMode(HSB, 20);
+    //emissive(12, 10, (20-i) * 0.5);
+    color hsb = color(12, 10, (20-i) * 0.5);
+    shark1.setFill(hsb);
+    shape(shark1);
+    //    glContext.clear(glContext.DEPTH_BUFFER_BIT);
+    pop();
+  }
 
   //  push();
   //  colorMode(RGB);
