@@ -20,9 +20,11 @@ Algorithm inspired by the one described by Matt DesLauriers in this talk: https:
 ArrayList<ArrayList<PVector>> clusters;
 ArrayList<ArrayList<PVector>> hulls;
 
+boolean bYouDied = false;
+
 void setup() {
   size(500, 800, P3D);
-  var size = min(width, height)*.95;
+  var size = max(width, height)*.95;
   noStroke();
   fill(255);
 
@@ -59,6 +61,10 @@ void draw() {
 void mouseReleased() {
   var p = new PVector(mouseX, mouseY);
   fill(230, 230, random(230, 255));
+  if (bYouDied) {
+    fill(255, 0, 0);
+    bYouDied = false;
+  }
   int argmin = -1;
   float minDist = width*height;
 
@@ -132,7 +138,8 @@ ArrayList<PVector> convexHull(ArrayList<PVector> points) {
   do {
     // 抜けてこなくなったら自爆する
     if (42 < i++) {
-      println("break");
+      println("you died");
+      bYouDied = true;
       break;
     }
     hull.add(pointOnHull);
