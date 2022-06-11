@@ -54,6 +54,10 @@ class ofMesh {
   int getNumVertices() {
     return vertices.size();
   }
+  void clear() {
+    vertices = new ArrayList();
+    indices = new ArrayList();
+  }
 }
 
 //--------------------------------------------------------------
