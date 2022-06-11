@@ -41,7 +41,7 @@ class ofMesh {
     indices = new ArrayList();
   }
   void addVertices(ArrayList<PVector> vs) {
-    vertices.addAll(v);
+    vertices.addAll(vs);
   }
   void addIndex(int index) {
     indices.add(index);
@@ -60,6 +60,9 @@ class ofMesh {
   }
 }
 
+ofMesh mesh;
+ofMesh frame;
+
 //--------------------------------------------------------------
 void setup() {
   size(720, 720, P3D);
@@ -68,21 +71,33 @@ void setup() {
   //triangle_list.insert(triangle_list.end(), ico_sphere.getMesh().getUniqueFaces().begin(), ico_sphere.getMesh().getUniqueFaces().end());
   triangle_list = loadTriangleList("triangle_list.txt");
 
-  frame.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
+  //  frame.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
+
+  mesh = new ofMesh();
+  frame = new ofMesh();
+}
+
+//vertices.add(PVector.normalize(triangle_list[i].getVertex(0)) * (radius + 5) - avg);
+PVector verticesNormalize(PVector v, float r, PVector avg) {
+  PVector n = new PVector(v.x, v.y, v.z);
+  n.mult(r);
+  n.sub(avg);
+  return n;
 }
 
 //--------------------------------------------------------------
 void update() {
-
   mesh.clear();
   frame.clear();
 
   for (float radius = 150; radius <= 300; radius += 10) {
-
-    for (int i = 0; i < triangle_list.size(); i++) {
-
-      PVector avg = (triangle_list[i].getVertex(0) + triangle_list[i].getVertex(1) + triangle_list[i].getVertex(2)) / 3;
-      var noise_value = openFrameworks.ofNoise(avg.y * 0.0065 + ofGetFrameNum() * 0.035, avg.x * 0.0025, avg.z * 0.0025);
+    for (int i = 0; i < triangle_list.length; i++) {
+      //      PVector avg = (triangle_list[i].getVertex(0) + triangle_list[i].getVertex(1) + triangle_list[i].getVertex(2)) / 3;
+      var t = triangle_list[i];
+      PVector avg = PVector.add(t.getVertex(0), t.getVertex(1));
+      avg.add(t.getVertex(2));
+      avg.div(3.0f);
+      var noise_value = openFrameworks.ofNoise(avg.y * 0.0065 + frameCount * 0.035, avg.x * 0.0025, avg.z * 0.0025);
 
       if (noise_value < 0.35) {
         noise_value = 0;
@@ -92,30 +107,38 @@ void update() {
         noise_value = map(noise_value, 0.35, 0.7, 0, 1);
       }
 
-      ArrayList<PVector> vertices;
+      ArrayList<PVector> vertices = new ArrayList();
 
-      vertices.push_back(glm::normalize(triangle_list[i].getVertex(0)) * (radius + 5) - avg);
-      vertices.push_back(glm::normalize(triangle_list[i].getVertex(1)) * (radius + 5) - avg);
-      vertices.push_back(glm::normalize(triangle_list[i].getVertex(2)) * (radius + 5) - avg);
+      //vertices.add(PVector.normalize(triangle_list[i].getVertex(0)) * (radius + 5) - avg);
+      //vertices.add(PVector.normalize(triangle_list[i].getVertex(1)) * (radius + 5) - avg);
+      //vertices.add(PVector.normalize(triangle_list[i].getVertex(2)) * (radius + 5) - avg);
 
-      vertices.push_back(glm::normalize(triangle_list[i].getVertex(0)) * (radius - 5) - avg);
-      vertices.push_back(glm::normalize(triangle_list[i].getVertex(1)) * (radius - 5) - avg);
-      vertices.push_back(glm::normalize(triangle_list[i].getVertex(2)) * (radius - 5) - avg);
+      //vertices.add(PVector.normalize(triangle_list[i].getVertex(0)) * (radius - 5) - avg);
+      //vertices.add(PVector.normalize(triangle_list[i].getVertex(1)) * (radius - 5) - avg);
+      //vertices.add(PVector.normalize(triangle_list[i].getVertex(2)) * (radius - 5) - avg);
+
+      vertices.add(verticesNormalize(t.getVertex(0), radius + 5, avg));
+      vertices.add(verticesNormalize(t.getVertex(1), radius + 5, avg));
+      vertices.add(verticesNormalize(t.getVertex(2), radius + 5, avg));
+
+      vertices.add(verticesNormalize(t.getVertex(0), radius - 5, avg));
+      vertices.add(verticesNormalize(t.getVertex(1), radius - 5, avg));
+      vertices.add(verticesNormalize(t.getVertex(2), radius - 5, avg));
 
       for (var vertex : vertices) {
-
-        vertex *= noise_value;
-        vertex += avg;
+        //vertex *= noise_value;
+        //vertex += avg;
+        vertex.mult(noise_value);
+        vertex.add(avg);
       }
 
       mesh.addVertices(vertices);
       frame.addVertices(vertices);
 
-      for (int k = 0; k < 6; k++) {
-
-        mesh.addColor(ofColor(0));
-        frame.addColor(ofColor(255));
-      }
+      //for (int k = 0; k < 6; k++) {
+      //  mesh.addColor(ofColor(0));
+      //  frame.addColor(ofColor(255));
+      //}
 
       mesh.addTriangle(mesh.getNumVertices() - 1, mesh.getNumVertices() - 2, mesh.getNumVertices() - 3);
       mesh.addTriangle(mesh.getNumVertices() - 4, mesh.getNumVertices() - 5, mesh.getNumVertices() - 6);
@@ -130,7 +153,6 @@ void update() {
       mesh.addTriangle(mesh.getNumVertices() - 2, mesh.getNumVertices() - 6, mesh.getNumVertices() - 5);
 
       if (radius == 150) {
-
         frame.addIndex(frame.getNumVertices() - 1);
         frame.addIndex(frame.getNumVertices() - 2);
         frame.addIndex(frame.getNumVertices() - 2);
@@ -140,7 +162,6 @@ void update() {
       }
 
       if (radius == 300) {
-
         frame.addIndex(frame.getNumVertices() - 4);
         frame.addIndex(frame.getNumVertices() - 5);
         frame.addIndex(frame.getNumVertices() - 5);
