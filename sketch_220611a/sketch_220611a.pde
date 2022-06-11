@@ -54,6 +54,15 @@ class ofMesh {
   int getNumVertices() {
     return vertices.size();
   }
+  int getNumIndices() {
+    return indices.size();
+  }
+  PVector getVertex(int i) {
+    return vertices.get(i);
+  }
+  int getIndex(int i) {
+    return indices.get(i);
+  }
   void clear() {
     vertices = new ArrayList();
     indices = new ArrayList();
@@ -183,13 +192,21 @@ void update() {
 //--------------------------------------------------------------
 void draw() {
   update();
+  
+  translate(width/2, height/2);
   background(0);
 
-  rotateY(radians(frameCount * 0.333333333333333333));
+//  rotateY(radians(frameCount * 0.333333333333333333));
 
-  fill(239);
-  mesh.drawFaces();
+  //  mesh.drawFaces();
 
-  stroke(39);
-  frame.drawWireframe();
+  //  frame.drawWireframe();
+  stroke(255);
+  beginShape(LINES);
+  for (int i = 0; i < frame.getNumIndices(); i++) {
+    int idx = frame.getIndex(i);
+    PVector v = frame.getVertex(idx);
+    vertex(v.x, v.y, v.z);
+  }
+  endShape();
 }
