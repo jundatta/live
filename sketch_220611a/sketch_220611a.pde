@@ -40,13 +40,13 @@ void setup() {
 
 void draw() {
   if (frameCount%60 == 0) {
-    mouseX = random(130, width - 130);
-    mouseY = random(60, height - 60);
+    mouseX = (int)random(130, width - 130);
+    mouseY = (int)random(60, height - 60);
     mouseReleased();
   }
   background(#2560AC);
   for (var hull : hulls) {
-    if (hull.length > 3) {
+    if (hull.size() > 3) {
       beginShape();
       for (var p : hull) {
         vertex(p.x, p.y);
@@ -59,10 +59,10 @@ void draw() {
 void mouseReleased() {
   var p = new PVector(mouseX, mouseY);
   fill(230, 230, random(230, 255));
-  var argmin = -1;
-  var minDist = width*height;
+  int argmin = -1;
+  float minDist = width*height;
 
-  for (var i = 0; i < clusters.length; i++) {
+  for (var i = 0; i < clusters.size(); i++) {
     for (var q : clusters.get(i)) {
       var d = distSquared(p, q);
       if (d < minDist) {
@@ -73,9 +73,9 @@ void mouseReleased() {
     }
   }
 
-  if (hulls[argmin].length > 5) {
+  if (hulls.get(argmin).size() > 5) {
     //    var clu = clusters.splice(argmin, 1)[0];
-    ArrayList<ArrayList<PVector>> clu = clusters.remove(argmin);
+    ArrayList<PVector> clu = clusters.remove(argmin);
     ArrayList<ArrayList<PVector>> newClusters = divide(clu);
     //clusters = [...clusters, ...newClusters];
     for (ArrayList<PVector> nc : newClusters) {
@@ -86,8 +86,6 @@ void mouseReleased() {
     hulls.add(convexHull(newClusters.get(0)));
     hulls.add(convexHull(newClusters.get(1)));
   }
-
-  return false;
 }
 
 // divide points into two convex clusters
@@ -99,7 +97,7 @@ ArrayList<ArrayList<PVector>> divide(ArrayList<PVector> points) {
   for (var i = 0; i < 2; i++) {
     PVector c;
     do {
-      c = random(points);
+      c = P5JSrandom(points);
     } while (centroids.indexOf(c) != -1);
     centroids.add(c);
     clusters.add(new ArrayList());
@@ -116,7 +114,7 @@ ArrayList<ArrayList<PVector>> divide(ArrayList<PVector> points) {
         argmin = i;
       }
     }
-    clusters[argmin].add(p);
+    clusters.get(argmin).add(p);
   }
 
   return clusters;
@@ -126,27 +124,26 @@ ArrayList<PVector> convexHull(ArrayList<PVector> points) {
   // adapted from https://en.wikipedia.org/wiki/Gift_wrapping_algorithm#Pseudocode
   points.sort((p, q) -> (int)(p.x - q.x));
   ArrayList<PVector> hull = new ArrayList();
-  var i = 0;
-  var endPoint;
-  var pointOnHull = points[0];
+  PVector endPoint;
+  var pointOnHull = points.get(0);
+  boolean bEquals = false;
   do {
     hull.add(pointOnHull);
     endPoint = points.get(0);
     for (var j = 0; j < points.size(); j++) {
       var p = PVector.sub(endPoint, pointOnHull);
       var q = PVector.sub(points.get(j), pointOnHull);
-      boolean bEquals = (endPoint.x == pointOnHull.x) && (endPoint.y == pointOnHull.y);
+      bEquals = (endPoint.x == pointOnHull.x) && (endPoint.y == pointOnHull.y);
       if (bEquals || (p.cross(q)).z < 0) {
         endPoint = points.get(j);
       }
     }
-    i++;
     pointOnHull = endPoint;
-    boolean bEquals = (endPoint.x == points.get(0).x) && (endPoint.y == points.get(0).y);
+    bEquals = (endPoint.x == points.get(0).x) && (endPoint.y == points.get(0).y);
   } while (!bEquals);
   return hull;
 }
 
-float distSquared(p, q) {
+float distSquared(PVector p, PVector q) {
   return sq(p.x - q.x) + sq(p.y - q.y);
 }
