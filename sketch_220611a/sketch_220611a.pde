@@ -89,6 +89,7 @@ void setup() {
 //vertices.add(PVector.normalize(triangle_list[i].getVertex(0)) * (radius + 5) - avg);
 PVector verticesNormalize(PVector v, float r, PVector avg) {
   PVector n = new PVector(v.x, v.y, v.z);
+  n.normalize();
   n.mult(r);
   n.sub(avg);
   return n;
