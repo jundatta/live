@@ -197,9 +197,18 @@ void draw() {
   translate(width/2, height/2);
   background(0);
 
-  //  rotateY(radians(frameCount * 0.333333333333333333));
+    rotateY(radians(frameCount * 0.333333333333333333));
 
   //  mesh.drawFaces();
+  noStroke();
+  fill(0);
+  beginShape(TRIANGLES);
+  for (int i = 0; i < mesh.getNumIndices(); i++) {
+    int idx = mesh.getIndex(i);
+    PVector v = mesh.getVertex(idx);
+    vertex(v.x, v.y, v.z);
+  }
+  endShape();
 
   //  frame.drawWireframe();
   stroke(255);
