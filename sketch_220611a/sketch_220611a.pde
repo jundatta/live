@@ -21,7 +21,7 @@ ArrayList<ArrayList<PVector>> clusters;
 ArrayList<ArrayList<PVector>> hulls;
 
 void setup() {
-  size(1112, 834);
+  size(500, 800, P3D);
   var size = min(width, height)*.95;
   noStroke();
   fill(255);
@@ -127,7 +127,14 @@ ArrayList<PVector> convexHull(ArrayList<PVector> points) {
   PVector endPoint;
   var pointOnHull = points.get(0);
   boolean bEquals = false;
+  // PC-8001（TN8001）さんありがとう＼(^_^)／
+  int i = 0;
   do {
+    // 抜けてこなくなったら自爆する
+    if (42 < i++) {
+      println("break");
+      break;
+    }
     hull.add(pointOnHull);
     endPoint = points.get(0);
     for (var j = 0; j < points.size(); j++) {
