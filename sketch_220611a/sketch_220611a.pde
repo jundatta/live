@@ -78,7 +78,20 @@ void setup() {
 
   //auto ico_sphere = ofIcoSpherePrimitive(300, 3);
   //triangle_list.insert(triangle_list.end(), ico_sphere.getMesh().getUniqueFaces().begin(), ico_sphere.getMesh().getUniqueFaces().end());
-  triangle_list = loadTriangleList("triangle_list.txt");
+
+  //  triangle_list = loadTriangleList("triangle_list.txt");
+  
+  // PC-8001（TN8001）さんありがとう＼(^_^)／
+  // （。。。こうしてワトソンはすごすごと引き上げるのであった...orz）
+  PShape s = new Sphere(300, 3).get();
+  triangle_list = new ofMeshFace[s.getVertexCount() / 3];
+  println(s.getVertexCount());
+  for (int i = 0; i < s.getVertexCount(); i += 3) {
+    PVector v0 = s.getVertex(i+0);
+    PVector v1 = s.getVertex(i+1);
+    PVector v2 = s.getVertex(i+2);
+    triangle_list[i / 3] = new ofMeshFace(v0, v1, v2);
+  }
 
   //  frame.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
 
@@ -197,7 +210,7 @@ void draw() {
   translate(width/2, height/2);
   background(0);
 
-    rotateY(radians(frameCount * 0.333333333333333333));
+  rotateY(radians(frameCount * 0.333333333333333333));
 
   //  mesh.drawFaces();
   noStroke();
