@@ -1,235 +1,142 @@
-// 【作者】中内　純(ハンドルネーム：JunKiyoshi)さん
-// 【作品名】Spherical pillar. Draw by openFrameworks
-// https://junkiyoshi.com/2022/02/02/
+// 【作者】元ネタはRoni Kaufmanさん
+//　　　　 ⇒A fork of Iceberg by Richard Bourne
+//         自動化（Iceberg Auto）にしたのはRichard Bourneさん
+// 【作品名】Iceberg Auto（元ネタの名前はIceberg）
+// https://openprocessing.org/sketch/1427999
+// https://openprocessing.org/sketch/1427685（Roni Kaufmanさん）
 
-class ofMeshFace {
-  PVector[] vertices;
-  ofMeshFace(PVector v0, PVector v1, PVector v2) {
-    vertices = new PVector[3];
-    vertices[0] = v0;
-    vertices[1] = v1;
-    vertices[2] = v2;
-  }
-  PVector getVertex(int index) {
-    return vertices[index];
-  }
-}
-ofMeshFace[] triangle_list;
-ofMeshFace[] loadTriangleList(String filePath) {
-  String[] lines = loadStrings(filePath);
-  float[] vertices = new float[lines.length];
-  for (int i = 0; i < lines.length; i++) {
-    String s = lines[i];
-    vertices[i] = float(s);
+// By Roni Kaufman
+// https://ronikaufman.github.io
+// https://twitter.com/KaufmanRoni
+
+/*
+Algorithm inspired by the one described by Matt DesLauriers in this talk: https://youtube.com/watch?v=tPqGn-4VdgA
+ "1. use a large set of random 2D points
+ 2. select a cluster of points and outline it
+ 3. remove these points from the data set
+ 4. repeat from step 2 on remaining points"
+ */
+
+
+let clusters = [];
+let hulls = [];
+
+function setup() {
+  createCanvas(1112, 834);
+  let size = min(width, height)*.95;
+  noStroke();
+  fill(255);
+
+  let points = [];
+  for (let i = 0; i < 2000; i++) {
+    points.push(createVector(width/2+random(-size/2, size/2), height/2+random(-size/2, size/2)));
   }
 
-  ofMeshFace[] triangleList = new ofMeshFace[vertices.length / (3 * 3)];
-  for (int i = 0; i < vertices.length; i += (3 * 3)) {
-    PVector v0 = new PVector(vertices[i + (0*3+0)], vertices[i + (0*3+1)], vertices[i + (0*3+2)]);
-    PVector v1 = new PVector(vertices[i + (1*3+0)], vertices[i + (1*3+1)], vertices[i + (1*3+2)]);
-    PVector v2 = new PVector(vertices[i + (2*3+0)], vertices[i + (2*3+1)], vertices[i + (2*3+2)]);
-    triangleList[i / (3 * 3)] = new ofMeshFace(v0, v1, v2);
-  }
-  return triangleList;
-}
-
-class ofMesh {
-  ArrayList<PVector> vertices;
-  ArrayList<Integer> indices;
-  ofMesh() {
-    vertices = new ArrayList();
-    indices = new ArrayList();
-  }
-  void addVertices(ArrayList<PVector> vs) {
-    vertices.addAll(vs);
-  }
-  void addIndex(int index) {
-    indices.add(index);
-  }
-  void addTriangle(int i0, int i1, int i2) {
-    addIndex(i0);
-    addIndex(i1);
-    addIndex(i2);
-  }
-  int getNumVertices() {
-    return vertices.size();
-  }
-  int getNumIndices() {
-    return indices.size();
-  }
-  PVector getVertex(int i) {
-    return vertices.get(i);
-  }
-  int getIndex(int i) {
-    return indices.get(i);
-  }
-  void clear() {
-    vertices = new ArrayList();
-    indices = new ArrayList();
-  }
+  clusters = divide(points);
+  hulls = [convexHull(clusters[0]), convexHull(clusters[1])];
 }
 
-ofMesh mesh;
-ofMesh frame;
-
-//--------------------------------------------------------------
-void setup() {
-  size(720, 720, P3D);
-
-  //auto ico_sphere = ofIcoSpherePrimitive(300, 3);
-  //triangle_list.insert(triangle_list.end(), ico_sphere.getMesh().getUniqueFaces().begin(), ico_sphere.getMesh().getUniqueFaces().end());
-
-  //  triangle_list = loadTriangleList("triangle_list.txt");
-  
-  // PC-8001（TN8001）さんありがとう＼(^_^)／
-  // （。。。こうしてワトソンはすごすごと引き上げるのであった...orz）
-  PShape s = new Sphere(300, 3).get();
-  triangle_list = new ofMeshFace[s.getVertexCount() / 3];
-  println(s.getVertexCount());
-  for (int i = 0; i < s.getVertexCount(); i += 3) {
-    PVector v0 = s.getVertex(i+0);
-    PVector v1 = s.getVertex(i+1);
-    PVector v2 = s.getVertex(i+2);
-    triangle_list[i / 3] = new ofMeshFace(v0, v1, v2);
+function draw() {
+  if (frameCount%60 == 0) {
+    mouseX = random(130, width - 130);
+    mouseY = random(60, height - 60);
+    mouseReleased();
   }
-
-  //  frame.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
-
-  mesh = new ofMesh();
-  frame = new ofMesh();
-}
-
-//vertices.add(PVector.normalize(triangle_list[i].getVertex(0)) * (radius + 5) - avg);
-PVector verticesNormalize(PVector v, float r, PVector avg) {
-  PVector n = new PVector(v.x, v.y, v.z);
-  n.normalize();
-  n.mult(r);
-  n.sub(avg);
-  return n;
-}
-
-//--------------------------------------------------------------
-void update() {
-  mesh.clear();
-  frame.clear();
-
-  for (float radius = 150; radius <= 300; radius += 10) {
-    for (int i = 0; i < triangle_list.length; i++) {
-      //      PVector avg = (triangle_list[i].getVertex(0) + triangle_list[i].getVertex(1) + triangle_list[i].getVertex(2)) / 3;
-      var t = triangle_list[i];
-      PVector avg = PVector.add(t.getVertex(0), t.getVertex(1));
-      avg.add(t.getVertex(2));
-      avg.div(3.0f);
-      var noise_value = openFrameworks.ofNoise(avg.y * 0.0065 + frameCount * 0.035, avg.x * 0.0025, avg.z * 0.0025);
-
-      if (noise_value < 0.35) {
-        noise_value = 0;
-      } else if (noise_value > 0.7) {
-        noise_value = 1;
-      } else {
-        noise_value = map(noise_value, 0.35, 0.7, 0, 1);
+  background("#2560AC");
+  for (let hull of hulls) {
+    if (hull.length > 3) {
+      beginShape();
+      for (let p of hull) {
+        vertex(p.x, p.y);
       }
-
-      ArrayList<PVector> vertices = new ArrayList();
-
-      //vertices.add(PVector.normalize(triangle_list[i].getVertex(0)) * (radius + 5) - avg);
-      //vertices.add(PVector.normalize(triangle_list[i].getVertex(1)) * (radius + 5) - avg);
-      //vertices.add(PVector.normalize(triangle_list[i].getVertex(2)) * (radius + 5) - avg);
-
-      //vertices.add(PVector.normalize(triangle_list[i].getVertex(0)) * (radius - 5) - avg);
-      //vertices.add(PVector.normalize(triangle_list[i].getVertex(1)) * (radius - 5) - avg);
-      //vertices.add(PVector.normalize(triangle_list[i].getVertex(2)) * (radius - 5) - avg);
-
-      vertices.add(verticesNormalize(t.getVertex(0), radius + 5, avg));
-      vertices.add(verticesNormalize(t.getVertex(1), radius + 5, avg));
-      vertices.add(verticesNormalize(t.getVertex(2), radius + 5, avg));
-
-      vertices.add(verticesNormalize(t.getVertex(0), radius - 5, avg));
-      vertices.add(verticesNormalize(t.getVertex(1), radius - 5, avg));
-      vertices.add(verticesNormalize(t.getVertex(2), radius - 5, avg));
-
-      for (var vertex : vertices) {
-        //vertex *= noise_value;
-        //vertex += avg;
-        vertex.mult(noise_value);
-        vertex.add(avg);
-      }
-
-      mesh.addVertices(vertices);
-      frame.addVertices(vertices);
-
-      //for (int k = 0; k < 6; k++) {
-      //  mesh.addColor(ofColor(0));
-      //  frame.addColor(ofColor(255));
-      //}
-
-      mesh.addTriangle(mesh.getNumVertices() - 1, mesh.getNumVertices() - 2, mesh.getNumVertices() - 3);
-      mesh.addTriangle(mesh.getNumVertices() - 4, mesh.getNumVertices() - 5, mesh.getNumVertices() - 6);
-
-      mesh.addTriangle(mesh.getNumVertices() - 1, mesh.getNumVertices() - 2, mesh.getNumVertices() - 5);
-      mesh.addTriangle(mesh.getNumVertices() - 1, mesh.getNumVertices() - 5, mesh.getNumVertices() - 4);
-
-      mesh.addTriangle(mesh.getNumVertices() - 1, mesh.getNumVertices() - 3, mesh.getNumVertices() - 6);
-      mesh.addTriangle(mesh.getNumVertices() - 1, mesh.getNumVertices() - 6, mesh.getNumVertices() - 4);
-
-      mesh.addTriangle(mesh.getNumVertices() - 2, mesh.getNumVertices() - 3, mesh.getNumVertices() - 6);
-      mesh.addTriangle(mesh.getNumVertices() - 2, mesh.getNumVertices() - 6, mesh.getNumVertices() - 5);
-
-      if (radius == 150) {
-        frame.addIndex(frame.getNumVertices() - 1);
-        frame.addIndex(frame.getNumVertices() - 2);
-        frame.addIndex(frame.getNumVertices() - 2);
-        frame.addIndex(frame.getNumVertices() - 3);
-        frame.addIndex(frame.getNumVertices() - 1);
-        frame.addIndex(frame.getNumVertices() - 3);
-      }
-
-      if (radius == 300) {
-        frame.addIndex(frame.getNumVertices() - 4);
-        frame.addIndex(frame.getNumVertices() - 5);
-        frame.addIndex(frame.getNumVertices() - 5);
-        frame.addIndex(frame.getNumVertices() - 6);
-        frame.addIndex(frame.getNumVertices() - 4);
-        frame.addIndex(frame.getNumVertices() - 6);
-      }
-
-      frame.addIndex(frame.getNumVertices() - 1);
-      frame.addIndex(frame.getNumVertices() - 4);
-      frame.addIndex(frame.getNumVertices() - 2);
-      frame.addIndex(frame.getNumVertices() - 5);
-      frame.addIndex(frame.getNumVertices() - 3);
-      frame.addIndex(frame.getNumVertices() - 6);
+      endShape(CLOSE);
     }
   }
 }
 
-//--------------------------------------------------------------
-void draw() {
-  update();
+function mouseReleased() {
+  let p = createVector(mouseX, mouseY);
+  fill(230, 230, random(230, 255));
+  let argmin = -1;
+  let minDist = width*height;
 
-  translate(width/2, height/2);
-  background(0);
-
-  rotateY(radians(frameCount * 0.333333333333333333));
-
-  //  mesh.drawFaces();
-  noStroke();
-  fill(0);
-  beginShape(TRIANGLES);
-  for (int i = 0; i < mesh.getNumIndices(); i++) {
-    int idx = mesh.getIndex(i);
-    PVector v = mesh.getVertex(idx);
-    vertex(v.x, v.y, v.z);
+  for (let i = 0; i < clusters.length; i++) {
+    for (let q of clusters[i]) {
+      let d = distSquared(p, q);
+      if (d < minDist) {
+        argmin = i;
+        minDist = d;
+        continue;
+      }
+    }
   }
-  endShape();
 
-  //  frame.drawWireframe();
-  stroke(255);
-  beginShape(LINES);
-  for (int i = 0; i < frame.getNumIndices(); i++) {
-    int idx = frame.getIndex(i);
-    PVector v = frame.getVertex(idx);
-    vertex(v.x, v.y, v.z);
+  if (hulls[argmin].length > 5) {
+    let clu = clusters.splice(argmin, 1)[0];
+    let newClusters = divide(clu);
+    clusters = [...clusters, ...newClusters];
+    hulls.splice(argmin, 1);
+    hulls = [...hulls, convexHull(newClusters[0]), convexHull(newClusters[1])];
   }
-  endShape();
+
+  return false;
+}
+
+// divide points into two convex clusters
+function divide(points) {
+  let clusters = [];
+
+  // initialize centroids randomly
+  let centroids = [];
+  for (let i = 0; i < 2; i++) {
+    let c;
+    do {
+      c = random(points);
+    } while (centroids.indexOf(c) != -1)
+      centroids.push(c);
+    clusters.push([]);
+  }
+
+  // assign clusters
+  for (let p of points) {
+    let argmin = 0;
+    let minDist = distSquared(p, centroids[0]);
+    for (let i = 1; i < 2; i++) {
+      let d = distSquared(p, centroids[i]);
+      if (d < minDist) {
+        minDist = d;
+        argmin = i;
+      }
+    }
+    clusters[argmin].push(p);
+  }
+
+  return clusters;
+}
+
+function convexHull(points) {
+  // adapted from https://en.wikipedia.org/wiki/Gift_wrapping_algorithm#Pseudocode
+  points.sort((p, q) => p.x - q.x);
+  let hull = [];
+  let i = 0;
+  let endPoint;
+  let pointOnHull = points[0];
+  do {
+    hull.push(pointOnHull);
+    endPoint = points[0];
+    for (let j = 0; j < points.length; j++) {
+      let p = p5.Vector.sub(endPoint, pointOnHull);
+      let q = p5.Vector.sub(points[j], pointOnHull);
+      if (endPoint.equals(pointOnHull) || (p.cross(q)).z < 0) {
+        endPoint = points[j];
+      }
+    }
+    i++;
+    pointOnHull = endPoint;
+  } while (!endPoint.equals(points[0]));
+  return hull;
+}
+
+function distSquared(p, q) {
+  return sq(p.x - q.x) + sq(p.y - q.y);
 }
