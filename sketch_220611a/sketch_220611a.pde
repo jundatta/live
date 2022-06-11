@@ -17,36 +17,38 @@ Algorithm inspired by the one described by Matt DesLauriers in this talk: https:
  4. repeat from step 2 on remaining points"
  */
 
+ArrayList<ArrayList<PVector>> clusters;
+ArrayList<ArrayList<PVector>> hulls;
 
-let clusters = [];
-let hulls = [];
-
-function setup() {
-  createCanvas(1112, 834);
-  let size = min(width, height)*.95;
+void setup() {
+  size(1112, 834);
+  var size = min(width, height)*.95;
   noStroke();
   fill(255);
 
-  let points = [];
-  for (let i = 0; i < 2000; i++) {
-    points.push(createVector(width/2+random(-size/2, size/2), height/2+random(-size/2, size/2)));
+  ArrayList<PVector> points = new ArrayList();
+  for (var i = 0; i < 2000; i++) {
+    points.add(new PVector(width/2+random(-size/2, size/2), height/2+random(-size/2, size/2)));
   }
 
   clusters = divide(points);
-  hulls = [convexHull(clusters[0]), convexHull(clusters[1])];
+  hulls = new ArrayList();
+  //hulls = [convexHull(clusters[0]), convexHull(clusters[1])];
+  hulls.add(convexHull(clusters.get(0)));
+  hulls.add(convexHull(clusters.get(1)));
 }
 
-function draw() {
+void draw() {
   if (frameCount%60 == 0) {
     mouseX = random(130, width - 130);
     mouseY = random(60, height - 60);
     mouseReleased();
   }
-  background("#2560AC");
-  for (let hull of hulls) {
+  background(#2560AC);
+  for (var hull : hulls) {
     if (hull.length > 3) {
       beginShape();
-      for (let p of hull) {
+      for (var p : hull) {
         vertex(p.x, p.y);
       }
       endShape(CLOSE);
@@ -54,15 +56,15 @@ function draw() {
   }
 }
 
-function mouseReleased() {
-  let p = createVector(mouseX, mouseY);
+void mouseReleased() {
+  var p = new PVector(mouseX, mouseY);
   fill(230, 230, random(230, 255));
-  let argmin = -1;
-  let minDist = width*height;
+  var argmin = -1;
+  var minDist = width*height;
 
-  for (let i = 0; i < clusters.length; i++) {
-    for (let q of clusters[i]) {
-      let d = distSquared(p, q);
+  for (var i = 0; i < clusters.length; i++) {
+    for (var q : clusters.get(i)) {
+      var d = distSquared(p, q);
       if (d < minDist) {
         argmin = i;
         minDist = d;
@@ -72,71 +74,79 @@ function mouseReleased() {
   }
 
   if (hulls[argmin].length > 5) {
-    let clu = clusters.splice(argmin, 1)[0];
-    let newClusters = divide(clu);
-    clusters = [...clusters, ...newClusters];
-    hulls.splice(argmin, 1);
-    hulls = [...hulls, convexHull(newClusters[0]), convexHull(newClusters[1])];
+    //    var clu = clusters.splice(argmin, 1)[0];
+    ArrayList<ArrayList<PVector>> clu = clusters.remove(argmin);
+    ArrayList<ArrayList<PVector>> newClusters = divide(clu);
+    //clusters = [...clusters, ...newClusters];
+    for (ArrayList<PVector> nc : newClusters) {
+      clusters.add(nc);
+    }
+    hulls.remove(argmin);
+    //hulls = [...hulls, convexHull(newClusters[0]), convexHull(newClusters[1])];
+    hulls.add(convexHull(newClusters.get(0)));
+    hulls.add(convexHull(newClusters.get(1)));
   }
 
   return false;
 }
 
 // divide points into two convex clusters
-function divide(points) {
-  let clusters = [];
+ArrayList<ArrayList<PVector>> divide(ArrayList<PVector> points) {
+  ArrayList<ArrayList<PVector>> clusters = new ArrayList();
 
   // initialize centroids randomly
-  let centroids = [];
-  for (let i = 0; i < 2; i++) {
-    let c;
+  ArrayList<PVector> centroids = new ArrayList();
+  for (var i = 0; i < 2; i++) {
+    PVector c;
     do {
       c = random(points);
-    } while (centroids.indexOf(c) != -1)
-      centroids.push(c);
-    clusters.push([]);
+    } while (centroids.indexOf(c) != -1);
+    centroids.add(c);
+    clusters.add(new ArrayList());
   }
 
   // assign clusters
-  for (let p of points) {
-    let argmin = 0;
-    let minDist = distSquared(p, centroids[0]);
-    for (let i = 1; i < 2; i++) {
-      let d = distSquared(p, centroids[i]);
+  for (var p : points) {
+    var argmin = 0;
+    var minDist = distSquared(p, centroids.get(0));
+    for (var i = 1; i < 2; i++) {
+      var d = distSquared(p, centroids.get(i));
       if (d < minDist) {
         minDist = d;
         argmin = i;
       }
     }
-    clusters[argmin].push(p);
+    clusters[argmin].add(p);
   }
 
   return clusters;
 }
 
-function convexHull(points) {
+ArrayList<PVector> convexHull(ArrayList<PVector> points) {
   // adapted from https://en.wikipedia.org/wiki/Gift_wrapping_algorithm#Pseudocode
-  points.sort((p, q) => p.x - q.x);
-  let hull = [];
-  let i = 0;
-  let endPoint;
-  let pointOnHull = points[0];
+  points.sort((p, q) -> (int)(p.x - q.x));
+  ArrayList<PVector> hull = new ArrayList();
+  var i = 0;
+  var endPoint;
+  var pointOnHull = points[0];
   do {
-    hull.push(pointOnHull);
-    endPoint = points[0];
-    for (let j = 0; j < points.length; j++) {
-      let p = p5.Vector.sub(endPoint, pointOnHull);
-      let q = p5.Vector.sub(points[j], pointOnHull);
-      if (endPoint.equals(pointOnHull) || (p.cross(q)).z < 0) {
-        endPoint = points[j];
+    hull.add(pointOnHull);
+    endPoint = points.get(0);
+    for (var j = 0; j < points.size(); j++) {
+      var p = PVector.sub(endPoint, pointOnHull);
+      var q = PVector.sub(points.get(j), pointOnHull);
+      boolean bEquals = (endPoint.x == pointOnHull.x) && (endPoint.y == pointOnHull.y);
+      if (bEquals || (p.cross(q)).z < 0) {
+        endPoint = points.get(j);
       }
     }
     i++;
     pointOnHull = endPoint;
-  } while (!endPoint.equals(points[0]));
+    boolean bEquals = (endPoint.x == points.get(0).x) && (endPoint.y == points.get(0).y);
+  } while (!bEquals);
   return hull;
 }
 
-function distSquared(p, q) {
+float distSquared(p, q) {
   return sq(p.x - q.x) + sq(p.y - q.y);
 }
