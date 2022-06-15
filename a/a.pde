@@ -1,3 +1,6 @@
+// 【移植】PC-8001（TN8001）さん
+// https://gist.github.com/TN8001/5223d75aa1870f914a38955406f7b49a
+
 //[Arrows on the numbers. Draw by openFrameworks – プログラミング de 落描き](https://junkiyoshi.com/openframeworks20220203/)
 
 // [Processing フォントのアウトライン情報を取得して文字をいじってみた - 忘れないうちに](https://turtar-fms.hatenablog.com/entry/2018/12/10/214017)
@@ -32,7 +35,7 @@ void draw() {
   var index = (frameCount / 54) % word.length;
 
   var charaShape = font.getShape(word[index], 1);
-  
+
   //auto vertices = outline[outline_index].getResampledBySpacing(38);
   for (var i = 0; i < charaShape.getVertexCount(); i++) {
     var param = frameCount % 5;
