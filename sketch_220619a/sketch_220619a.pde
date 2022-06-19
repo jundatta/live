@@ -1,57 +1,140 @@
-// 【作者】yooyooyさん
-// 【作品名】Barnsley Fern
-// https://openprocessing.org/sketch/1348846
-// https://ja.wikipedia.org/wiki/%E3%83%90%E3%83%BC%E3%83%B3%E3%82%BA%E3%83%AA%E3%83%BC%E3%81%AE%E3%82%B7%E3%83%80
+// 【作者】中内　純(ハンドルネーム：JunKiyoshi)さん
+// 【作品名】Rotating number. Draw by openFrameworks
+// https://junkiyoshi.com/2022/01/30/
 
+#include "ofApp.h"
 
-float x = 0;
-float y = 0;
+  //--------------------------------------------------------------
+  void ofApp::setup() {
 
-void setup() {
-  size(600, 600);
-  background(0);
+  ofSetFrameRate(30);
+  ofSetWindowTitle("openFrameworks");
+
+  ofBackground(0);
+  ofSetLineWidth(2);
+  ofEnableDepthTest();
+
+  this->font.loadFont("fonts/Kazesawa-Bold.ttf", 50, true, true, true);
 }
 
-//range −2.1820 < x < 2.6558 and 0 ≤ y < 9.9983.
-void drawPoint() {
-  stroke(255);
-  strokeWeight(1);
-  float px = map(x, -2.1820, 2.6558, 0, width);
-  float py = map(y, 0, 9.9983, height, 0);
-  point(px, py);
+//--------------------------------------------------------------
+void ofApp::update() {
+
+  ofSeedRandom(39);
 }
 
-void nextPoint() {
-  float nextX;
-  float nextY;
+//--------------------------------------------------------------
+void ofApp::draw() {
 
-  float r = random(1);
+  this->cam.begin();
 
-  if (r < 0.01) {
-    //1
-    nextX = 0;
-    nextY = 0.16 * y;
-  } else if (r < 0.86) {
-    //2
-    nextX = 0.85 * x + 0.04 * y;
-    nextY = -0.04 * x + 0.85 * y + 1.60;
-  } else if (r < 0.93) {
-    //3
-    nextX = 0.20 * x + -0.26 * y;
-    nextY = 0.23 * x + 0.22 * y + 1.60;
-  } else {
-    //4
-    nextX = -0.15 * x + 0.28 * y;
-    nextY = 0.26 * x + 0.24 * y + 0.44;
+  vector<string> word_list = {
+    "0", "1", "2", "3",
+    "6", "5", "4",
+    "7", "8", "9", "0"
+  };
+
+  for (int base_deg = 0; base_deg < 360; base_deg += 15) {
+
+    for (int y = -120; y <= 180; y += 60) {
+
+      int word_index = ofMap(ofNoise(ofRandom(1000), ofGetFrameNum() * 0.005), 0, 1, 0, word_list.size());
+      auto word = word_list[word_index];
+
+      vector<ofPath> word_path = this->font.getStringAsPoints(word, true, false);
+      for (int word_index = 0; word_index < word_path.size(); word_index++) {
+
+        vector<ofPolyline> outline = word_path[word_index].getOutline();
+        for (int outline_index = 0; outline_index < outline.size(); outline_index++) {
+
+          outline[outline_index] = outline[outline_index].getResampledBySpacing(2);
+          vector<glm::vec3> vertices = outline[outline_index].getVertices();
+          vector<glm::vec3> mesh_vertices;
+          vector<glm::vec3> base_location_list;
+          vector<glm::highp_mat4x4> rotate_vertices;
+
+          for (int vertices_index = 0; vertices_index < vertices.size(); vertices_index++) {
+
+            auto base_location = glm::vec3(0, y, 200);
+            base_location += glm::vec3(this->font.stringWidth(word_list[word_index]) * 0.5, this->font.stringHeight(word_list[word_index]) * 0.5, 0);
+
+            auto noise_value = ofNoise(base_location.y * 0.08, ofGetFrameNum() * 0.005);
+            auto deg = base_deg;
+            if (noise_value > 0.75) {
+
+              deg = base_deg + ofMap(noise_value, 0.75, 1, 0, 360);
+            } else if (noise_value < 0.35) {
+
+              deg = base_deg + ofMap(noise_value, 0, 0.35, -360, 0);
+            }
+
+
+            auto rotation = glm::rotate(glm::mat4(), (float)(deg * DEG_TO_RAD), glm::vec3(0, 1, 0));
+            auto location = vertices[vertices_index] - glm::vec3(this->font.stringWidth(word_list[word_index]) * 1.5, this->font.stringHeight(word_list[word_index]) * -1.5, 0);
+            location.x *= -1;
+
+            mesh_vertices.push_back(location);
+            rotate_vertices.push_back(rotation);
+            base_location_list.push_back(base_location);
+          }
+
+          ofMesh face, line;
+          line.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
+          for (int k = 0; k < mesh_vertices.size(); k++) {
+
+            face.addVertex(glm::vec4(base_location_list[k], 0) * rotate_vertices[k] + glm::vec4(mesh_vertices[k] + glm::vec3(0, 0, -15), 0) * -rotate_vertices[k]);
+            face.addVertex(glm::vec4(base_location_list[k], 0) * rotate_vertices[k] + glm::vec4(mesh_vertices[k] + glm::vec3(0, 0, 15), 0) * -rotate_vertices[k]);
+
+            line.addVertex(glm::vec4(base_location_list[k], 0) * rotate_vertices[k] + glm::vec4(mesh_vertices[k] + glm::vec3(0, 0, -15), 0) * -rotate_vertices[k]);
+            line.addVertex(glm::vec4(base_location_list[k], 0) * rotate_vertices[k] + glm::vec4(mesh_vertices[k] + glm::vec3(0, 0, 15), 0) * -rotate_vertices[k]);
+
+            if (k > 0) {
+
+              face.addIndex(face.getNumVertices() - 1);
+              face.addIndex(face.getNumVertices() - 2);
+              face.addIndex(face.getNumVertices() - 4);
+              face.addIndex(face.getNumVertices() - 1);
+              face.addIndex(face.getNumVertices() - 3);
+              face.addIndex(face.getNumVertices() - 4);
+
+              line.addIndex(line.getNumVertices() - 1);
+              line.addIndex(line.getNumVertices() - 3);
+              line.addIndex(line.getNumVertices() - 2);
+              line.addIndex(line.getNumVertices() - 4);
+            }
+
+            line.addIndex(line.getNumVertices() - 1);
+            line.addIndex(line.getNumVertices() - 2);
+          }
+
+          face.addIndex(face.getNumVertices() - 1);
+          face.addIndex(0);
+          face.addIndex(1);
+          face.addIndex(face.getNumVertices() - 1);
+          face.addIndex(face.getNumVertices() - 2);
+          face.addIndex(2);
+
+          line.addIndex(line.getNumVertices() - 1);
+          line.addIndex(1);
+          line.addIndex(line.getNumVertices() - 2);
+          line.addIndex(0);
+
+          ofSetColor(0);
+          face.draw();
+
+          ofSetColor(0, 255, 255);
+          line.drawWireframe();
+        }
+      }
+    }
   }
 
-  x = nextX;
-  y = nextY;
+  this->cam.end();
 }
 
-void draw() {
-  for (float i = 0; i < 100; i++) {
-    drawPoint();
-    nextPoint();
-  }
+//--------------------------------------------------------------
+int main() {
+
+  ofSetupOpenGL(720, 720, OF_WINDOW);
+  ofRunApp(new ofApp());
 }
