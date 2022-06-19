@@ -75,6 +75,14 @@ void draw() {
         gap.mult(map(param, 0, 5, 0, 1));
         location.add(gap);
         draw_arrow(location, vertices.v[i + 1], 18, color(0));
+      } else {
+        var distance = PVector.dist(vertices.v[0], vertices.v[i]);
+        if (distance >= 18) {
+          PVector gap = PVector.sub(vertices.v[0], vertices.v[i]);
+          gap.mult(map(param, 0, 5, 0, 1));
+          PVector location = PVector.add(vertices.v[i], gap);
+          draw_arrow(location, vertices.v[0], 18, color(0));
+        }
       }
     }
   }
