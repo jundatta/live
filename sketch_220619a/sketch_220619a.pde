@@ -2,8 +2,50 @@
 // 【作品名】Rotating number. Draw by openFrameworks
 // https://junkiyoshi.com/2022/01/30/
 
+class ofPolyline {
+  PVector[] v;
+}
+ArrayList<ofPolyline[]> word;
+
+final int source[] = {
+  // openFrameworks側で取ったフォント0～9のアウトラインのxy座標をファイルにしたので
+  // それをProcessing側で読み込む。
+  // フォント：0  1  2  3  4  5  6  7  8  9のそれぞれのアウトラインの数を定義する。
+  2, 1, 1, 1, 2, 1, 2, 1, 3, 2,
+};
+ofPolyline loadOutline(String path) {
+  ofPolyline vertices = new ofPolyline();
+  String[] lines = loadStrings(path);
+  PVector[] v = new PVector[lines.length];
+  for (int i = 0; i < v.length; i++) {
+    String s = lines[i];
+    String[] units = splitTokens(s, ", ");
+    PVector p = new PVector(float(units[0]), float(units[1]));
+    v[i] = p;
+  }
+  vertices.v = v;
+  return vertices;
+}
+
+void preload() {
+  // アウトラインのxy座標を定義した0_x.txt～9_x.txtを読み込む。
+  word = new ArrayList();
+  for (int i = 0; i < source.length; i++) {
+    int outlineNum = source[i];
+    ofPolyline[] outline = new ofPolyline[outlineNum];
+    for (int outline_index = 0; outline_index < outlineNum; outline_index++) {
+      String path = "data/";
+      path += i + "_" + outline_index + ".txt";
+      ofPolyline vertices = loadOutline(path);
+      outline[outline_index] = vertices;
+    }
+    word.add(outline);
+  }
+}
+
 //--------------------------------------------------------------
 void setup() {
+  preload();
 }
 
 //--------------------------------------------------------------
