@@ -2,29 +2,14 @@
 // 【作品名】Rotating number. Draw by openFrameworks
 // https://junkiyoshi.com/2022/01/30/
 
-#include "ofApp.h"
+//--------------------------------------------------------------
+void setup() {
+}
 
-  //--------------------------------------------------------------
-  void ofApp::setup() {
-
-  ofSetFrameRate(30);
-  ofSetWindowTitle("openFrameworks");
-
+//--------------------------------------------------------------
+void draw() {
   ofBackground(0);
   ofSetLineWidth(2);
-  ofEnableDepthTest();
-
-  this->font.loadFont("fonts/Kazesawa-Bold.ttf", 50, true, true, true);
-}
-
-//--------------------------------------------------------------
-void ofApp::update() {
-
-  ofSeedRandom(39);
-}
-
-//--------------------------------------------------------------
-void ofApp::draw() {
 
   this->cam.begin();
 
@@ -130,11 +115,4 @@ void ofApp::draw() {
   }
 
   this->cam.end();
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
