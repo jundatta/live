@@ -21,7 +21,7 @@ final int source[] = {
 };
 ofPolyline loadOutline(String path) {
   ofPolyline vertices = new ofPolyline();
-  String[] lines = loadStrings(path);
+  String[] lines = loadStrings(path); //<>//
   PVector[] v = new PVector[lines.length];
   for (int i = 0; i < v.length; i++) {
     String s = lines[i];
@@ -51,61 +51,111 @@ void preload() {
 
 //--------------------------------------------------------------
 void setup() {
+  size(720, 720, P3D);
   preload();
   strokeWeight(2);
 }
 
+class ofMesh {
+  ArrayList<PVector> vertices;
+  ArrayList<Integer> indices;
+  ofMesh() {
+    vertices = new ArrayList();
+    indices = new ArrayList();
+  }
+  void addVertex(PVector v) {
+    vertices.add(v);
+  }
+  void addIndex(int i) {
+    indices.add(i);
+  }
+  int getNumVertices() {
+    return vertices.size();
+  }
+  void drawWireframe() {
+    beginShape(LINES);
+    for (int index : indices) {
+      PVector v = vertices.get(index);
+      vertex(v.x, v.y, v.z);
+    }
+    endShape();
+  }
+}
+
+PVector rotateVertex(PMatrix3D r, PVector base, PVector mesh, PVector vec3) {
+  PVector p0 = r.mult(base, null);
+  PVector p1 = PVector.add(mesh, vec3);
+  PVector p2 = r.mult(p1, null);
+  p2.mult(-1);
+  PVector p3 = PVector.add(p0, p2);
+  return p3;
+}
+
 //--------------------------------------------------------------
 void draw() {
+  translate(width/2, height/2);
   background(0);
 
   for (int base_deg = 0; base_deg < 360; base_deg += 15) {
     for (int y = -120; y <= 180; y += 60) {
-      int word_index = map(openFrameworks.ofNoise(random(1000), frameCount * 0.005), 0, 1, 0, 10);
+      int word_index = (int)map(openFrameworks.ofNoise(random(1000), frameCount * 0.005), 0, 1, 0, 10);
 
       ofPolyline[] outline = word.get(word_index);
-      for (int outline_index = 0; outline_index < outline.size(); outline_index++) {
-        PVector[] vertices = outline.getVertices();
-        PVector[] mesh_vertices = new PVector[vertices.size()];
-        PVector[] base_location_list = new PVector[vertices.size()];
-        PMatrix3D[] rotate_vertices = new PMatrix3D[vertices.size()];
+      for (int outline_index = 0; outline_index < outline.length; outline_index++) {
+        PVector[] vertices = outline[outline_index].getVertices();
+        PVector[] mesh_vertices = new PVector[vertices.length];
+        PVector[] base_location_list = new PVector[vertices.length];
+        PMatrix3D[] rotate_vertices = new PMatrix3D[vertices.length];
 
-        for (int vertices_index = 0; vertices_index < vertices.size(); vertices_index++) {
-          auto base_location = glm::vec3(0, y, 200);
-          base_location += glm::vec3(fontStringWidth * 0.5, fontStringHeight * 0.5, 0);
+        for (int vertices_index = 0; vertices_index < vertices.length; vertices_index++) {
+          var base_location = new PVector(0, y, 200);
+          base_location.x += fontStringWidth * 0.5;
+          base_location.y += fontStringHeight * 0.5;
 
-          auto noise_value = ofNoise(base_location.y * 0.08, ofGetFrameNum() * 0.005);
-          auto deg = base_deg;
+
+          var noise_value = openFrameworks.ofNoise(base_location.y * 0.08, frameCount * 0.005);
+          var deg = base_deg;
           if (noise_value > 0.75) {
-
-            deg = base_deg + ofMap(noise_value, 0.75, 1, 0, 360);
+            deg = base_deg + (int)map(noise_value, 0.75, 1, 0, 360);
           } else if (noise_value < 0.35) {
-
-            deg = base_deg + ofMap(noise_value, 0, 0.35, -360, 0);
+            deg = base_deg + (int)map(noise_value, 0, 0.35, -360, 0);
           }
 
 
-          auto rotation = glm::rotate(glm::mat4(), (float)(deg * DEG_TO_RAD), glm::vec3(0, 1, 0));
-          auto location = vertices[vertices_index] - glm::vec3(fontStringWidth * 1.5, fontStringHeight * -1.5, 0);
+          //auto rotation = glm::rotate(glm::mat4(), (float)(deg * DEG_TO_RAD), glm::vec3(0, 1, 0));
+          PMatrix3D rotation = new PMatrix3D();
+          rotation.rotateY(deg * DEG_TO_RAD);
+          //auto location = vertices[vertices_index] - glm::vec3(fontStringWidth * 1.5, fontStringHeight * -1.5, 0);
+          var location = new PVector(vertices[vertices_index].x, vertices[vertices_index].y);
+          location.x -= fontStringWidth * 1.5;
+          location.y -= fontStringHeight * -1.5;
           location.x *= -1;
 
-          mesh_vertices.push_back(location);
-          rotate_vertices.push_back(rotation);
-          base_location_list.push_back(base_location);
+          mesh_vertices[vertices_index] = location;
+          rotate_vertices[vertices_index] = rotation;
+          base_location_list[vertices_index] = base_location;
         }
 
         ofMesh face, line;
-        line.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
-        for (int k = 0; k < mesh_vertices.size(); k++) {
+        face = new ofMesh();
+        line = new ofMesh();
+        //line.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
+        for (int k = 0; k < mesh_vertices.length; k++) {
+          //face.addVertex(glm::vec4(base_location_list[k], 0) * rotate_vertices[k] + glm::vec4(mesh_vertices[k] + glm::vec3(0, 0, -15), 0) * -rotate_vertices[k]);
+          //face.addVertex(glm::vec4(base_location_list[k], 0) * rotate_vertices[k] + glm::vec4(mesh_vertices[k] + glm::vec3(0, 0, 15), 0) * -rotate_vertices[k]);
+          PVector face0 = rotateVertex(rotate_vertices[k], base_location_list[k], mesh_vertices[k], new PVector(0, 0, -15));
+          face.addVertex(face0);
+          PVector face1 = rotateVertex(rotate_vertices[k], base_location_list[k], mesh_vertices[k], new PVector(0, 0, 15));
+          face.addVertex(face1);
 
-          face.addVertex(glm::vec4(base_location_list[k], 0) * rotate_vertices[k] + glm::vec4(mesh_vertices[k] + glm::vec3(0, 0, -15), 0) * -rotate_vertices[k]);
-          face.addVertex(glm::vec4(base_location_list[k], 0) * rotate_vertices[k] + glm::vec4(mesh_vertices[k] + glm::vec3(0, 0, 15), 0) * -rotate_vertices[k]);
-
-          line.addVertex(glm::vec4(base_location_list[k], 0) * rotate_vertices[k] + glm::vec4(mesh_vertices[k] + glm::vec3(0, 0, -15), 0) * -rotate_vertices[k]);
-          line.addVertex(glm::vec4(base_location_list[k], 0) * rotate_vertices[k] + glm::vec4(mesh_vertices[k] + glm::vec3(0, 0, 15), 0) * -rotate_vertices[k]);
+          //line.addVertex(glm::vec4(base_location_list[k], 0) * rotate_vertices[k] + glm::vec4(mesh_vertices[k] + glm::vec3(0, 0, -15), 0) * -rotate_vertices[k]);
+          //line.addVertex(glm::vec4(base_location_list[k], 0) * rotate_vertices[k] + glm::vec4(mesh_vertices[k] + glm::vec3(0, 0, 15), 0) * -rotate_vertices[k]);
+          PVector line0 = rotateVertex(rotate_vertices[k], base_location_list[k], mesh_vertices[k], new PVector(0, 0, -15));
+          line.addVertex(line0);
+          PVector line1 = rotateVertex(rotate_vertices[k], base_location_list[k], mesh_vertices[k], new PVector(0, 0, 15));
+          line.addVertex(line1);
 
           if (k > 0) {
-
             face.addIndex(face.getNumVertices() - 1);
             face.addIndex(face.getNumVertices() - 2);
             face.addIndex(face.getNumVertices() - 4);
@@ -135,10 +185,11 @@ void draw() {
         line.addIndex(line.getNumVertices() - 2);
         line.addIndex(0);
 
-        ofSetColor(0);
-        face.draw();
+        //ofSetColor(0);
+        //face.draw();
 
-        ofSetColor(0, 255, 255);
+        stroke(0, 255, 255);
+        noFill();
         line.drawWireframe();
       }
     }
