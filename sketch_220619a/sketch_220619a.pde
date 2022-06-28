@@ -4,6 +4,9 @@
 
 class ofPolyline {
   PVector[] v;
+  PVector[] getVertices() {
+    return v;
+  }
 }
 ArrayList<ofPolyline[]> word;
 
@@ -57,22 +60,17 @@ void draw() {
   background(0);
 
   for (int base_deg = 0; base_deg < 360; base_deg += 15) {
-
     for (int y = -120; y <= 180; y += 60) {
+      int word_index = map(openFrameworks.ofNoise(random(1000), frameCount * 0.005), 0, 1, 0, 10);
 
-      int word_index = ofMap(ofNoise(ofRandom(1000), ofGetFrameNum() * 0.005), 0, 1, 0, 10);
-
-      vector<ofPolyline> outline = word_path[word_index].getOutline();
+      ofPolyline[] outline = word.get(word_index);
       for (int outline_index = 0; outline_index < outline.size(); outline_index++) {
-
-        outline[outline_index] = outline[outline_index].getResampledBySpacing(2);
-        vector<glm::vec3> vertices = outline[outline_index].getVertices();
-        vector<glm::vec3> mesh_vertices;
-        vector<glm::vec3> base_location_list;
-        vector<glm::highp_mat4x4> rotate_vertices;
+        PVector[] vertices = outline.getVertices();
+        PVector[] mesh_vertices = new PVector[vertices.size()];
+        PVector[] base_location_list = new PVector[vertices.size()];
+        PMatrix3D[] rotate_vertices = new PMatrix3D[vertices.size()];
 
         for (int vertices_index = 0; vertices_index < vertices.size(); vertices_index++) {
-
           auto base_location = glm::vec3(0, y, 200);
           base_location += glm::vec3(fontStringWidth * 0.5, fontStringHeight * 0.5, 0);
 
