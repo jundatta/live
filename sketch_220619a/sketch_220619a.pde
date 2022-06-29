@@ -1,4 +1,4 @@
-// 【作者】中内　純(ハンドルネーム：JunKiyoshi)さん
+// 【作者】中内　純(ハンドルネーム：JunKiyoshi)さん //<>//
 // 【作品名】Rotating number. Draw by openFrameworks
 // https://junkiyoshi.com/2022/01/30/
 
@@ -21,7 +21,7 @@ final int source[] = {
 };
 ofPolyline loadOutline(String path) {
   ofPolyline vertices = new ofPolyline();
-  String[] lines = loadStrings(path); //<>//
+  String[] lines = loadStrings(path);
   PVector[] v = new PVector[lines.length];
   for (int i = 0; i < v.length; i++) {
     String s = lines[i];
@@ -53,7 +53,7 @@ void preload() {
 void setup() {
   size(720, 720, P3D);
   preload();
-  strokeWeight(2);
+  //strokeWeight(2);
 }
 
 class ofMesh {
@@ -71,6 +71,14 @@ class ofMesh {
   }
   int getNumVertices() {
     return vertices.size();
+  }
+  void draw() {
+    beginShape(TRIANGLE);
+    for (int index : indices) {
+      PVector v = vertices.get(index);
+      vertex(v.x, v.y, v.z);
+    }
+    endShape();
   }
   void drawWireframe() {
     beginShape(LINES);
@@ -91,9 +99,15 @@ PVector rotateVertex(PMatrix3D r, PVector base, PVector mesh, PVector vec3) {
   return p3;
 }
 
+void update() {
+  randomSeed(39);
+}
+
 //--------------------------------------------------------------
 void draw() {
+  update();
   translate(width/2, height/2);
+  scale(1, -1);
   background(0);
 
   for (int base_deg = 0; base_deg < 360; base_deg += 15) {
@@ -185,8 +199,9 @@ void draw() {
         line.addIndex(line.getNumVertices() - 2);
         line.addIndex(0);
 
-        //ofSetColor(0);
-        //face.draw();
+        noStroke();
+        fill(0);
+        face.draw();
 
         stroke(0, 255, 255);
         noFill();
