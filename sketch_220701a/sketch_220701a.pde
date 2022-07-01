@@ -8,7 +8,7 @@ Fibonacci number
  */
 
 void setup() {
-  size(834, 834);
+  size(500, 800, P3D);
   noStroke();
   colorMode(RGB, 1);
 }
