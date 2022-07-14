@@ -2,7 +2,7 @@
 // 【作品名】360
 // https://openprocessing.org/sketch/947901
 
-float h = -125, v = 20;
+float h = -125 + 90, v = 20 - 45;
 PImage tex;
 PShape sphere;
 
@@ -19,7 +19,8 @@ void draw() {
   background(0);
   noStroke();
   //  camera(0, 0, 0, 0, 0, 1, 0, 1, 0);
-  scale(-1, 1, 1);
+  final float sc = 3.0f;
+  scale(-sc, sc, sc);
   rotateX(radians(v));
   rotateY(radians(h));
 
@@ -37,5 +38,7 @@ void draw() {
     v = min(90, max(-90, v + (mouseY - height / 2) / (float)height));
   }
   
-  keyCode = 0;
+  if (!keyPressed) {
+    keyCode = 0;
+  }
 }
