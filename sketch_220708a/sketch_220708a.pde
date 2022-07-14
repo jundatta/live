@@ -24,6 +24,7 @@ void draw() {
 
   //  texture(tex);
   //sphere(1000);
+  shape(sphere);
 
   if (keyCode == 39) h--;
   if (keyCode == 37) h++;
