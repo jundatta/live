@@ -2,32 +2,36 @@
 // 【作品名】360
 // https://openprocessing.org/sketch/947901
 
-let h = -125, v = 20
-  let tex;
+float h = -125, v = 20;
+PImage tex;
+PShape sphere;
 
-function setup() {
-  createCanvas(windowWidth, windowHeight, WEBGL);
-  tex = loadImage('360.png');
+void setup() {
+  size(1112, 834, P3D);
+  tex = loadImage("360.png");
+  sphere = createShape(SPHERE, 1000);
+  sphere.setTexture(tex);
+  sphere.setStrokeWeight(0);
 }
 
-function draw() {
+void draw() {
   background(0);
   noStroke();
-  camera(0, 0, 0, 0, 0, 1, 0, 1, 0);
-  scale(-1, 1, 1)
-    rotateX(radians(v));
+  //  camera(0, 0, 0, 0, 0, 1, 0, 1, 0);
+  scale(-1, 1, 1);
+  rotateX(radians(v));
   rotateY(radians(h));
 
-  texture(tex);
-  sphere(1000);
+  //  texture(tex);
+  //sphere(1000);
 
-  if (keyIsDown(39)) h--;
-  if (keyIsDown(37)) h++;
-  if (keyIsDown(38) && v > -90) v--;
-  if (keyIsDown(40) && v < 90) v++;
+  if (keyCode == 39) h--;
+  if (keyCode == 37) h++;
+  if (keyCode == 38 && v > -90) v--;
+  if (keyCode == 40 && v < 90) v++;
 
-  if (mouseIsPressed) {
-    h -= (mouseX - width / 2) / width;
-    v = min(90, max(-90, v + (mouseY - height / 2) / height));
+  if (mousePressed) {
+    h -= (mouseX - width / 2) / (float)width;
+    v = min(90, max(-90, v + (mouseY - height / 2) / (float)height));
   }
 }
