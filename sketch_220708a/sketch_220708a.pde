@@ -15,6 +15,7 @@ void setup() {
 }
 
 void draw() {
+  translate(width/2, height/2);
   background(0);
   noStroke();
   //  camera(0, 0, 0, 0, 0, 1, 0, 1, 0);
@@ -35,4 +36,6 @@ void draw() {
     h -= (mouseX - width / 2) / (float)width;
     v = min(90, max(-90, v + (mouseY - height / 2) / (float)height));
   }
+  
+  keyCode = 0;
 }
