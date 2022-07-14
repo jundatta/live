@@ -7,7 +7,8 @@ PImage tex;
 PShape sphere;
 
 void setup() {
-  size(1112, 834, P3D);
+  //size(1112, 834, P3D);
+  size(500, 800, P3D);
   tex = loadImage("360.png");
   sphere = createShape(SPHERE, 1000);
   sphere.setTexture(tex);
