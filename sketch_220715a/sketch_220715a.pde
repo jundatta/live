@@ -1,70 +1,68 @@
 // https://openprocessing.org/sketch/1180918
 
-var sphere_radius = 200;
-var num_rings = 10;
-var delta_angle = 180 / num_rings;
-var gap = 2.5;
+final float sphere_radius = 200;
+final float num_rings = 10;
+final float delta_angle = 180 / num_rings;
+final float gap = 2.5;
 // var num_lines = 20;
 
-var num_lines_arr = [];
+ArrayList<line_ring> line_rings = new ArrayList();
 
-var line_rings = [];
-
-function setup() {
-  createCanvas(windowWidth, windowHeight, WEBGL);
-  angleMode(DEGREES);
+void setup() {
+  size(1112, 834, P3D);
+  //  angleMode(DEGREES);
   background(0);
-  // blendMode(ADD);
 
-  for (var n=-90 + delta_angle; n<= 90 - 2 * delta_angle; n+=delta_angle) {
-    // var num_lines = random(10, 20);
-    // num_lines_arr.push(num_lines);
+  for (float n=-90 + delta_angle; n<= 90 - 2 * delta_angle; n+=delta_angle) {
+    float angle1 = n + gap;
+    float angle2 = n + delta_angle - gap;
 
-    var angle1 = n + gap;
-    var angle2 = n + delta_angle - gap;
-    // var min_n_lines = floor(random(5, 10));
-    // var max_n_lines = floor(random(50, 150));
+    float min_n_lines = 5;
+    float max_n_lines = 60;
 
-    var min_n_lines = 5;
-    var max_n_lines = 60;
+    float inc_t = random(0.1, 1);
+    float phase = random(0, 360);
+    color c = color(255, 255);
 
-
-    var inc_t = random(0.1, 1);
-    var phase = random(0, 360);
-    var c = color(255);
-    c.setAlpha(255);
-
-    line_rings.push(new line_ring(angle1, angle2, min_n_lines, max_n_lines, inc_t, phase, c));
+    line_rings.add(new line_ring(angle1, angle2, min_n_lines, max_n_lines, inc_t, phase, c));
   }
+  sphereDetail(6, 4);
 }
 
-function draw() {
+void draw() {
   background(0);
-  orbitControl(3, 3, 0.01);
+  //  orbitControl(3, 3, 0.01);
 
   push();
   stroke(255, 255, 255);
   strokeWeight(2);
   noFill();
-  rotateX(0.2 * frameCount);
-  rotateY(1 * frameCount);
-  rotateZ(0.3 * frameCount);
-  sphere(80, 6, 4);
+  rotateX(radians(0.2 * frameCount));
+  rotateY(radians(1 * frameCount));
+  rotateZ(radians(0.3 * frameCount));
+  //  sphere(80, 6, 4);
+  sphere(80);
   pop();
 
 
   push();
-  rotateX(- 0.1 * frameCount);
-  rotateY(- 0.4 * frameCount);
-  rotateZ(0.15 * frameCount);
-  for (var ring of line_rings) {
+  rotateX(radians(- 0.1 * frameCount));
+  rotateY(radians(- 0.4 * frameCount));
+  rotateZ(radians(0.15 * frameCount));
+  for (var ring : line_rings) {
     ring.draw();
   }
   pop();
 }
 
 class line_ring {
-  constructor(angle1, angle2, min_n_lines, max_n_lines, inc_t, phase, c) {
+  float angle1, angle2;
+  float min_n_lines, max_n_lines;
+  float inc_t;
+  float phase;
+  color c;
+  line_ring(float angle1, float angle2,
+    float min_n_lines, float max_n_lines, float inc_t, float phase, color c) {
     this.angle1 = angle1;
     this.angle2 = angle2;
     this.min_n_lines = min_n_lines;
@@ -74,28 +72,26 @@ class line_ring {
     this.c = c;
   }
 
-  draw() {
+  void draw() {
+    translate(width/2, height/2);
+    
     var n_lines = map(sin(0.2 * this.inc_t * frameCount + this.phase), -1, 1, this.min_n_lines, this.max_n_lines);
-    // var n_lines = this.max_n_lines;
     var a_inc = 360 / n_lines;
 
     for (var a=0; a<360; a+= a_inc) {
+      var y1 = sphere_radius * sin(radians(this.angle1));
+      var y2 = sphere_radius * sin(radians(this.angle2));
 
-      var y1 = sphere_radius * sin(this.angle1);
-      var y2 = sphere_radius * sin(this.angle2);
+      var factor = map(sin(radians(frameCount + this.angle1 * 2.5)), -1, 1, 0.5, 1.5);
 
-      // var factor = map(noise(frameCount * 0.005 + this.phase), 0.3, 0.7, 0.5, 1.5);
-      var factor = map(sin(frameCount + this.angle1 * 2.5), -1, 1, 0.5, 1.5);
-      // var factor = 1;
+      var radius1 = sphere_radius * cos(radians(this.angle1)) * factor;
+      var radius2 = sphere_radius * cos(radians(this.angle2)) * factor;
 
-      var radius1 = sphere_radius * cos(this.angle1) * factor;
-      var radius2 = sphere_radius * cos(this.angle2) * factor;
+      var x1 = radius1 * cos(radians(a));
+      var x2 = radius2 * cos(radians(a));
 
-      var x1 = radius1 * cos(a);
-      var x2 = radius2 * cos(a);
-
-      var z1 = radius1 * sin(a);
-      var z2 = radius2 * sin(a);
+      var z1 = radius1 * sin(radians(a));
+      var z2 = radius2 * sin(radians(a));
 
       push();
       rotateY(map(noise(0.002 * (frameCount) + this.phase), 0.3, 0.7, -180, 180));
@@ -103,12 +99,6 @@ class line_ring {
       strokeWeight(a%8);
       noFill();
       line(x1, y1, z1, x2, y2, z2);
-      // translate(x1, y1, z1);
-      // rotateX(0.5 * frameCount + this.phase);
-      // rotateY(0.2 * frameCount + this.phase);
-      // rotateZ(0.7 * frameCount + this.phase)
-      // sphere(20, 3, 2);
-      // line(x1, y1, z1, x1, y2, z1);
       pop();
     }
   }
