@@ -30,6 +30,8 @@ void setup() {
 }
 
 void draw() {
+  translate(width/2, height/2);
+
   background(0);
   //  orbitControl(3, 3, 0.01);
 
@@ -73,8 +75,6 @@ class line_ring {
   }
 
   void draw() {
-    translate(width/2, height/2);
-    
     var n_lines = map(sin(0.2 * this.inc_t * frameCount + this.phase), -1, 1, this.min_n_lines, this.max_n_lines);
     var a_inc = 360 / n_lines;
 
