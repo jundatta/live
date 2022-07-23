@@ -94,7 +94,7 @@ class line_ring {
       var z2 = radius2 * sin(radians(a));
 
       push();
-      rotateY(map(noise(0.002 * (frameCount) + this.phase), 0.3, 0.7, -180, 180));
+      rotateY(radians(map(noise(0.002 * (frameCount) + this.phase), 0.3, 0.7, -180, 180)));
       stroke(this.c);
       strokeWeight(a%8);
       noFill();
