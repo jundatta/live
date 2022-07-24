@@ -24,7 +24,7 @@ class Shape {
     this.Fi = Fill;
   }
 
-  show(float ang, int a) {
+  void show(float ang, int a) {
     this.ang = ang;
     this.offset = 360/(float)this.num;
 

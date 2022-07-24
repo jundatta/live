@@ -87,13 +87,15 @@ void draw() {
   }
 
   for (int i=0; i<rune_num; i++) {
-    lis[i].Rotate(210, 360/(float)rune_num*i);
-    lis[i].show();
+    float ang = 360/(float)rune_num*i;
+    lis[i].Rotate(210, ang);
+    lis[i].show(ang);
   }
 
   for (int i=0; i<rune_num; i++) {
-    lis[i].Rotate(380, 180+360/(float)rune_num*i);
-    lis[i].show();
+    float ang = 180+360/(float)rune_num*i;
+    lis[i].Rotate(380, ang);
+    lis[i].show(ang);
   }
 
   shape4.show(0, 0);
