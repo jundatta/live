@@ -43,14 +43,14 @@ void taicy(int num, float cenx, float ceny, float w, float h) {
 
 void lin(float cenx, float ceny, float w, float h) {
   fill(255);
-  x = cenx-w/2;
-  y = ceny-h/2;
+  float x = cenx-w/2;
+  float y = ceny-h/2;
   rect(x, y, w, h);
 }
 
 void dotlin(float cenx, float ceny, float w, float h) {
-  x = cenx-w/2;
-  y = ceny-h/2;
+  float x = cenx-w/2;
+  float y = ceny-h/2;
   rect(x, y, w/5*2, h);
   rect(x+w/5*3, y, w/5*2, h);
 }

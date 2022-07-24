@@ -1,8 +1,8 @@
-function taigy(r) {
-  an1 = radians( - 90);
-  an2 = radians(  90);
-  an3 = radians(  270);
-  an4 = radians(  270);
+void taigy(float r) {
+  float an1 = radians( - 90);
+  float an2 = radians(  90);
+  float an3 = radians(  270);
+  float an4 = radians(  270);
 
   stroke(0);
   fill(255);
@@ -10,8 +10,8 @@ function taigy(r) {
 
   stroke(0);
   fill(255);
-  x = -r/4 * cos(an1);
-  y = -r/4 * sin(an1);
+  float x = -r/4 * cos(an1);
+  float y = -r/4 * sin(an1);
   arc(x, y, r/2, r/2, an2, an1);
 
   fill(0);
