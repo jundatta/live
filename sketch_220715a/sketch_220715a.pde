@@ -77,20 +77,22 @@ void draw() {
   re(250, 8, 70, 50, 1);
 
   int rune_num = lis.size();
+  final float w = 60;
+  final float h = 8;
   for (int j=0; j<rune_num; j++) {
     float an = radians(45*j);
     rotate(an);
-    taicy(j+1, 0, 275);
+    taicy(j+1, 0, 275, w, h);
     rotate(-an);
   }
 
   for (int i=0; i<rune_num; i++) {
-    lis[i].Rotate(210, 360/(float)(rune_num*i));
+    lis[i].Rotate(210, 360/(float)rune_num*i);
     lis[i].show();
   }
 
   for (int i=0; i<rune_num; i++) {
-    lis[i].Rotate(380, 180+360/(float)(rune_num*i));
+    lis[i].Rotate(380, 180+360/(float)rune_num*i);
     lis[i].show();
   }
 
@@ -111,7 +113,7 @@ void re(float r, int amount, float w, float h, boolean fi) {
   }
 
   for (int j=0; j<amount; j++) {
-    an = radians(360/(float)(amount*j));
+    an = radians(360/(float)amount*j);
     rotate(an);
     rect(-w/2, -r-h, w, h);
     rotate(-an);

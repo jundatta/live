@@ -1,4 +1,4 @@
-function taicy(num, cenx, ceny) {
+void taicy(int num, float cenx, float ceny, float w, float h) {
   if (num==1) {
     lin(cenx, ceny-2*h, w, h);
     lin(cenx, ceny, w, h);
@@ -41,14 +41,14 @@ function taicy(num, cenx, ceny) {
   }
 }
 
-function lin(cenx, ceny, w, h) {
+void lin(float cenx, float ceny, float w, float h) {
   fill(255);
   x = cenx-w/2;
   y = ceny-h/2;
   rect(x, y, w, h);
 }
 
-function dotlin(cenx, ceny, w, h) {
+void dotlin(float cenx, float ceny, float w, float h) {
   x = cenx-w/2;
   y = ceny-h/2;
   rect(x, y, w/5*2, h);
