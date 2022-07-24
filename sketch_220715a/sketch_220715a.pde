@@ -1,105 +1,118 @@
-// https://openprocessing.org/sketch/1180918
+// https://openprocessing.org/sketch/1274942
 
-final float sphere_radius = 200;
-final float num_rings = 10;
-final float delta_angle = 180 / num_rings;
-final float gap = 2.5;
-// var num_lines = 20;
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  background(100);
 
-ArrayList<line_ring> line_rings = new ArrayList();
+  shape1 = new Shape(0, 0, 0, 255, 3, 0, 255, 215, 0, 255, 0, 8);
+  shape2 = new Shape(0, 0, 0, 270, 10, 0, 255, 215, 0, 255, 0, 8);
+  shape3 = new Shape(0, 0, 0, 280, 10, 0, 255, 215, 0, 255, 0, 8);
+  shape4 = new Shape(0, 0, 0, 340, 3, 0, 255, 215, 0, 255, 0, 4);
+  shape5 = new Shape(0, 0, 0, 425, 3, 0, 255, 215, 0, 255, 0, 4);
 
-void setup() {
-  size(1112, 834, P3D);
-  //  angleMode(DEGREES);
-  background(0);
-
-  for (float n=-90 + delta_angle; n<= 90 - 2 * delta_angle; n+=delta_angle) {
-    float angle1 = n + gap;
-    float angle2 = n + delta_angle - gap;
-
-    float min_n_lines = 5;
-    float max_n_lines = 60;
-
-    float inc_t = random(0.1, 1);
-    float phase = random(0, 360);
-    color c = color(255, 255);
-
-    line_rings.add(new line_ring(angle1, angle2, min_n_lines, max_n_lines, inc_t, phase, c));
-  }
-  sphereDetail(6, 4);
-}
-
-void draw() {
-  translate(width/2, height/2);
-
-  background(0);
-  //  orbitControl(3, 3, 0.01);
-
-  push();
-  stroke(255, 255, 255);
-  strokeWeight(2);
-  noFill();
-  rotateX(radians(0.2 * frameCount));
-  rotateY(radians(1 * frameCount));
-  rotateZ(radians(0.3 * frameCount));
-  //  sphere(80, 6, 4);
-  sphere(80);
-  pop();
-
-
-  push();
-  rotateX(radians(- 0.1 * frameCount));
-  rotateY(radians(- 0.4 * frameCount));
-  rotateZ(radians(0.15 * frameCount));
-  for (var ring : line_rings) {
-    ring.draw();
-  }
-  pop();
-}
-
-class line_ring {
-  float angle1, angle2;
-  float min_n_lines, max_n_lines;
-  float inc_t;
-  float phase;
-  color c;
-  line_ring(float angle1, float angle2,
-    float min_n_lines, float max_n_lines, float inc_t, float phase, color c) {
-    this.angle1 = angle1;
-    this.angle2 = angle2;
-    this.min_n_lines = min_n_lines;
-    this.max_n_lines = max_n_lines;
-    this.inc_t = inc_t;
-    this.phase = phase;
-    this.c = c;
-  }
-
-  void draw() {
-    var n_lines = map(sin(radians(0.2 * this.inc_t * frameCount + this.phase)), -1, 1, this.min_n_lines, this.max_n_lines);
-    var a_inc = 360 / n_lines;
-
-    for (var a=0; a<360; a+= a_inc) {
-      var y1 = sphere_radius * sin(radians(this.angle1));
-      var y2 = sphere_radius * sin(radians(this.angle2));
-
-      var factor = map(sin(radians(frameCount + this.angle1 * 2.5)), -1, 1, 0.5, 1.5);
-
-      var radius1 = sphere_radius * cos(radians(this.angle1)) * factor;
-      var radius2 = sphere_radius * cos(radians(this.angle2)) * factor;
-
-      var x1 = radius1 * cos(radians(a));
-      var x2 = radius2 * cos(radians(a));
-
-      var z1 = radius1 * sin(radians(a));
-      var z2 = radius2 * sin(radians(a));
-
-      push();
-      rotateY(radians(map(noise(0.002 * (frameCount) + this.phase), 0.3, 0.7, -180, 180)));
-      stroke(this.c);
-      strokeWeight(a%8);
-      noFill();
-      line(x1, y1, z1, x2, y2, z2);
-      pop();
+  lis = [];
+  c = 0;
+  rune_num = 8;
+  for (i=0; i<rune_num; i++) {
+    c += 1;
+    if (c>8) {
+      c -= 8;
     }
+    zodiac = new Zodiac(c, 0, 0, 2, 20, 255, 255, 255);
+    append(lis, zodiac);
+  }
+
+  ang = 0;
+}
+
+function draw() {
+  background(0);
+  translate(width/2, height/2);
+  rotate(radians(ang));
+
+  taigy(120);
+
+  noFill();
+  stroke(255, 215, 0);
+  strokeWeight(10);
+  ellipse(0, 0, 200);
+  stroke(255);
+  ellipse(0, 0, 230);
+  stroke(255, 215, 0);
+
+  stroke(255, 215, 0);
+  strokeWeight(5);
+  ellipse(0, 0, 300);
+
+  strokeWeight(2)
+    amount = 60;
+  a = 360/amount;
+  r = 140;
+  for (j=0; j<amount; j++) {
+    an = radians(a*j);
+    x = 150 * cos(an);
+    y = 150 * sin(an);
+    X = 65 * cos(an);
+    Y = 65 * sin(an);
+    line(x, y, X, Y);
+  }
+
+  stroke(255, 215, 0);
+  re(185, 8, 70, 50, 0);
+
+  stroke(255);
+  ellipse(0, 0, 320);
+  re(160, 4, 30, 30, 0);
+
+  stroke(255, 215, 0);
+  strokeWeight(10);
+  ellipse(0, 0, 380);
+
+  shape1.show(22.5, 0);
+  shape2.show(22.5, 0);
+  shape3.show(22.5, 0);
+
+  re(250, 8, 70, 50, 1);
+
+  w = 60;
+  h = 8;
+  for (j=0; j<8; j++) {
+    an = radians(45*j);
+    rotate(an);
+    taicy(j+1, 0, 275)
+      rotate(-an);
+  }
+
+  for (i=0; i<rune_num; i++) {
+    lis[i].Rotate(210, 360/rune_num*i);
+    lis[i].show();
+  }
+
+  for (i=0; i<rune_num; i++) {
+    lis[i].Rotate(380, 180+360/rune_num*i);
+    lis[i].show();
+  }
+
+  shape4.show(0, 0);
+  shape4.show(45, 0);
+  shape5.show(0, 0);
+  shape5.show(45, 0);
+
+  ang +=1;
+}
+
+function re(r, amount, w, h, fi) {
+  strokeWeight(2);
+  if (fi == 1) {
+    fill(0);
+  } else {
+    noFill();
+  }
+
+  for (j=0; j<amount; j++) {
+    an = radians(360/amount*j);
+    rotate(an);
+    rect(-w/2, -r-h, w, h);
+    rotate(-an);
   }
 }
