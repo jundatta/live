@@ -1,5 +1,15 @@
 class Shape {
-  constructor(cen_x, cen_y, dis, R, w, ang, r, g, b, alp, Fill, num) {
+  float cen_x, cen_y;
+  float d;
+  float R;
+  float w;
+  int ang;
+  int r, g, b, alp;
+  boolean Fi;
+  int num;
+  
+  Shape(float cen_x, float cen_y, float dis, float R, float w, int ang,
+      int r, int g, int b, int alp, boolean Fill, int num) {
     this.cen_x = cen_x  + dis * cos(radians(ang-90));
     this.cen_y = cen_x  + dis * sin(radians(ang-90));
     this.d = dis;
@@ -14,14 +24,14 @@ class Shape {
     this.Fi = Fill;
   }
 
-  show(ang, a) {
+  show(float ang, int a) {
     this.ang = ang;
-    this.offset = 360/this.num;
+    this.offset = 360/(float)this.num;
 
     stroke(this.r, this.g, this.b, this.alp);
     strokeWeight(this.w);
-    if (this.Fi==1) {
-      fill(this.r, this.g, this.b, this.alp)
+    if (this.Fi) {
+      fill(this.r, this.g, this.b, this.alp);
     } else {
       noFill();
     }
@@ -29,12 +39,10 @@ class Shape {
     this.cen_x = 0 + this.d * cos(radians(a-90));
     this.cen_y = 0 + this.d * sin(radians(a-90));
 
-
     beginShape();
-    for (let j = 0; j < this.num; j++) {
-
-      let x = this.cen_x + (this.R) * cos(radians(this.ang+this.offset*j));
-      let y = this.cen_y + (this.R) * sin(radians(this.ang+this.offset*j));
+    for (int j = 0; j < this.num; j++) {
+      float x = this.cen_x + (this.R) * cos(radians(this.ang+this.offset*j));
+      float y = this.cen_y + (this.R) * sin(radians(this.ang+this.offset*j));
       vertex(x, y);
     }
     endShape(CLOSE);

@@ -1,6 +1,6 @@
 // https://openprocessing.org/sketch/1274942
 
-PShape shape1, shape2, shape3, shape4, shape5;
+Shape shape1, shape2, shape3, shape4, shape5;
 Zodiac[] lis;
 int ang;
 

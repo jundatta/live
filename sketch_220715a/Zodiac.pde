@@ -29,8 +29,8 @@ class Zodiac {
     } else {
       this.a = a;
     }
-    strokeWeight(this.w)
-      noFill();
+    strokeWeight(this.w);
+    noFill();
 
     let len = this.r/4;
     let len2 = this.r/2;
