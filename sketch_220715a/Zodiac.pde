@@ -116,7 +116,7 @@ class Zodiac {
       stroke(this.R, this.g, this.b);
       line(xp3, yp3, xp2, yp2);
       line(xp5, yp5, xp4, yp4);
-      arc(x_cen, y_cen, this.r*0.8, this.r*0.8, an7+radians(15), an5-radians(15));
+      arc(x_cen, y_cen, this.r*0.8, this.r*0.8, an7+radians(15), an5-radians(15)+TWO_PI);
     }
     if (this.choice == 6) {
       // Virgo  ()
@@ -201,7 +201,7 @@ class Zodiac {
       ellipse(xp1, yp1, this.r/2, this.r/2);
       line(xp4, yp4, xp5, yp5);
       line(xp6, yp6, xp7, yp7);
-      arc(xp2, yp2, this.r/2, this.r/2, an1, an);
+      arc(xp2, yp2, this.r/2, this.r/2, an1, an+TWO_PI);
       arc(xp3, yp3, this.r/2, this.r/2, an, an1);
     }
     if (this.choice == 4) {
@@ -217,7 +217,7 @@ class Zodiac {
       ellipse(xp1, yp1, this.r/2, this.r/2);
       ellipse(xp2, yp2, this.r/2, this.r/2);
       arc(x_cen, y_cen, this.r*1.5, this.r, an, an7);
-      arc(x_cen, y_cen, this.r*1.5, this.r, an1, an4);
+      arc(x_cen, y_cen, this.r*1.5, this.r, an1, an4+TWO_PI);
     }
 
     if (this.choice == 3) {
