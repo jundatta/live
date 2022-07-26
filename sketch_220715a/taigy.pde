@@ -17,16 +17,16 @@ void taigy(float r) {
   fill(0);
   x = r/4 * cos(an1);
   y = r/4 * sin(an1);
-  ellipse(x, y, r/2);
+  ellipse(x, y, r/2, r/2);
 
   stroke(255);
   fill(255);
-  ellipse(x, y, r/6);
+  ellipse(x, y, r/6, r/6);
 
   noStroke();
   x = -r/4 * cos(an1);
   y = -r/4 * sin(an1);
 
   fill(0);
-  ellipse(x, y, r/6);
+  ellipse(x, y, r/6, r/6);
 }

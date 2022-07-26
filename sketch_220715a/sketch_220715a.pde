@@ -8,21 +8,20 @@ void setup() {
   size(1112, 834);
   background(100);
 
-  shape1 = new Shape(0, 0, 0, 255, 3, 0, 255, 215, 0, 255, 0, 8);
-  shape2 = new Shape(0, 0, 0, 270, 10, 0, 255, 215, 0, 255, 0, 8);
-  shape3 = new Shape(0, 0, 0, 280, 10, 0, 255, 215, 0, 255, 0, 8);
-  shape4 = new Shape(0, 0, 0, 340, 3, 0, 255, 215, 0, 255, 0, 4);
-  shape5 = new Shape(0, 0, 0, 425, 3, 0, 255, 215, 0, 255, 0, 4);
+  shape1 = new Shape(0, 255, 3, 255, 215, 0, 255, false, 8);
+  shape2 = new Shape(0, 270, 10, 255, 215, 0, 255, false, 8);
+  shape3 = new Shape(0, 280, 10, 255, 215, 0, 255, false, 8);
+  shape4 = new Shape(0, 340, 3, 255, 215, 0, 255, false, 4);
+  shape5 = new Shape(0, 425, 3, 255, 215, 0, 255, false, 4);
 
   lis = new Zodiac[8];
   int c = 0;
-  for (int i=0; i<Zodiac.size(); i++) {
+  for (int i=0; i<lis.length; i++) {
     c += 1;
     if (c>8) {
       c -= 8;
     }
-    zodiac = new Zodiac(c, 0, 0, 2, 20, 255, 255, 255);
-    lis[i] = zodiac;
+    lis[i] = new Zodiac(c, 2, 20, 255, 255, 255);
   }
 
   ang = 0;
@@ -38,14 +37,14 @@ void draw() {
   noFill();
   stroke(255, 215, 0);
   strokeWeight(10);
-  ellipse(0, 0, 200);
+  ellipse(0, 0, 200, 200);
   stroke(255);
-  ellipse(0, 0, 230);
+  ellipse(0, 0, 230, 230);
   stroke(255, 215, 0);
 
   stroke(255, 215, 0);
   strokeWeight(5);
-  ellipse(0, 0, 300);
+  ellipse(0, 0, 300, 300);
 
   strokeWeight(2);
   int amount = 60;
@@ -60,23 +59,23 @@ void draw() {
   }
 
   stroke(255, 215, 0);
-  re(185, 8, 70, 50, 0);
+  re(185, 8, 70, 50, false);
 
   stroke(255);
-  ellipse(0, 0, 320);
-  re(160, 4, 30, 30, 0);
+  ellipse(0, 0, 320, 320);
+  re(160, 4, 30, 30, false);
 
   stroke(255, 215, 0);
   strokeWeight(10);
-  ellipse(0, 0, 380);
+  ellipse(0, 0, 380, 380);
 
   shape1.show(22.5, 0);
   shape2.show(22.5, 0);
   shape3.show(22.5, 0);
 
-  re(250, 8, 70, 50, 1);
+  re(250, 8, 70, 50, true);
 
-  int rune_num = lis.size();
+  int rune_num = lis.length;
   final float w = 60;
   final float h = 8;
   for (int j=0; j<rune_num; j++) {
@@ -88,14 +87,12 @@ void draw() {
 
   for (int i=0; i<rune_num; i++) {
     float ang = 360/(float)rune_num*i;
-    lis[i].Rotate(210, ang);
-    lis[i].show(ang);
+    lis[i].show(210, ang);
   }
 
   for (int i=0; i<rune_num; i++) {
     float ang = 180+360/(float)rune_num*i;
-    lis[i].Rotate(380, ang);
-    lis[i].show(ang);
+    lis[i].show(380, ang);
   }
 
   shape4.show(0, 0);
@@ -115,7 +112,7 @@ void re(float r, int amount, float w, float h, boolean fi) {
   }
 
   for (int j=0; j<amount; j++) {
-    an = radians(360/(float)amount*j);
+    float an = radians(360/(float)amount*j);
     rotate(an);
     rect(-w/2, -r-h, w, h);
     rotate(-an);
