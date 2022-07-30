@@ -1,40 +1,96 @@
-#ifdef GL_ES
-precision mediump float;
-#endif
-uniform vec2 resolution;
+precision highp float;
 uniform float time;
-uniform vec2 mouse;
+uniform vec2 resolution;
 
-const float Pi = 3.14159;
+// params
+// MODE : 0,1,2
+#define MODE 1
+#define SLIDE_SPAN 8.0
+#define ITR 8
+#define SCALE 1.2
+#define COLOR_SMOOTH_MIN 0.1
+#define COLOR_SMOOTH_MAX 0.4
 
-vec3 hsb2rgb(vec3 c ){
-    vec3 rgb = clamp(abs(mod(c.x*6.0+vec3(0.0,4.0,2.0), 6.0)-3.0)-1.0, 0.0, 1.0 );
-    rgb = rgb*rgb*(3.0-2.0*rgb);
-    return c.z * mix(vec3(1.0), rgb, c.y);
+const float PI = acos(-1.);
+
+vec3 hsv(in float h, in float s, in float v) { return ((clamp(abs(fract(h+vec3(0., 2., 1.)/3.0)*6.-3.)-1., 0., 1.)-1.)*s+1.)*v; }
+
+float easeIn(in float t) { return pow(t, 8.); }
+float easeOut(in float t) { return 1.0-easeIn(1.0-t); }
+float easeInOut(in float t) { return t<0.5 ? 0.5*easeIn(t*2.0) : 0.5+0.5*easeOut(t*2.0-1.0); }
+
+mat2 rotate(in float r) { float c=cos(r), s=sin(r); return mat2(c, -s, s, c); }
+vec2 rotate(in vec2 p, in float r) { return rotate(r) * p; }
+vec3 rotate(in vec3 p, in vec3 r) {
+  vec3 q = p;
+  q.xy = rotate(q.xy, r.z);
+  q.yz = rotate(q.yz, r.x);
+  q.zx = rotate(q.zx, r.y);
+  return q;
+}
+
+float hash(in float x) { return fract(sin(x) * 43237.5324); }
+float hash(in vec2 x) { return fract(sin(dot(x, vec2(12.9898, 78.233)))*43237.5324); }
+vec3 hash3(in float x) { return vec3(hash(x), hash(x+100.), hash(10000.)); }
+float noise(in vec2 p) {
+  vec2 f = fract(p);
+  vec2 i = floor(p);
+  vec2 u = f*f*(3.-2.*f);
+  return mix(
+      mix(hash(i+vec2(0., 0.)), hash(i+vec2(1., 0.)), u.x),
+      mix(hash(i+vec2(0., 1.)), hash(i+vec2(1., 1.)), u.x),
+      u.y
+    );
+}
+float noise(in vec3 p) {
+  vec3 f = fract(p);
+  vec3 i = floor(p);
+  vec3 u = f*f*(3.-2.*f);
+  float n = i.x + i.y*53.0 + i.z*117.0;
+  return mix(
+      mix(mix(hash(n+0.), hash(n+1.), u.x), mix(hash(n+53.0), hash(n+54.0), u.x), u.y),
+      mix(mix(hash(n+117.), hash(n+118.), u.x), mix(hash(n+170.0), hash(n+171.0), u.x), u.y),
+      u.z
+    );
+}
+float fbm(in vec3 p) {
+  float res = 0.;
+  res += 0.5000*noise(p); p = rotate(p*2.02, vec3(PI*0.125));
+  res += 0.2500*noise(p); p = rotate(p*2.03, vec3(PI*0.125));
+  res += 0.1250*noise(p); p = rotate(p*2.01, vec3(PI*0.125));
+  res += 0.0625*noise(p);
+  return res;
 }
 
 void main()
 {
-    vec2 fc = gl_FragCoord.xy;
-    vec2 p=(2.0*fc-resolution)/min(resolution.x,resolution.y);
-   p= gl_FragCoord.xy / (resolution) ;
+    vec2 uv = gl_FragCoord.xy / resolution.xy;
+    vec2 p = (gl_FragCoord.xy*2.0-resolution.xy) / min(resolution.x, resolution.y);
+    
+    float t = time*(1./SLIDE_SPAN);
+    uv.x += floor(t) + easeInOut(fract(t));
+    vec2 fuv = fract(uv)*2.0-1.0;
+    vec2 iuv = floor(uv);
 
-    float r = 100.;
-    vec3 c = vec3(smoothstep(r*1.01,r, distance(fc, resolution*0.5) ));
-    vec3 rc = vec3(1.) - c;
-
-    vec2 m =vec2(0.,time);
-    for(int i=1;i<10;i++)
-    {
-        vec2 newp=p;
-        newp.x+=0.6/float(i)*sin(float(i)*p.y+time*0.001/10.0) + m.x/20.0;
-        newp.y+=0.6/float(i)*sin(float(i)*p.x+time*0.001/10.0) - m.y/20.0;
-        p=newp;
+    // render
+    vec3 col = vec3(1.);
+    vec3 v = vec3(fuv + iuv, 0.);
+    for(int i=0;i<ITR;i++) {
+        float fi = float(i);
+        float f = fbm(v);
+        vec2 vxy = MODE==0 ? v.xy*SCALE : (MODE==1 ? v.xy*SCALE+f : v.xy*SCALE*f);
+    	v = vec3(vxy, fi+f+time*0.1);
+        vec3 c = hsv(iuv.x*0.3+f+0.02*fi, 1.0-f*hash(iuv), 1.);
+        col = mix(c, col, smoothstep(COLOR_SMOOTH_MIN, COLOR_SMOOTH_MAX, f));
     }
-    vec3 col =vec3(0.5*sin(p.x*5.0)+0.5);
-    vec3 hsb= hsb2rgb(vec3(0.5*sin(p.x*3.0)+0.5, 1.,1.0) );
+    
+    // frame
+    uv = abs(fuv*vec2(resolution.x/resolution.y, 1.));
+    float r=0.9, w=0.01;
+    vec3 frameCol = vec3(0.98);
+    col = mix(frameCol, col, smoothstep(r, r-w, length(uv)));
+    col = mix(frameCol, col, smoothstep(r, r-w, max(uv.x, uv.y)));
 
-    vec3 res = (col + hsb*0.5) * c +rc* col;
-
-    gl_FragColor=vec4( res  * 1.5, 1.0);
+    // Output to screen
+    gl_FragColor = vec4(col,1.0);
 }
