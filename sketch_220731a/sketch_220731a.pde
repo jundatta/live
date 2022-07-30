@@ -3,8 +3,8 @@
 PShader s;
 
 void setup() {
-  size(787, 442, P3D);
-  //size(500, 800, P3D);
+  //size(787, 442, P3D);
+  size(500, 800, P3D);
   noStroke();
   s = loadShader("data/neort.glsl");
   s.set("resolution", width, height);

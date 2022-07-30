@@ -65,7 +65,6 @@ float fbm(in vec3 p) {
 void main()
 {
     vec2 uv = gl_FragCoord.xy / resolution.xy;
-    vec2 p = (gl_FragCoord.xy*2.0-resolution.xy) / min(resolution.x, resolution.y);
     
     float t = time*(1./SLIDE_SPAN);
     uv.x += floor(t) + easeInOut(fract(t));
