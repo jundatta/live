@@ -8,6 +8,9 @@ void setup() {
   noStroke();
   s = loadShader("data/neort.glsl");
   s.set("resolution", width, height);
+  float aspect = (float)width / (float)height;
+  s.set("uniformAspect", aspect);
+  s.set("uniformInverseAspect", 1.0f / aspect);
 }
 
 void draw() {
