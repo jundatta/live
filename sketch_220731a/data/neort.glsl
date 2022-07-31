@@ -64,13 +64,14 @@ float fbm(in vec3 p) {
 
 void main()
 {
-    vec2 uv = gl_FragCoord.xy / resolution.xy;
+    vec2 uv = gl_FragCoord.xy / resolution.xy;	// 0.0 <= uv <= 1.0かにゃ？
     
     float t = time*(1./SLIDE_SPAN);
     uv.x += floor(t) + easeInOut(fract(t));
-    vec2 fuv = fract(uv)*2.0-1.0;
-    vec2 iuv = floor(uv);
-
+    vec2 fuv = fract(uv)*2.0-1.0;	// -1.0 < fuv < 1.0 であってる？
+    fuv *= 1.0 / (resolution.x / resolution.y);	// 逆数？
+    vec2 iuv = floor(uv);	// 色が変わる！！（とりあえず円の大きさには無関係(^_^)）
+    
     // render
     vec3 col = vec3(1.);
     vec3 v = vec3(fuv + iuv, 0.);
@@ -86,7 +87,7 @@ void main()
     // frame
     uv = abs(fuv*vec2(resolution.x/resolution.y, 1.));
     float r=0.9, w=0.01;
-    vec3 frameCol = vec3(0.98);
+    vec3 frameCol = vec3(0.98);	// 淡い白？
     col = mix(frameCol, col, smoothstep(r, r-w, length(uv)));
     col = mix(frameCol, col, smoothstep(r, r-w, max(uv.x, uv.y)));
 
