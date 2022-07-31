@@ -15,8 +15,8 @@ PImage back = new PImage();
 PVector[] hits;
 
 void setup() {
-  size(600, 600);
-  frameRate(60);
+  size(500, 800, P3D);
+  colorMode(HSB);
 
   // Load Image
   back = loadImage("background.jpg");
@@ -26,9 +26,8 @@ void setup() {
 }
 
 void draw() {
-  //background(0, 40, 100);
   imageMode(CENTER);
-  image(back, width/2, height/2);
+  image(back, width/2, height/2, height, height);
 
   // Mouse Speed
   ms = new PVector(mouseX - pmouseX, mouseY - pmouseY);
@@ -363,7 +362,6 @@ class Smoke {
 
   void display() {
     noStroke();
-    colorMode(HSB);
     fill(100, life*0.5);
     ellipse(pPos.x, pPos.y, 10-life/30, 10-life/30);
   }
