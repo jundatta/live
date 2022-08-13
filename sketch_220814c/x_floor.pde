@@ -1,3 +1,19 @@
+class Next {
+  String[] trees;
+}
+
+class Data {
+  String name;
+  float mat;
+  PVector[] vertices;
+}
+
+class Floor {
+  String id;
+  Next next;
+  Data data;
+}
+
 function getFloorData() {
   return [ {
   "id":

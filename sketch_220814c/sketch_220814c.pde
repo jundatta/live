@@ -1,5 +1,15 @@
 // https://openprocessing.org/sketch/1251077
 
+class Models {
+  ArrayList<Floor> floor;
+  ArrayList<Trees> trees;
+  ArrayList<Base> base;
+  ArrayList<Door> door;
+  ArrayList<Win> win;
+  ArrayList<Roof> roof;
+  ArrayList<Roofaddon> roofaddon;
+  ArrayList<Top> top;
+}
 let models = {};
 let arch = {};
 let ui = {
