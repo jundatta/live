@@ -11,7 +11,7 @@ class Roof {
   String id;
   RoofNext next;
   ArrayList<Data> data;
-  Base(String id, RoofNext next, ArrayList<Data> data) {
+  Roof(String id, RoofNext next, ArrayList<Data> data) {
     this.id = id;
     this.next = next;
     this.data = data;

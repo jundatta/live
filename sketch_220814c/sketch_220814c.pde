@@ -10,7 +10,11 @@ class Models {
   ArrayList<Roofaddon> roofaddon;
   ArrayList<Top> top;
 }
-let models = {};
+Models models = new Models();
+
+class Arch {
+  float floor;
+}
 let arch = {};
 let ui = {
   shading:

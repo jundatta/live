@@ -1,7 +1,7 @@
 class Door {
   String id;
   ArrayList<Data> data;
-  Floor(String id, ArrayList<Data> data) {
+  Door(String id, ArrayList<Data> data) {
     this.id = id;
     this.data = data;
   }
