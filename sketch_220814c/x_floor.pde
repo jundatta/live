@@ -39,16 +39,16 @@ ArrayList<Floor> getFloorData() {
   ArrayList<Floor> p = new ArrayList();
 
   t = new ArrayList();
-  t.add("trees-0");
-  t.add("trees-1");
-  t.add("trees-2");
-  t.add("trees-3");
-  t.add("trees-4");
-  t.add("trees-5");
-  t.add("empty");
-  t.add("empty");
-  t.add("empty");
-  t.add("empty");
+  t.add("trees-0"); 
+  t.add("trees-1"); 
+  t.add("trees-2"); 
+  t.add("trees-3"); 
+  t.add("trees-4"); 
+  t.add("trees-5"); 
+  t.add("empty"); 
+  t.add("empty"); 
+  t.add("empty"); 
+  t.add("empty"); 
   n = new FloorNext(t);
 
   dd = new ArrayList();
@@ -66,16 +66,16 @@ ArrayList<Floor> getFloorData() {
 
 
   t = new ArrayList();
-  t.add("trees-0");
-  t.add("trees-1");
-  t.add("trees-2");
-  t.add("trees-3");
-  t.add("trees-4");
-  t.add("trees-5");
-  t.add("empty");
-  t.add("empty");
-  t.add("empty");
-  t.add("empty");
+  t.add("trees-0"); 
+  t.add("trees-1"); 
+  t.add("trees-2"); 
+  t.add("trees-3"); 
+  t.add("trees-4"); 
+  t.add("trees-5"); 
+  t.add("empty"); 
+  t.add("empty"); 
+  t.add("empty"); 
+  t.add("empty"); 
   n = new FloorNext(t);
 
   dd = new ArrayList();
@@ -101,16 +101,16 @@ ArrayList<Floor> getFloorData() {
 
 
   t = new ArrayList();
-  t.add("trees-0");
-  t.add("trees-1");
-  t.add("trees-2");
-  t.add("trees-3");
-  t.add("trees-4");
-  t.add("trees-5");
-  t.add("empty");
-  t.add("empty");
-  t.add("empty");
-  t.add("empty");
+  t.add("trees-0"); 
+  t.add("trees-1"); 
+  t.add("trees-2"); 
+  t.add("trees-3"); 
+  t.add("trees-4"); 
+  t.add("trees-5"); 
+  t.add("empty"); 
+  t.add("empty"); 
+  t.add("empty"); 
+  t.add("empty"); 
   n = new FloorNext(t);
 
   dd = new ArrayList();
