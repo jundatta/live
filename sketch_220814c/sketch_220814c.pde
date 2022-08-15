@@ -13,50 +13,23 @@ class Models {
 Models models = new Models();
 
 class Arch {
-  float floor;
+  int floor;
+  int trees;
+  int base;
+  int door;
+  int win;
+  int roof;
+  int roofaddon;
+  int top;
 }
-let arch = {};
-let ui = {
-  shading:
-0,
-  isLineJittering:
-true,
-  isLineExtended:
-true
-  }; // 0: shaded, 1: filled, 2: lines only, 3: darker
-let materials;
-let bgCol = [
-  [234, 219, 200],
-  [234, 219, 200],
-  [234, 219, 200],
-  [37, 73, 99]
-];
-let strCol = [0, 0, 0, 255];
-let gui;
+Arch arch;
 
-function setup() {
-  createCanvas(windowWidth, windowHeight, WEBGL);
-  cam = createCamera();
-  cam.perspective(PI * 0.48, width / height);
-  cam.setPosition(0, -50, 500);
-  cam.lookAt(0, -200, 0);
-  frameRate(12);
+ArrayList<IntList> materials;
+color bgCol = color(234, 219, 200);
+color strCol = color(0);
 
-  gui = new dat.gui.GUI();
-  gui.add(ui, 'shading', {
-  shaded:
-    0,
-    white:
-    1,
-    "lines only":
-    2,
-    inverted:
-    3
-  }
-  );
-  gui.add(ui, 'isLineExtended');
-  gui.add(ui, 'isLineJittering');
-  gui.add(ui, 'generate');
+void setup() {
+  size(1112, 834, P3D);
 
   models.floor = getFloorData();
   models.trees = getTreesData();
@@ -68,40 +41,104 @@ function setup() {
   models.top = getTopData();
   materials = getMaterialsData();
 
-  ui.generate();
+  generate();
 }
 
-ui.generate = function() {
-  arch = {};
+void generate() {
+  arch = new Arch();
 
   arch.floor = 0; //Math.floor(Math.random() * models.floor.length);
 
-  if (models.floor[arch.floor].next) {
-    for (let key in models.floor[arch.floor].next) {
-      arch[key] = getNext(models.floor[arch.floor].next[key], key);
-    }
+  arch.trees = 1000;
+  if (0 < models.floor.get(arch.floor).next.trees.size()) {
+    arch.trees = getNextTrees(models.floor.get(arch.floor).next.trees, models.trees);
   }
 
-  arch.base = Math.floor(Math.random() * models.base.length);
+  arch.base = (int)Math.floor(Math.random() * models.base.size());
 
-  if (models.base[arch.base].next) {
-    for (let key in models.base[arch.base].next) {
-      arch[key] = getNext(models.base[arch.base].next[key], key);
-    }
+  arch.door = 1000;
+  if (0 < models.base.get(arch.base).next.door.size()) {
+    arch.door = getNextDoor(models.base.get(arch.base).next.door, models.door);
+  }
+  arch.win = 1000;
+  if (0 < models.base.get(arch.base).next.win.size()) {
+    arch.win = getNextWin(models.base.get(arch.base).next.win, models.win);
+  }
+  arch.roof = 1000;
+  if (0 < models.base.get(arch.base).next.roof.size()) {
+    arch.roof = getNextRoof(models.base.get(arch.base).next.roof, models.roof);
   }
 
-  if (models.roof[arch.roof].next) {
-    for (let key in models.roof[arch.roof].next) {
-      arch[key] = getNext(models.roof[arch.roof].next[key], key);
-    }
+  arch.roofaddon = 1000;
+  if (0 < models.roof.get(arch.roof).next.roofaddon.size()) {
+    arch.roofaddon = getNextRoofaddon(models.roof.get(arch.roof).next.roofaddon, models.roofaddon);
+  }
+  arch.top = 1000;
+  if (0 < models.roof.get(arch.roof).next.top.size()) {
+    arch.top = getNextTop(models.roof.get(arch.roof).next.top, models.top);
   }
 }
 
-function getNext(pArray, pKey) {
-  let myName = pArray[Math.floor(Math.random() * pArray.length)];
-  let myIdx = 1000;
-  for (let i = 0; i < models[pKey].length; i += 1) {
-    if (models[pKey][i].id === myName) {
+int getNextTrees(ArrayList<String> pArray, ArrayList<Trees> model) {
+  String myName = pArray.get((int)Math.floor(Math.random() * pArray.size()));
+  int myIdx = 1000;
+  for (int i = 0; i < model.size(); i += 1) {
+    if (model.get(i).id.equals(myName)) {
+      myIdx = i;
+      break;
+    }
+  }
+  return myIdx;
+}
+int getNextDoor(ArrayList<String> pArray, ArrayList<Door> model) {
+  String myName = pArray.get((int)Math.floor(Math.random() * pArray.size()));
+  int myIdx = 1000;
+  for (int i = 0; i < model.size(); i += 1) {
+    if (model.get(i).id.equals(myName)) {
+      myIdx = i;
+      break;
+    }
+  }
+  return myIdx;
+}
+int getNextWin(ArrayList<String> pArray, ArrayList<Win> model) {
+  String myName = pArray.get((int)Math.floor(Math.random() * pArray.size()));
+  int myIdx = 1000;
+  for (int i = 0; i < model.size(); i += 1) {
+    if (model.get(i).id.equals(myName)) {
+      myIdx = i;
+      break;
+    }
+  }
+  return myIdx;
+}
+int getNextRoof(ArrayList<String> pArray, ArrayList<Roof> model) {
+  String myName = pArray.get((int)Math.floor(Math.random() * pArray.size()));
+  int myIdx = 1000;
+  for (int i = 0; i < model.size(); i += 1) {
+    if (model.get(i).id.equals(myName)) {
+      myIdx = i;
+      break;
+    }
+  }
+  return myIdx;
+}
+int getNextRoofaddon(ArrayList<String> pArray, ArrayList<Roofaddon> model) {
+  String myName = pArray.get((int)Math.floor(Math.random() * pArray.size()));
+  int myIdx = 1000;
+  for (int i = 0; i < model.size(); i += 1) {
+    if (model.get(i).id.equals(myName)) {
+      myIdx = i;
+      break;
+    }
+  }
+  return myIdx;
+}
+int getNextTop(ArrayList<String> pArray, ArrayList<Top> model) {
+  String myName = pArray.get((int)Math.floor(Math.random() * pArray.size()));
+  int myIdx = 1000;
+  for (int i = 0; i < model.size(); i += 1) {
+    if (model.get(i).id.equals(myName)) {
       myIdx = i;
       break;
     }
@@ -109,63 +146,68 @@ function getNext(pArray, pKey) {
   return myIdx;
 }
 
-function draw() {
-  // background(234, 219, 200);
-  background(bgCol[ui.shading][0], bgCol[ui.shading][1], bgCol[ui.shading][2]);
-  orbitControl(3, 2, 0);
-  // drawShape(models.trees[0]);
-  if (arch.floor < 1000) drawShape(models.floor[arch.floor]);
-  if (arch.trees < 1000) drawShape(models.trees[arch.trees]);
-  if (arch.base < 1000) drawShape(models.base[arch.base]);
-  if (arch.door < 1000) drawShape(models.door[arch.door]); // drawShape(xbasedoor[1]);
-  if (arch.win < 1000) drawShape(models.win[arch.win]); // drawShape(xbasewins[3]);
-  if (arch.roof < 1000) drawShape(models.roof[arch.roof]); // drawShape(xroof[0]);
-  if (arch.roofaddon < 1000) drawShape(models.roofaddon[arch.roofaddon]); // drawShape(xroofaddon[0]);
-  if (arch.top < 1000) drawShape(models.top[arch.top]); // drawShape(xtop[1]);
+void draw() {
+  translate(width/2, height/2);
+
+  rotateX(-PI/6.0f);
+  rotateY(PI/6.0f);
+
+  background(bgCol);
+  //orbitControl(3, 2, 0);
+  if (arch.floor < 1000) drawShape(models.floor.get(arch.floor).data);
+  if (arch.trees < 1000) drawShape(models.trees.get(arch.trees).data);
+  if (arch.base < 1000) drawShape(models.base.get(arch.base).data);
+  if (arch.door < 1000) drawShape(models.door.get(arch.door).data);
+  if (arch.win < 1000) drawShape(models.win.get(arch.win).data);
+  if (arch.roof < 1000) drawShape(models.roof.get(arch.roof).data);
+  if (arch.roofaddon < 1000) drawShape(models.roofaddon.get(arch.roofaddon).data);
+  if (arch.top < 1000) drawShape(models.top.get(arch.top).data);
 }
 
-function drawShape(pShape) {
-  let m = 70;
+void drawShape(ArrayList<Data> pShape) {
+  float m = 70;
   noStroke();
-  for (let i = 0; i < pShape.data.length; i += 1) {
-    pShape.data[i].tess ? beginShape(TESS) : beginShape();
-    for (let j = 0; j < pShape.data[i].vertices.length; j += 1) {
-      let myMat = materials[ui.shading][pShape.data[i].mat];
-      fill(myMat[0], myMat[1], myMat[2], myMat[3]);
-      if (!pShape.data[i].mat) noFill();
-      vertex(pShape.data[i].vertices[j][0] * m, pShape.data[i].vertices[j][1] * m, pShape.data[i].vertices[j][2] * m);
+  for (int i = 0; i < pShape.size(); i += 1) {
+    beginShape();
+    for (int j = 0; j < pShape.get(i).vertices.size(); j += 1) {
+      color myMat = materials.get(0).get(pShape.get(i).mat);
+      fill(myMat);
+      if (pShape.get(i).mat == 0) noFill();
+      PVector v = pShape.get(i).vertices.get(j);
+      vertex(v.x * m, v.y * m, v.z * m);
     }
     endShape();
   }
 
-  for (let i = 0; i < pShape.data.length; i += 1) {
-    pShape.data[i].vertices.push(pShape.data[i].vertices[0]);
-    for (let j = 0; j < pShape.data[i].vertices.length - 1; j += 1) {
+  for (int i = 0; i < pShape.size(); i += 1) {
+    Data data = pShape.get(i);
+    data.vertices.add(data.vertices.get(0));
+    for (int j = 0; j < data.vertices.size() - 1; j += 1) {
       push();
       strokeWeight(3);
-      stroke(strCol[ui.shading]);
-      let p1 = createVector(pShape.data[i].vertices[j][0] * m, pShape.data[i].vertices[j][1] * m, pShape.data[i].vertices[j][2] * m);
-      let p2 = createVector(pShape.data[i].vertices[j + 1][0] * m, pShape.data[i].vertices[j + 1][1] * m, pShape.data[i].vertices[j + 1][2] * m);
-      let p3 = p5.Vector.sub(p2, p1);
-      let rnd = 0.15;
-      if (ui.isLineJittering) {
-        rnd = Math.random() * 0.15;
-        let prnd1 = createVector(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1);
-        let prnd2 = createVector(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1);
+      stroke(strCol);
+      PVector vj0 = data.vertices.get(j);
+      PVector p1 = new PVector(vj0.x * m, vj0.y * m, vj0.z * m);
+      PVector vj1 = data.vertices.get(j+1);
+      PVector p2 = new PVector(vj1.x * m, vj1.y * m, vj1.z * m);
+      PVector p3 = PVector.sub(p2, p1);
+      float rnd = 0.15;
+      rnd = random(1) * 0.15;
+      PVector prnd1 = new PVector(random(1) * 2 - 1, random(1) * 2 - 1, random(1) * 2 - 1);
+      PVector prnd2 = new PVector(random(1) * 2 - 1, random(1) * 2 - 1, random(1) * 2 - 1);
 
-        p1.add(prnd1);
-        p2.add(prnd2);
-      }
-      let r1 = createVector(rnd, rnd, rnd);
-      p3.mult(r1);
-      if (ui.isLineExtended) {
-        p2.add(p3);
-        p1.sub(p3);
-      }
+      p1.add(prnd1);
+      p2.add(prnd2);
+      p3.mult(rnd);
+      p2.add(p3);
+      p1.sub(p3);
 
       line(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z);
       pop();
     }
-    pShape.data[i].vertices.pop();
+    data.vertices.remove(0);
   }
+}
+void mousePressed() {
+  generate();
 }
