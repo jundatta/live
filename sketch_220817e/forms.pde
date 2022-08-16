@@ -14,6 +14,11 @@ void ring(float i, float t, PMatrix2D aMatrix,
   float arcStart = noise(5, i/rings) * PI*2;
   float arcEnd = arcStart + noise(aRandomNumber + i)*PI*2;
 
+  if (arcEnd < arcStart) {
+    float temp = arcStart;
+    arcStart = arcEnd;
+    arcEnd = temp;
+  }
   arc(width/2, height/2, ringSize, ringSize, arcStart, arcEnd);
 }
 
@@ -28,6 +33,11 @@ void fadeRing(float i, float s, float rings, float ringSize, color[] colors, col
 
   stroke(c);
   strokeWeight(map(noise(i), 0, 1, relSize(1), relSize(200)));
+  if (arcEnd < arcStart) {
+    float temp = arcStart;
+    arcStart = arcEnd;
+    arcEnd = temp;
+  }
   arc(width / 2, height / 2, r, r, arcStart, arcEnd);
 }
 
@@ -80,6 +90,11 @@ void streaks(float i, float t, float rings, float ringSize, color c, color[] col
 
   final float rs = ringSize * (noise(ringIndex) + 0.5);
 
+  if (arcEnd < arcStart) {
+    float temp = arcStart;
+    arcStart = arcEnd;
+    arcEnd = temp;
+  }
   arc(width/2, height/2, P5JS.randomGaussian(rs, relSize(15)), P5JS.randomGaussian(rs, relSize(15)), arcStart, arcEnd);
   pop();
 }
