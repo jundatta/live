@@ -41,6 +41,7 @@ float shearAmount;
 final boolean forceIE = false;
 
 void setup() {
+  P5JS.setup(this);
   size(1112, 834);
 
   reset();
@@ -51,22 +52,22 @@ void setup() {
 void reset() {
   // seeds and arbitrary stuff
   aRandomNumber = random(1000);
-  aMatrix = utils.getMatrix(0.01);
+  aMatrix = getMatrix(0.01);
 
   // stuff about shapes
   rings = random(50, 150);
-  ringSize = utils.relSize(random(250, 600));
+  ringSize = relSize(random(250, 600));
   startAngle = random(PI*2);
 
   shearAmount = random(-0.1, 0.1) * PI;
 
   // stuff about colors
-  mainColor = random(colors);
-  streakColor = random(colors);
+  mainColor = P5JS.random(colors);
+  streakColor = P5JS.random(colors);
 
   accentColor = mainColor;
   while (mainColor == accentColor) {
-    accentColor = random(colors);
+    accentColor = P5JS.random(colors);
   }
 
   if (forceIE) {
@@ -77,34 +78,34 @@ void reset() {
   }
 }
 
-function drawRing(i) {
-  ring(i, t, aMatrix, aRandomNumber, rings, ringSize, colors, mainColor)
+void drawRing(float i) {
+  ring(i, t, aMatrix, aRandomNumber, rings, ringSize, colors, mainColor);
 }
-function drawFadedArc(i) {
-  fadeRing(i, s, rings, ringSize, colors, mainColor)
+void drawFadedArc(float i) {
+  fadeRing(i, s, rings, ringSize, colors, mainColor);
 }
-function drawFlecks(i) {
+void drawFlecks(float i) {
   flecks(i, t, ringSize, startAngle, accentColor, colors);
 }
-function drawLines(i) {
-  gridLines(i, s, ringSize, startAngle, accentColor)
+void drawLines(float i) {
+  gridLines(i, s, ringSize, startAngle, accentColor);
 }
-function drawStreaks(i) {
-  streaks(i, t, rings, ringSize, streakColor, colors)
+void drawStreaks(float i) {
+  streaks(i, t, rings, ringSize, streakColor, colors);
 }
 
 
-function draw() {
+void draw() {
   clear();
   background(0);
-  t = Math.sin(frameCount/80.0f);
-  s = Math.cos(frameCount/60.0f);
+  t = sin(frameCount/80.0f);
+  s = cos(frameCount/60.0f);
 
   // setting the randomSeed to the same arbitrary number every draw
   // is what keeps the randomized elements in the same places
   // without having to save their location
   // you just have to make sure you call random() the same number of times
-  randomSeed(aRandomNumber);
+  randomSeed((long)aRandomNumber);
 
   shearX(shearAmount);
   translate(width * (-shearAmount/2.0f), 0); // wild that this works
@@ -113,8 +114,8 @@ function draw() {
     push();
 
     translate(
-      map(noise(index/rings, 1), 0, 1, utils.relSize(minShift), utils.relSize(maxShift)),
-      map(noise(1, index/rings), 0, 1, utils.relSize(minShift), utils.relSize(maxShift))
+      map(noise(index/rings, 1), 0, 1, relSize(minShift), relSize(maxShift)),
+      map(noise(1, index/rings), 0, 1, relSize(minShift), relSize(maxShift))
       ); // jiggle the canvas around
 
     drawRing(index);
@@ -141,5 +142,11 @@ function draw() {
 }
 
 void mouseReleased() {
-  reset();
+  if (millis() - lapse > 200) {
+    clear();
+    noiseSeed((long)random(1000));
+    reset();
+    redraw();
+  }
+  lapse = millis();
 }
