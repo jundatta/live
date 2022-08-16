@@ -17,25 +17,25 @@ void ring(float i, float t, PMatrix2D aMatrix,
 }
 
 // the main blurry shape
-function fadeRing(i, s, rings, ringSize, colors, c) {
-  let arcStart = noise(i, i / rings) * PI * 2;
-  let arcEnd = arcStart - random(PI * 0.5);
+void fadeRing(float i, float s, float rings, float ringSize, color[] colors, color c) {
+  float arcStart = noise(i, i / rings) * PI * 2;
+  float arcEnd = arcStart - random(PI * 0.5);
   c = random() < 0.3 ? random(colors) : c;
-  const r = map(noise(s+i), 0, 1, ringSize*0.75, ringSize*1.25);
+  final float r = map(noise(s+i), 0, 1, ringSize*0.75, ringSize*1.25);
 
   c.setAlpha(100/rings);
 
   stroke(c);
-  strokeWeight(map(noise(i), 0, 1, utils.relSize(1), utils.relSize(200)))
+  strokeWeight(map(noise(i), 0, 1, utils.relSize(1), utils.relSize(200)));
     arc(width / 2, height / 2, r, r, arcStart, arcEnd);
 }
 
 // look, i know glitter lost, but, glitter
-function flecks(i, t, ringSize, startAngle, c, colors) {
-  const v = createVector(0, ringSize/2);
+void flecks(float i, float t, float ringSize, float startAngle, color c, color[] colors) {
+  final PVector v = new PVector(0, ringSize/2);
   // why didn't anyone tell me circle math is so much easier with vectors
-  v.rotate((noise(i/5) * 3*PI)+ startAngle);
-  v.setMag(randomGaussian(ringSize/2, ringSize/10));
+  v.rotate((noise(i/5.0f) * 3*PI)+ startAngle);
+  v.setMag(randomGaussian(ringSize/2, ringSize/10.0f));
   v.add(width/2, height/2);
 
   c = random() > 0.3 ? c : random(colors);
@@ -43,12 +43,12 @@ function flecks(i, t, ringSize, startAngle, c, colors) {
 
   fill(c);
   noStroke();
-  const r = map(noise(i/5 + 0.1), 0, 1, utils.relSize(0.5), utils.relSize(25));
+  final float r = map(noise(i/5 + 0.1), 0, 1, utils.relSize(0.5), utils.relSize(25));
 
   push();
   rectMode(CENTER);
   translate(v.x, v.y);
-  rotate(PI/4);
+  rotate(PI/4.0f);
 
   if (noise(i*5, t*5) > 0.2) {
     ellipse(0, 0, r, r);
@@ -61,23 +61,23 @@ function flecks(i, t, ringSize, startAngle, c, colors) {
 }
 
 // the "ridges" so to speak
-function streaks(i, t, rings, ringSize, c, colors) {
-  const streakOffset = 40;
+void streaks(float i, float t, float rings, float ringSize, color c, color[] colors) {
+  final float streakOffset = 40;
   push();
-  const ringIndex = floor(i/25);
-  const offsetX = map(noise(ringIndex), 0, 1, -utils.relSize(streakOffset), utils.relSize(streakOffset));
-  const offsetY = map(noise(1000 + ringIndex), 0, 1, -utils.relSize(streakOffset), utils.relSize(streakOffset));
+  final float ringIndex = floor(i/25.0f);
+  final float offsetX = map(noise(ringIndex), 0, 1, -utils.relSize(streakOffset), utils.relSize(streakOffset));
+  final float offsetY = map(noise(1000 + ringIndex), 0, 1, -utils.relSize(streakOffset), utils.relSize(streakOffset));
   translate(offsetX, offsetY);
   c = random() < 0.1 ? random(colors) : c;
   c.setAlpha(100);
   stroke(c);
-  strokeWeight(map(noise(i/rings), 0, 1, utils.relSize(1), utils.relSize(4)))
+  strokeWeight(map(noise(i/rings), 0, 1, utils.relSize(1), utils.relSize(4)));
     noFill();
 
-  let arcStart = (noise(5, ringIndex)+ fract(t / ringIndex)/3) * PI*2;
-  let arcEnd = arcStart + (PI * 2 * noise(20, ringIndex));
+  float arcStart = (noise(5, ringIndex)+ fract(t / ringIndex)/3.0f) * PI*2;
+  float arcEnd = arcStart + (PI * 2 * noise(20, ringIndex));
 
-  const rs = ringSize * (noise(ringIndex) + 0.5);
+  final float rs = ringSize * (noise(ringIndex) + 0.5);
 
   arc(width/2, height/2, randomGaussian(rs, utils.relSize(15)), randomGaussian(rs, utils.relSize(15)), arcStart, arcEnd);
   pop();
@@ -85,12 +85,12 @@ function streaks(i, t, rings, ringSize, c, colors) {
 
 
 // the "grid lines" so to speak
-function gridLines(i, s, ringSize, startAngle, c) {
-  const v = createVector(0, ringSize/2);
-  v.rotate((fract(i/130) * 2*PI) + floor(startAngle * s/3));
-  v.setMag(map(noise(floor(i/12), s), 0, 1, ringSize/10, ringSize*0.85));
+void gridLines(float i, float s, float ringSize, float startAngle, color c) {
+  final PVector v = new PVector(0, ringSize/2.0f);
+  v.rotate((fract(i/130.0f) * 2*PI) + floor(startAngle * s/3.0f));
+  v.setMag(map(noise(floor(i/12.0f), s), 0, 1, ringSize/10.0f, ringSize*0.85));
 
-  const v2 = v.copy();
+  final PVector v2 = v.copy();
   v2.mult(random() > 0.1 ? 0.8 : 1.2);
 
   v.add(width/2, height/2);
@@ -100,7 +100,7 @@ function gridLines(i, s, ringSize, startAngle, c) {
 
   noFill();
   stroke(c);
-  const w = map(noise(i/5 + 0.1), 0, 1, utils.relSize(0.5), utils.relSize(5));
+  final float w = map(noise(i/5 + 0.1), 0, 1, utils.relSize(0.5), utils.relSize(5));
   strokeWeight(w);
   line(v.x, v.y, v2.x, v2.y);
 }
