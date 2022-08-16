@@ -1,15 +1,16 @@
 // this would better be described as highlight arcs
-function ring(i, t, aMatrix, aRandomNumber, rings, ringSize, colors, c) {
-  c = random() < 0.3 ? random(colors) : c;
+void ring(float i, float t, PMatrix2D aMatrix,
+  float aRandomNumber, float rings, float ringSize, color[] colors, color c) {
+  c = random(1) < 0.3 ? random(colors) : c;
   c.setAlpha(map(1/rings, 0, 0.2, 0, 40));
 
   stroke(c);
   noFill();
 
-  applyMatrix(...aMatrix);
-  strokeWeight(map(noise(i/rings, t), 0, 1, utils.relSize(1), utils.relSize(20)))
+  applyMatrix(aMatrix);
+  strokeWeight(map(noise(i/rings, t), 0, 1, utils.relSize(1), utils.relSize(20)));
 
-    let arcStart = noise(5, i/rings) * PI*2;
+  let arcStart = noise(5, i/rings) * PI*2;
   let arcEnd = arcStart + noise(aRandomNumber + i)*PI*2;
 
   arc(width/2, height/2, ringSize, ringSize, arcStart, arcEnd);

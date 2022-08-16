@@ -20,35 +20,6 @@ function(a, b) {
   return Math.floor(random(a, b))
 }
 ,
-
-  standardCanvas:
-function(override = false) {
-  let smallerDimension = windowWidth < windowHeight ? windowWidth : windowHeight;
-  smallerDimension -= 20; // for padding
-  if (override) {
-    smallerDimension = override;
-  }
-
-  return createCanvas(smallerDimension, smallerDimension);
-}
-,
-  standardKeyPressed:
-function() {
-
-  if (frameStandard > 30) {
-    frameStandard = floor(frameRate());
-  }
-
-  if (key === "s") {
-    save()
-  }
-  if (key === "p") {
-    frameRate(isPaused ? 30 : 0);
-    isPaused = !isPaused;
-    console.log(isPaused);
-  }
-}
-,
   standardMouseReleasedFactory:
 function(resetFunction) {
   return function() {

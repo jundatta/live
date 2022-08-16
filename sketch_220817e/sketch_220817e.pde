@@ -8,54 +8,47 @@
 
 // This week: Void
 
-let ringSize;
-let mainColor;
-let accentColor;
-let streakColor;
-let colors;
+float ringSize;
+color mainColor;
+color accentColor;
+color streakColor;
+color[] colors = { // manually set to some colors i thought fit the vibe
+  #ff3311,
+  #1166ff,
+  #6633ff,
+  #ee6611,
+  color(50, 205, 209),
+  color(120, 5, 205),
+  color(211, 73, 39),
+  color(254, 232, 20)
+};
 
-let rings = 100;
-const minShift = -100;
-const maxShift = 100;
+float rings = 100;
+final float minShift = -100;
+final float maxShift = 100;
 
-let t; // sin time
-let s; // cosine time
-let aRandomNumber; // for seeds
-let aMatrix; // for weirdness
+float t; // sin time
+float s; // cosine time
+float aRandomNumber; // for seeds
+PMatrix2D aMatrix; // for weirdness
 
-let startAngle = 0;
+float startAngle = 0;
 
-let shearAmount;
+float shearAmount;
 
 // despite what it sounds like, this is NOT for cross-browser support!
 // https://twitter.com/clarabellum/status/1442906188576804865
-const forceIE = false;
+final boolean forceIE = false;
 
-function setup() {
-  utils.standardCanvas();
-
-  colors = [ // manually set to some colors i thought fit the vibe
-    '#ff3311',
-    '#1166ff',
-    '#6633ff',
-    '#ee6611',
-    'rgb(50, 205, 209)',
-    'rgb(120, 5, 205)',
-    'rgb(211, 73, 39)',
-    'rgb(254, 232, 20)'
-  ];
-
-  colors = colors.map((c) =>  color(c)); // get p5 versions
+void setup() {
+  size(1112, 834);
 
   reset();
-  window.mouseReleased = utils.standardMouseReleasedFactory(reset);
-  window.keyPressed = utils.standardKeyPressed;
   blendMode(ADD);
   strokeCap(SQUARE);
 }
 
-
-function reset() {
+void reset() {
   // seeds and arbitrary stuff
   aRandomNumber = random(1000);
   aMatrix = utils.getMatrix(0.01);
@@ -75,7 +68,6 @@ function reset() {
   while (mainColor == accentColor) {
     accentColor = random(colors);
   }
-
 
   if (forceIE) {
     mainColor = colors[1];
@@ -105,8 +97,8 @@ function drawStreaks(i) {
 function draw() {
   clear();
   background(0);
-  t = Math.sin(frameCount/80);
-  s = Math.cos(frameCount/60);
+  t = Math.sin(frameCount/80.0f);
+  s = Math.cos(frameCount/60.0f);
 
   // setting the randomSeed to the same arbitrary number every draw
   // is what keeps the randomized elements in the same places
@@ -115,9 +107,9 @@ function draw() {
   randomSeed(aRandomNumber);
 
   shearX(shearAmount);
-  translate(width * (-shearAmount/2), 0); // wild that this works
+  translate(width * (-shearAmount/2.0f), 0); // wild that this works
 
-  for (let index = 0; index < rings; index++) {
+  for (float index = 0; index < rings; index++) {
     push();
 
     translate(
@@ -137,17 +129,17 @@ function draw() {
   // these I don't want jiggled
   // i want them twisted slightly in a consistent way.
   // hence, ...aMatrix.
-  applyMatrix(...aMatrix);
+  applyMatrix(aMatrix);
 
   // btw, i think in openProcessing you can just say applyMatrix(aMatrix)
   // but in my env you need to spread the matrix because webpack is stricter I guess
 
-  for (let index = 0; index < rings; index++) {
+  for (float index = 0; index < rings; index++) {
     drawStreaks(index);
     drawLines(index);
   }
+}
 
-  // oh, and just to troll the OG generative artists
-  // draw function returns void!
-  return "void";
+void mouseReleased() {
+  reset();
 }
