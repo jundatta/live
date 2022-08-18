@@ -15,9 +15,7 @@ void ring(float i, float t, PMatrix2D aMatrix,
   float arcEnd = arcStart + noise(aRandomNumber + i)*PI*2;
 
   if (arcEnd < arcStart) {
-    float temp = arcStart;
-    arcStart = arcEnd;
-    arcEnd = temp;
+    arcEnd += TWO_PI;
   }
   arc(width/2, height/2, ringSize, ringSize, arcStart, arcEnd);
 }
@@ -29,14 +27,18 @@ void fadeRing(float i, float s, float rings, float ringSize, color[] colors, col
   c = random(1) < 0.3 ? P5JS.random(colors) : c;
   final float r = map(noise(s+i), 0, 1, ringSize*0.75, ringSize*1.25);
 
-  c = color(red(c), green(c), blue(c), 100/rings);
+  //c = color(red(c), green(c), blue(c), 100/rings);
+  c = color(125, 5, 205, 1);
+  int aaa = (c >> 24) & 0xff;
+  int rrr = (c >> 16) & 0xff;
+  int ggg = (c >> 8) & 0xff;
+  int bbb = c & 0xff;
+  println("a:" + aaa + " r:" + rrr + " g:" + ggg + " b:" + bbb);
 
   stroke(c);
   strokeWeight(map(noise(i), 0, 1, relSize(1), relSize(200)));
   if (arcEnd < arcStart) {
-    float temp = arcStart;
-    arcStart = arcEnd;
-    arcEnd = temp;
+    arcEnd += TWO_PI;
   }
   arc(width / 2, height / 2, r, r, arcStart, arcEnd);
 }
@@ -50,11 +52,11 @@ void flecks(float i, float t, float ringSize, float startAngle, color c, color[]
   v.add(width/2, height/2);
 
   c = random(1) > 0.3 ? c : P5JS.random(colors);
-  c = color(red(c), green(c), blue(c), 255 - (noise(i/5 + 1) * 255));
+  c = color(red(c), green(c), blue(c), 255 - (noise(i/5.0f + 1) * 255));
 
   fill(c);
   noStroke();
-  final float r = map(noise(i/5 + 0.1), 0, 1, relSize(0.5), relSize(25));
+  final float r = map(noise(i/5.0f + 0.1), 0, 1, relSize(0.5), relSize(25));
 
   push();
   rectMode(CENTER);
@@ -91,9 +93,7 @@ void streaks(float i, float t, float rings, float ringSize, color c, color[] col
   final float rs = ringSize * (noise(ringIndex) + 0.5);
 
   if (arcEnd < arcStart) {
-    float temp = arcStart;
-    arcStart = arcEnd;
-    arcEnd = temp;
+    arcEnd += TWO_PI;
   }
   arc(width/2, height/2, P5JS.randomGaussian(rs, relSize(15)), P5JS.randomGaussian(rs, relSize(15)), arcStart, arcEnd);
   pop();
@@ -112,11 +112,11 @@ void gridLines(float i, float s, float ringSize, float startAngle, color c) {
   v.add(width/2, height/2);
   v2.add(width/2, height/2);
 
-  c = color(red(c), green(c), blue(c), 255 - (noise(i/5 + 1) * 255));
+  c = color(red(c), green(c), blue(c), 255 - (noise(i/5.0f + 1) * 255));
 
   noFill();
   stroke(c);
-  final float w = map(noise(i/5 + 0.1), 0, 1, relSize(0.5), relSize(5));
+  final float w = map(noise(i/5.0f + 0.1), 0, 1, relSize(0.5), relSize(5));
   strokeWeight(w);
   line(v.x, v.y, v2.x, v2.y);
 }

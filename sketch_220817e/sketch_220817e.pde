@@ -112,33 +112,32 @@ void draw() {
 
   for (float index = 0; index < rings; index++) {
     push();
+    //translate(
+    //  map(noise(index/rings, 1), 0, 1, relSize(minShift), relSize(maxShift)),
+    //  map(noise(1, index/rings), 0, 1, relSize(minShift), relSize(maxShift))
+    //  ); // jiggle the canvas around
 
-    translate(
-      map(noise(index/rings, 1), 0, 1, relSize(minShift), relSize(maxShift)),
-      map(noise(1, index/rings), 0, 1, relSize(minShift), relSize(maxShift))
-      ); // jiggle the canvas around
-
-    drawRing(index);
+    //drawRing(index);
     drawFadedArc(index);
-    drawFadedArc(index+0.5);
+    //drawFadedArc(index+0.5);
 
-    drawFlecks(index);
-    drawFlecks(index + 0.5);
+    //drawFlecks(index);
+    //drawFlecks(index + 0.5);
     pop();
   }
 
   // these I don't want jiggled
   // i want them twisted slightly in a consistent way.
   // hence, ...aMatrix.
-  applyMatrix(aMatrix);
+  //applyMatrix(aMatrix);
 
   // btw, i think in openProcessing you can just say applyMatrix(aMatrix)
   // but in my env you need to spread the matrix because webpack is stricter I guess
 
-  for (float index = 0; index < rings; index++) {
-    drawStreaks(index);
-    drawLines(index);
-  }
+  //for (float index = 0; index < rings; index++) {
+  //  drawStreaks(index);
+  //  drawLines(index);
+  //}
 }
 
 void mouseReleased() {
