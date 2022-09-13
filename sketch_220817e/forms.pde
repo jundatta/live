@@ -8,7 +8,7 @@ void ring(float i, float t, PMatrix2D aMatrix,
   stroke(c);
   noFill();
 
-  applyMatrix(aMatrix);
+  //applyMatrix(aMatrix);
   strokeWeight(map(noise(i/rings, t), 0, 1, relSize(1), relSize(20)));
 
   float arcStart = noise(5, i/rings) * PI*2;
@@ -17,6 +17,8 @@ void ring(float i, float t, PMatrix2D aMatrix,
   if (arcEnd < arcStart) {
     arcEnd += TWO_PI;
   }
+  println("start:" + arcStart);
+  println("end:" + arcEnd);
   arc(width/2, height/2, ringSize, ringSize, arcStart, arcEnd);
 }
 

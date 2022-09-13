@@ -6,12 +6,14 @@ function ring(i, t, aMatrix, aRandomNumber, rings, ringSize, colors, c) {
   stroke(c);
   noFill();
 
-  applyMatrix(...aMatrix);
-  strokeWeight(map(noise(i/rings, t), 0, 1, utils.relSize(1), utils.relSize(20)))
+  //applyMatrix(...aMatrix);
+  strokeWeight(map(noise(i/rings, t), 0, 1, utils.relSize(1), utils.relSize(20)));
 
-    let arcStart = noise(5, i/rings) * PI*2;
+  let arcStart = noise(5, i/rings) * PI*2;
   let arcEnd = arcStart + noise(aRandomNumber + i)*PI*2;
 
+  console.log("start:" + arcStart);
+  console.log("end:" + arcEnd);
   arc(width/2, height/2, ringSize, ringSize, arcStart, arcEnd);
 }
 

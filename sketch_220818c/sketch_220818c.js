@@ -112,9 +112,10 @@ function draw() {
   // you just have to make sure you call random() the same number of times
   randomSeed(aRandomNumber);
 
-  shearX(shearAmount);
-  translate(width * (-shearAmount/2), 0); // wild that this works
+  //shearX(shearAmount);
+  //translate(width * (-shearAmount/2), 0); // wild that this works
 
+rings = 1;
   for (let index = 0; index < rings; index++) {
     push();
 
@@ -123,8 +124,8 @@ function draw() {
     //  map(noise(1, index/rings), 0, 1, utils.relSize(minShift), utils.relSize(maxShift))
     //  ); // jiggle the canvas around
 
-    //drawRing(index);
-    drawFadedArc(index);
+    drawRing(index);
+    //drawFadedArc(index);
     //drawFadedArc(index+0.5);
 
     //drawFlecks(index);

@@ -42,7 +42,7 @@ final boolean forceIE = false;
 
 void setup() {
   P5JS.setup(this);
-  size(1112, 834);
+  size(1112, 834, P3D);
 
   reset();
   blendMode(ADD);
@@ -107,9 +107,10 @@ void draw() {
   // you just have to make sure you call random() the same number of times
   randomSeed((long)aRandomNumber);
 
-  shearX(shearAmount);
-  translate(width * (-shearAmount/2.0f), 0); // wild that this works
+  //shearX(shearAmount);
+  //translate(width * (-shearAmount/2.0f), 0); // wild that this works
 
+rings = 1;
   for (float index = 0; index < rings; index++) {
     push();
     //translate(
@@ -117,8 +118,8 @@ void draw() {
     //  map(noise(1, index/rings), 0, 1, relSize(minShift), relSize(maxShift))
     //  ); // jiggle the canvas around
 
-    //drawRing(index);
-    drawFadedArc(index);
+    drawRing(index);
+    //drawFadedArc(index);
     //drawFadedArc(index+0.5);
 
     //drawFlecks(index);
