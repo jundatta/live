@@ -57,6 +57,13 @@ function reset() {
   // seeds and arbitrary stuff
   aRandomNumber = random(1000);
   aMatrix = utils.getMatrix(0.01);
+  aMatrix[0] = 1.0;
+  aMatrix[1] = 0.0;
+  aMatrix[2] = 0.0;
+  aMatrix[3] = 1.0;
+  aMatrix[4] = 0.0;
+  aMatrix[5] = 0.0;
+  console.log(aMatrix);
 
   // stuff about shapes
   rings = random(50, 150);
@@ -115,7 +122,7 @@ function draw() {
   //shearX(shearAmount);
   //translate(width * (-shearAmount/2), 0); // wild that this works
 
-rings = 1;
+  rings = 1;
   for (let index = 0; index < rings; index++) {
     push();
 

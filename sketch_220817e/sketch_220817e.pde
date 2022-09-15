@@ -53,6 +53,18 @@ void reset() {
   // seeds and arbitrary stuff
   aRandomNumber = random(1000);
   aMatrix = getMatrix(0.01);
+  aMatrix.m00 = 1.0f;
+  aMatrix.m01 = 0.0f;
+  aMatrix.m02 = 0.0f;
+  aMatrix.m10 = 0.0f;
+  aMatrix.m11 = 1.0f;
+  aMatrix.m12 = 0.0f;
+  println("0: "+aMatrix.m00);
+  println("1: "+aMatrix.m01);
+  println("2: "+aMatrix.m02);
+  println("3: "+aMatrix.m10);
+  println("4: "+aMatrix.m11);
+  println("5: "+aMatrix.m12);
 
   // stuff about shapes
   rings = random(50, 150);
@@ -110,7 +122,7 @@ void draw() {
   //shearX(shearAmount);
   //translate(width * (-shearAmount/2.0f), 0); // wild that this works
 
-rings = 1;
+  rings = 1;
   for (float index = 0; index < rings; index++) {
     push();
     //translate(

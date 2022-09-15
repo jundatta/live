@@ -8,7 +8,7 @@ void ring(float i, float t, PMatrix2D aMatrix,
   stroke(c);
   noFill();
 
-  //applyMatrix(aMatrix);
+  applyMatrix(aMatrix);
   strokeWeight(map(noise(i/rings, t), 0, 1, relSize(1), relSize(20)));
 
   float arcStart = noise(5, i/rings) * PI*2;
@@ -17,8 +17,6 @@ void ring(float i, float t, PMatrix2D aMatrix,
   if (arcEnd < arcStart) {
     arcEnd += TWO_PI;
   }
-  println("start:" + arcStart);
-  println("end:" + arcEnd);
   arc(width/2, height/2, ringSize, ringSize, arcStart, arcEnd);
 }
 
@@ -29,13 +27,7 @@ void fadeRing(float i, float s, float rings, float ringSize, color[] colors, col
   c = random(1) < 0.3 ? P5JS.random(colors) : c;
   final float r = map(noise(s+i), 0, 1, ringSize*0.75, ringSize*1.25);
 
-  //c = color(red(c), green(c), blue(c), 100/rings);
-  c = color(125, 5, 205, 1);
-  int aaa = (c >> 24) & 0xff;
-  int rrr = (c >> 16) & 0xff;
-  int ggg = (c >> 8) & 0xff;
-  int bbb = c & 0xff;
-  println("a:" + aaa + " r:" + rrr + " g:" + ggg + " b:" + bbb);
+  c = color(red(c), green(c), blue(c), 100/rings);
 
   stroke(c);
   strokeWeight(map(noise(i), 0, 1, relSize(1), relSize(200)));
