@@ -42,7 +42,7 @@ final boolean forceIE = false;
 
 void setup() {
   P5JS.setup(this);
-  size(1112, 834, P3D);
+  size(1112, 834);
 
   reset();
   blendMode(ADD);
@@ -59,12 +59,6 @@ void reset() {
   aMatrix.m10 = 0.0f;
   aMatrix.m11 = 1.0f;
   aMatrix.m12 = 0.0f;
-  println("0: "+aMatrix.m00);
-  println("1: "+aMatrix.m01);
-  println("2: "+aMatrix.m02);
-  println("3: "+aMatrix.m10);
-  println("4: "+aMatrix.m11);
-  println("5: "+aMatrix.m12);
 
   // stuff about shapes
   rings = random(50, 150);
@@ -119,23 +113,22 @@ void draw() {
   // you just have to make sure you call random() the same number of times
   randomSeed((long)aRandomNumber);
 
-  //shearX(shearAmount);
-  //translate(width * (-shearAmount/2.0f), 0); // wild that this works
+  shearX(shearAmount);
+  translate(width * (-shearAmount/2.0f), 0); // wild that this works
 
-  rings = 1;
   for (float index = 0; index < rings; index++) {
     push();
-    //translate(
-    //  map(noise(index/rings, 1), 0, 1, relSize(minShift), relSize(maxShift)),
-    //  map(noise(1, index/rings), 0, 1, relSize(minShift), relSize(maxShift))
-    //  ); // jiggle the canvas around
+    translate(
+      map(noise(index/rings, 1), 0, 1, relSize(minShift), relSize(maxShift)),
+      map(noise(1, index/rings), 0, 1, relSize(minShift), relSize(maxShift))
+      ); // jiggle the canvas around
 
     drawRing(index);
     //drawFadedArc(index);
     //drawFadedArc(index+0.5);
 
-    //drawFlecks(index);
-    //drawFlecks(index + 0.5);
+    drawFlecks(index);
+    drawFlecks(index + 0.5);
     pop();
   }
 

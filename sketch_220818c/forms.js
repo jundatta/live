@@ -2,6 +2,7 @@
 function ring(i, t, aMatrix, aRandomNumber, rings, ringSize, colors, c) {
   c = random() < 0.3 ? random(colors) : c;
   c.setAlpha(map(1/rings, 0, 0.2, 0, 40));
+  console.log(map(1/rings, 0, 0.2, 0, 40));
 
   stroke(c);
   noFill();
@@ -23,8 +24,6 @@ function fadeRing(i, s, rings, ringSize, colors, c) {
   const r = map(noise(s+i), 0, 1, ringSize*0.75, ringSize*1.25);
 
   c.setAlpha(100/rings);
-
-  c = color(125, 5, 205, 1);
 
   stroke(c);
   strokeWeight(map(noise(i), 0, 1, utils.relSize(1), utils.relSize(200)))

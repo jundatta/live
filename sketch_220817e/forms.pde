@@ -2,7 +2,8 @@
 void ring(float i, float t, PMatrix2D aMatrix,
   float aRandomNumber, float rings, float ringSize, color[] colors, color c) {
   c = random(1) < 0.3 ? P5JS.random(colors) : c;
-  int alpha = (int)map(1/rings, 0, 0.2, 0, 40);
+  float alpha = map(1/rings, 0, 0.2, 0, 40);
+  println(alpha);
   c = color(red(c), green(c), blue(c), alpha);
 
   stroke(c);
