@@ -121,6 +121,8 @@ function draw() {
   shearX(shearAmount);
   translate(width * (-shearAmount/2), 0); // wild that this works
 
+rings = 87;
+console.log(rings);
   for (let index = 0; index < rings; index++) {
     push();
 
@@ -130,8 +132,8 @@ function draw() {
       ); // jiggle the canvas around
 
     drawRing(index);
-    //drawFadedArc(index);
-    //drawFadedArc(index+0.5);
+    drawFadedArc(index);
+    drawFadedArc(index+0.5);
 
     drawFlecks(index);
     drawFlecks(index + 0.5);

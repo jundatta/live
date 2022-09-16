@@ -116,6 +116,8 @@ void draw() {
   shearX(shearAmount);
   translate(width * (-shearAmount/2.0f), 0); // wild that this works
 
+rings = 87;
+  println(rings);
   for (float index = 0; index < rings; index++) {
     push();
     translate(
@@ -124,8 +126,8 @@ void draw() {
       ); // jiggle the canvas around
 
     drawRing(index);
-    //drawFadedArc(index);
-    //drawFadedArc(index+0.5);
+    drawFadedArc(index);
+    drawFadedArc(index+0.5);
 
     drawFlecks(index);
     drawFlecks(index + 0.5);

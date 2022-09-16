@@ -2,7 +2,6 @@
 function ring(i, t, aMatrix, aRandomNumber, rings, ringSize, colors, c) {
   c = random() < 0.3 ? random(colors) : c;
   c.setAlpha(map(1/rings, 0, 0.2, 0, 40));
-  console.log(map(1/rings, 0, 0.2, 0, 40));
 
   stroke(c);
   noFill();
@@ -26,8 +25,8 @@ function fadeRing(i, s, rings, ringSize, colors, c) {
   c.setAlpha(100/rings);
 
   stroke(c);
-  strokeWeight(map(noise(i), 0, 1, utils.relSize(1), utils.relSize(200)))
-    arc(width / 2, height / 2, r, r, arcStart, arcEnd);
+  strokeWeight(map(noise(i), 0, 1, utils.relSize(1), utils.relSize(200)));
+  arc(width / 2, height / 2, r, r, arcStart, arcEnd);
 }
 
 // look, i know glitter lost, but, glitter
