@@ -1,8 +1,15 @@
+// いい感じに輝かせるにゃー
+final float THRESHOLD = 10.0f;
+
 // this would better be described as highlight arcs
 void ring(float i, float t, PMatrix2D aMatrix,
   float aRandomNumber, float rings, float ringSize, color[] colors, color c) {
   c = random(1) < 0.3 ? P5JS.random(colors) : c;
-  float alpha = map(1/rings, 0, 0.2, 0, 40);
+  // この方が輝いてる感がでたにゃー♪
+  float alpha = 4.0f;
+  if (i < THRESHOLD) {
+    alpha = map(1/rings, 0, 0.2, 0, 40);
+  }
   c = color(red(c), green(c), blue(c), alpha);
 
   stroke(c);
@@ -27,7 +34,12 @@ void fadeRing(float i, float s, float rings, float ringSize, color[] colors, col
   c = random(1) < 0.3 ? P5JS.random(colors) : c;
   final float r = map(noise(s+i), 0, 1, ringSize*0.75, ringSize*1.25);
 
-  c = color(red(c), green(c), blue(c), 100/rings);
+  // この方が輝いてる感がでたにゃー♪
+  float alpha = 4.0f;
+  if (i < THRESHOLD) {
+    alpha = 100/rings;
+  }
+  c = color(red(c), green(c), blue(c), alpha);
 
   stroke(c);
   strokeWeight(map(noise(i), 0, 1, relSize(1), relSize(200)));

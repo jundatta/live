@@ -42,7 +42,7 @@ final boolean forceIE = false;
 
 void setup() {
   P5JS.setup(this);
-  size(1112, 834);
+  size(1112, 834, P3D);
 
   reset();
   blendMode(ADD);
@@ -116,8 +116,6 @@ void draw() {
   shearX(shearAmount);
   translate(width * (-shearAmount/2.0f), 0); // wild that this works
 
-rings = 87;
-  println(rings);
   for (float index = 0; index < rings; index++) {
     push();
     translate(
@@ -142,10 +140,10 @@ rings = 87;
   // btw, i think in openProcessing you can just say applyMatrix(aMatrix)
   // but in my env you need to spread the matrix because webpack is stricter I guess
 
-  //for (float index = 0; index < rings; index++) {
-  //  drawStreaks(index);
-  //  drawLines(index);
-  //}
+  for (float index = 0; index < rings; index++) {
+    drawStreaks(index);
+    drawLines(index);
+  }
 }
 
 void mouseReleased() {

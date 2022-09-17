@@ -121,8 +121,6 @@ function draw() {
   shearX(shearAmount);
   translate(width * (-shearAmount/2), 0); // wild that this works
 
-rings = 87;
-console.log(rings);
   for (let index = 0; index < rings; index++) {
     push();
 
@@ -148,10 +146,10 @@ console.log(rings);
   // btw, i think in openProcessing you can just say applyMatrix(aMatrix)
   // but in my env you need to spread the matrix because webpack is stricter I guess
 
-  //for (let index = 0; index < rings; index++) {
-  //  drawStreaks(index);
-  //  drawLines(index);
-  //}
+  for (let index = 0; index < rings; index++) {
+    drawStreaks(index);
+    drawLines(index);
+  }
 
   // oh, and just to troll the OG generative artists
   // draw function returns void!
