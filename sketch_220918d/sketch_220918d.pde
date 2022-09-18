@@ -19,9 +19,7 @@ void setup() {
   R=H*0.8;
 
   g = createGraphics((int)S, (int)S, P3D);
-  g.noStroke();
   s = createGraphics((int)S, (int)S, P3D);
-  s.noStroke();
 
   m = createGraphics((int)S, (int)S, P2D);
 
@@ -31,23 +29,23 @@ void setup() {
 
 void draw() {
   background(0);
-  translate(width/2, height/2);
 
-  setBox(s, 255, 100, 250);
+  //setBox(s, 255, 100, 250);
 
-  m.beginDraw();
-  m.clear();
-  m.beginShape();
-  for (float i=0; i<D; ++i) {
-    m.vertex(cos(noise(t+i)*TAU*2)*S+H, sin(noise(t+i)*TAU*2)*S+H);
-  }
-  m.endShape();
-  m.endDraw();
+  //m.beginDraw();
+  //m.clear();
+  //m.beginShape();
+  //for (float i=0; i<D; ++i) {
+  //  m.vertex(cos(noise(t+i)*TAU*2)*S+H, sin(noise(t+i)*TAU*2)*S+H);
+  //}
+  //m.endShape();
+  //m.endDraw();
 
   //s = g.get();
   //s.mask(m);
 
-  setBox(g, 150, 200, 255);
+  //setBox(g, 150, 200, 255);
+  setBox(g, 255, 255, 255);
 
   image(g, 0, 0);
   //image(s, 0, 0);
@@ -58,6 +56,8 @@ void draw() {
 
 void setBox(PGraphics pg, float j, float k, float l) {
   pg.beginDraw();
+  pg.noStroke();
+  pg.translate(width/2, height/2);
   pg.clear();
   pg.ambientLight(0, 10, 50);
   pg.pointLight(64, 64, 50, 0, 0, R);
