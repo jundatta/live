@@ -6,49 +6,64 @@ setup=_=>{c=createGraphics;w=image;createCanvas(S=500,S);H=S/2;g=c(S,S,WEBGL);g.
  b=(j,k,l)=>{g.clear();g.ambientLight(0,10,50);g.pointLight(M,M,200,0,0,H*0.64);g.ambientMaterial(M,j,k,l);g.box(H*0.8)}
 /**/
 
-function setup() {
-  createCanvas(S=500, S);
-  H=S/2;
+float S, H, D, R;
+PGraphics g, s, m;
+PVector v;
+float t;
+
+void setup() {
+  size(500, 500, P3D);
+  S = width;
+  H=S/2.0f;
   D=200;
   R=H*0.8;
 
-  g = createGraphics(S, S, WEBGL);
+  g = createGraphics((int)S, (int)S, P3D);
   g.noStroke();
+  s = createGraphics((int)S, (int)S, P3D);
+  s.noStroke();
 
-  m = createGraphics(S, S);
+  m = createGraphics((int)S, (int)S, P2D);
 
-  v = createVector(1, 1, 0.5);
+  v = new PVector(1, 1, 0.5);
   t = 0;
 }
 
-function draw() {
+void draw() {
   background(0);
-  setBox(255, 100, 250);
+  translate(width/2, height/2);
 
+  setBox(s, 255, 100, 250);
+
+  m.beginDraw();
   m.clear();
   m.beginShape();
-  for (i=0; i<D; ++i) {
+  for (float i=0; i<D; ++i) {
     m.vertex(cos(noise(t+i)*TAU*2)*S+H, sin(noise(t+i)*TAU*2)*S+H);
   }
   m.endShape();
+  m.endDraw();
 
-  s = g.get();
-  s.mask(m);
+  //s = g.get();
+  //s.mask(m);
 
-  setBox(150, 200, 255);
+  setBox(g, 150, 200, 255);
 
   image(g, 0, 0);
-  image(s, 0, 0);
+  //image(s, 0, 0);
 
-  g.rotate(0.005, v);
+  //  g.rotate(0.005, v);
   t+=0.0002;
 }
 
-function setBox(j, k, l) {
-  g.clear();
-  g.ambientLight(0, 10, 50);
-  g.pointLight(64, 64, 50, 0, 0, R);
-  g.ambientMaterial(255, j, k, l);
-  g.box(R);
+void setBox(PGraphics pg, float j, float k, float l) {
+  pg.beginDraw();
+  pg.clear();
+  pg.ambientLight(0, 10, 50);
+  pg.pointLight(64, 64, 50, 0, 0, R);
+  //g.ambientMaterial(255, j, k, l);
+  pg.ambient(j, k, l);
+  pg.box(R);
+  pg.endDraw();
 }
 /**/
