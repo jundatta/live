@@ -30,25 +30,23 @@ void setup() {
 void draw() {
   background(0);
 
-  //setBox(s, 255, 100, 250);
-
-  //m.beginDraw();
-  //m.clear();
-  //m.beginShape();
-  //for (float i=0; i<D; ++i) {
-  //  m.vertex(cos(noise(t+i)*TAU*2)*S+H, sin(noise(t+i)*TAU*2)*S+H);
-  //}
-  //m.endShape();
-  //m.endDraw();
-
-  //s = g.get();
-  //s.mask(m);
-
-  //setBox(g, 150, 200, 255);
-  setBox(g, 255, 255, 255);
-
+  setBox(g, 213, 154, 255);
   image(g, 0, 0);
-  //image(s, 0, 0);
+
+  m.beginDraw();
+  m.background(0);
+  m.noStroke();
+  m.beginShape();
+  for (float i=0; i<D; ++i) {
+    m.vertex(cos(noise(t+i)*TAU*2)*S+H, sin(noise(t+i)*TAU*2)*S+H);
+  }
+  m.endShape();
+  m.endDraw();
+
+  setBox(s, 215, 246, 162);
+  s.mask(m);
+
+  image(s, 0, 0);
 
   //  g.rotate(0.005, v);
   t+=0.0002;
@@ -56,13 +54,10 @@ void draw() {
 
 void setBox(PGraphics pg, float j, float k, float l) {
   pg.beginDraw();
-  pg.noStroke();
+  pg.background(0);
   pg.translate(width/2, height/2);
-  pg.clear();
-  pg.ambientLight(0, 10, 50);
-  pg.pointLight(64, 64, 50, 0, 0, R);
-  //g.ambientMaterial(255, j, k, l);
-  pg.ambient(j, k, l);
+  pg.noStroke();
+  pg.fill(j, k, l);
   pg.box(R);
   pg.endDraw();
 }

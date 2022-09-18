@@ -21,20 +21,19 @@ function setup() {
 
 function draw() {
   background(0);
-  //setBox(255, 100, 250);
+  setBox(255, 100, 250);
 
-  //m.clear();
-  //m.beginShape();
-  //for (i=0; i<D; ++i) {
-  //  m.vertex(cos(noise(t+i)*TAU*2)*S+H, sin(noise(t+i)*TAU*2)*S+H);
-  //}
-  //m.endShape();
+  m.clear();
+  m.beginShape();
+  for (i=0; i<D; ++i) {
+    m.vertex(cos(noise(t+i)*TAU*2)*S+H, sin(noise(t+i)*TAU*2)*S+H);
+  }
+  m.endShape();
 
-  //s = g.get();
-  //s.mask(m);
+  s = g.get();
+  s.mask(m);
 
-  //setBox(150, 200, 255);
-  setBox(255, 255, 255);
+  setBox(150, 200, 255);
 
   image(g, 0, 0);
   image(s, 0, 0);
