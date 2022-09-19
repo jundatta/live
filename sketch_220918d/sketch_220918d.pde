@@ -28,6 +28,12 @@ void setup() {
 }
 
 void draw() {
+  //push();
+  //translate(width/2, height/2);
+  //lightSpecular(192, 192, 192);
+  //pointLight(255, 255, 255, 0, 0, S);
+  //pop();
+
   background(0);
 
   setBox(g, 213, 154, 255);
@@ -43,6 +49,7 @@ void draw() {
   m.endShape();
   m.endDraw();
 
+  //setBoxTex(s, 215, 246, 162);
   setBox(s, 215, 246, 162);
   s.mask(m);
 
@@ -56,6 +63,11 @@ void setBox(PGraphics pg, float j, float k, float l) {
   pg.beginDraw();
   pg.background(0);
   pg.translate(width/2, height/2);
+  pg.lightSpecular(255, 255, 255);
+  pg.pointLight(255, 255, 255, 0, 0, R);
+  pg.rotateY(t*25.0f);
+  pg.rotateX(t*25.0f);
+  pg.rotateZ(t*25.0f);
   pg.noStroke();
   pg.fill(j, k, l);
   pg.box(R);

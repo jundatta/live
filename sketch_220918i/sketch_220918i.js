@@ -38,7 +38,7 @@ function draw() {
   image(g, 0, 0);
   image(s, 0, 0);
 
-  //g.rotate(0.005, v);
+  g.rotate(0.005, v);
   t+=0.0002;
 }
 
