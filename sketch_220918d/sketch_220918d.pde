@@ -36,7 +36,8 @@ void draw() {
 
   background(0);
 
-  setBox(g, 213, 154, 255);
+  //setBox(g, 213, 154, 255);
+  setBox(g, 220, 160, 255);
   image(g, 0, 0);
 
   m.beginDraw();
@@ -49,8 +50,7 @@ void draw() {
   m.endShape();
   m.endDraw();
 
-  //setBoxTex(s, 215, 246, 162);
-  setBox(s, 215, 246, 162);
+  setBox(s, 230, 250, 170);
   s.mask(m);
 
   image(s, 0, 0);
@@ -64,7 +64,7 @@ void setBox(PGraphics pg, float j, float k, float l) {
   pg.background(0);
   pg.translate(width/2, height/2);
   pg.lightSpecular(255, 255, 255);
-  pg.pointLight(255, 255, 255, 0, 0, R);
+  pg.pointLight(255, 255, 200, 0, 0, R);
   pg.rotateY(t*25.0f);
   pg.rotateX(t*25.0f);
   pg.rotateZ(t*25.0f);
