@@ -33,12 +33,6 @@ void setup() {
 }
 
 void draw() {
-  // ※Shadertoyの場合、透明度は指定しても反映されない
-  // void mainImage( out vec4 fragColor, in vec2 fragCoord )の
-  // fragCoordの透明度の指定は反映されない
-  // なのでfragCoordの透明度は1.0（不透明）固定で返すように注意する
-  //  background(0);
-  // 最初からのミリ秒として渡したいのでstartMillisをmillis()から引く
   bufferA.set("iTime", (millis() - startMillis) / 1000.0f);
   bufferA.set("iFrame", frameCount - startFrame);
   iChannel0.beginDraw();
