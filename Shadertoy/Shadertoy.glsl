@@ -1,4 +1,4 @@
-uniform vec2 iResolution;
+uniform vec3 iResolution;
 
 uniform sampler2D iChannel0;
 

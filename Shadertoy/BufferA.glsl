@@ -1,8 +1,12 @@
-uniform vec2 iResolution;
+uniform vec3 iResolution;
 uniform float iTime;
 uniform int iFrame;
 
+// オリジナルでは描画前の絵と平均を取ってぼかしている？が
+// うまく作り込めなかったのでギブアップした＼(^_^)／
+#if 0
 uniform sampler2D iChannel0;
+#endif
 
 #define LOWQUALITY
 
@@ -741,7 +745,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
     vec3 col = renderSky( ro, rd );
 
-
     //----------------------------------
     // raycast terrain and tree envelope
     //----------------------------------
@@ -886,7 +889,6 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     }
 
 
-
     float isCloud = 0.0;
     //----------------------------------
     // clouds
@@ -917,7 +919,10 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     col = pow( col, vec3(1.0,0.92,1.0) );   // soft green
     col *= vec3(1.02,0.99,0.9 );            // tint red
     col.z = col.z+0.1;                      // bias blue
-    
+
+// オリジナルでは描画前の絵と平均を取ってぼかしている？が
+// うまく作り込めなかったのでギブアップした＼(^_^)／
+#if 0
     //------------------------------------------
 	// reproject from previous frame and average
     //------------------------------------------
@@ -949,9 +954,10 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     	if( iFrame==0 ) ocol = col;
         col = mix( ocol, col, 0.1+0.8*isCloud );
     }
+#endif
 
     //----------------------------------
-                           
+
 	if( fragCoord.y<1.0 && fragCoord.x<3.0 )
     {
         if( abs(fragCoord.x-2.5)<0.5 ) fragColor = vec4( ca[2], -dot(ca[2],ro) );
