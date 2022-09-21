@@ -30,18 +30,17 @@ void setup() {
   }
 }
 
-function draw() {
+void draw() {
   background(0);
 
-
-  h = 60;
-  w = 5;
-  num = 0;
-  angl = 360/rune_num;
+  int h = 60;
+  int w = 5;
+  int num = 0;
+  int angl = 360/rune_num;
 
   rotateX(radians(25));
-  for (i=0; i<360; i++) {
-    an = radians(i);
+  for (int i=0; i<360; i++) {
+    float an = radians(i);
 
     rotateY(ang+an);
     translate(0, 0, dis);
@@ -49,16 +48,15 @@ function draw() {
     if (i%angl==0) {
       lis[num].move(0, 0);
       lis[num].show(0);
-      num+=1
+      num+=1;
     }
 
-    rect(0-w/2, 0-h/2, w, h/10);
-    rect(0-w/2, 0+h/2, w, h/10);
+    rect(0-w/2.0f, 0-h/2.0f, w, h/10.0f);
+    rect(0-w/2.0f, 0+h/2.0f, w, h/10.0f);
 
     translate(0, 0, -dis);
     rotateY(-an-ang);
   }
-
 
   a +=1;
   ang = radians(a);
