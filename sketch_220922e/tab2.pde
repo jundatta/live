@@ -1,5 +1,22 @@
 class Rune {
-  constructor(word_choice, x_cen, y_cen, w, r, R, g, b, a) {
+  int choice;
+  float x_cen, y_cen;
+  float r;
+  int R, g, b;
+  float a;
+  float w;
+
+  float xp1, yp1;
+  float xp2, yp2;
+  float xp3, yp3;
+  float xp4, yp4;
+  float xp5, yp5;
+  float xp6, yp6;
+  float xp7, yp7;
+  float xp8, yp8;
+
+  Rune(int word_choice, float x_cen, float y_cen,
+    float w, float r, int R, int g, int b, float a) {
     this.choice = word_choice;
     this.x_cen = x_cen;
     this.y_cen = y_cen;
@@ -12,39 +29,34 @@ class Rune {
   }
 
 
-  Rotate(r, a) {
+  void Rotate(float r, float a) {
     this.x_cen = r * cos(radians(a-90));
     this.y_cen = r * sin(radians(a-90));
     this.a = a;
   }
 
-  move(x, y) {
+  void move(float x, float y) {
     this.x_cen = x;
     this.y_cen = y;
   }
 
-  show(a) {
-    let k = this.a;
-    if (a == undefined) {
-      this.a = k;
-    } else {
-      this.a = a;
-    }
-    strokeWeight(this.w)
-      noFill();
+  void show() {
+    var k = this.a;
+    strokeWeight(this.w);
+    noFill();
 
-    let len = this.r/4;
-    let len2 = this.r/2;
-    let len3 = this.r/1.5;
+    var len = this.r/4;
+    var len2 = this.r/2;
+    var len3 = this.r/1.5;
 
-    let an = radians(this.a);
-    let an1 = radians(this.a+180);
-    let an2 = radians(this.a-90);
-    let an3 = radians(this.a+90);
-    let an4 = radians(this.a-45);
-    let an5 = radians(this.a+45);
-    let an6 = radians(this.a-135);
-    let an7 = radians(this.a+135);
+    var an = radians(this.a);
+    var an1 = radians(this.a+180);
+    var an2 = radians(this.a-90);
+    var an3 = radians(this.a+90);
+    var an4 = radians(this.a-45);
+    var an5 = radians(this.a+45);
+    var an6 = radians(this.a-135);
+    var an7 = radians(this.a+135);
 
 
     if (this.choice == 29) {
@@ -495,7 +507,7 @@ class Rune {
       this.yp2 = this.y_cen + len2 * sin(an3);
 
       stroke(this.R, this.g, this.b);
-      line(this.xp1, this.yp1, this.xp2, this.yp2)
+      line(this.xp1, this.yp1, this.xp2, this.yp2);
     }
     if (this.choice == 10) {
       // nyd()
@@ -685,7 +697,7 @@ class Rune {
 
       stroke(this.R, this.g, this.b);
       line(this.xp2, this.yp2, this.xp1, this.yp1);
-      line(this.x_cen, this.y_cen, this.xp3, this.yp3)
+      line(this.x_cen, this.y_cen, this.xp3, this.yp3);
     }
 
 
