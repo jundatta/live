@@ -1,28 +1,36 @@
 // https://openprocessing.org/sketch/1170377
 
-function setup() {
+final int Z = 40;
+final int T = 15;
+int pacx = 11*Z;
+int pacy = 16*Z;
+int pacmx = 0;
+int pacmy = 0;
+int pacd = 0;
+int wacn = 0;
+int score = 0;
+int[] GT = {14, 16, 18, 20};
+int[] ghostx = {9*Z, 10*Z, 11*Z, 12*Z};
+int[] ghosty = {10*Z, 10*Z, 10*Z, 10*Z};
+int[] ghostmx = {1, -1, 0, 0};
+int[] ghostmy = {0, 0, 0, 0};
+int[] ghoststate = {0, 0, 0, 0};
+// colorMode(HSB, 256)に置き換えておく。
+// int[] ghostcol = {color(00, 200, 255), color(220, 125, 255), color(120, 200, 255), color(20, 150, 255)};
+int[] ghostcol;
+int powerpellet = 0;
+int pacstate = 0;
+int life = 0;
+
+void setup() {
   background(100);
-  Z = 40 ;
-  T = 15;
-  pacx = 11*Z ;
-  pacy = 16*Z ;
-  pacmx = 0 ;
-  pacmy = 0 ;
-  pacd = 0 ;
-  wacn = 0;
-  score = 0;
-  GT = [14, 16, 18, 20];
-  ghostx = [9*Z, 10*Z, 11*Z, 12*Z] ;
-  ghosty = [10*Z, 10*Z, 10*Z, 10*Z];
-  ghostmx = [1, -1, 0, 0] ;
-  ghostmy = [0, 0, 0, 0] ;
-  ghoststate = [0, 0, 0, 0];
   colorMode(HSB, 256);
-  ghostcol = [color(00, 200, 255), color(220, 125, 255), color(120, 200, 255), color(20, 150, 255)];
+  int[] col = {color(00, 200, 255), color(220, 125, 255), color(120, 200, 255), color(20, 150, 255)};
+  ghostcol = new int[col.length];
+  for (int i = 0; i < ghostcol.length; i++) {
+    ghostcol[i] = col[i];
+  }
   colorMode(RGB, 256) ;
-  powerpellet = 0 ;
-  pacstate = 0 ;
-  life = 0;
 
   levelstring = [
     "11111111111111111111111",
