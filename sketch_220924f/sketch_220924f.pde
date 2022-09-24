@@ -6,14 +6,14 @@ int pacx = 11*Z;
 int pacy = 16*Z;
 int pacmx = 0;
 int pacmy = 0;
-int pacd = 0;
+float pacd = 0;
 int wacn = 0;
 int score = 0;
 int[] GT = {14, 16, 18, 20};
 int[] ghostx = {9*Z, 10*Z, 11*Z, 12*Z};
 int[] ghosty = {10*Z, 10*Z, 10*Z, 10*Z};
-int[] ghostmx = {1, -1, 0, 0};
-int[] ghostmy = {0, 0, 0, 0};
+float[] ghostmx = {1, -1, 0, 0};
+float[] ghostmy = {0, 0, 0, 0};
 int[] ghoststate = {0, 0, 0, 0};
 // colorMode(HSB, 256)に置き換えておく。
 // int[] ghostcol = {color(00, 200, 255), color(220, 125, 255), color(120, 200, 255), color(20, 150, 255)};
@@ -63,28 +63,27 @@ void setup() {
     "11111111111111111111111"};
   levelstring = str;
 
-  windowWidth = lvlw ;
-  windowHeight = lvlh;
   size(920, 880);
 
   aap = new int[w*h];
-  for (i=0; i<w*h; i++) {
-    aap[i] = getlevel((i % w)*Z, Z*floor(i/w)) == "1" ? -1 : 0;
+  for (int i=0; i<w*h; i++) {
+    aap[i] = getlevel((i % w)*Z, Z*floor(i/w)) == '1' ? -1 : 0;
   }
 }
 
-int getlevel(int x, int y) {
+char getlevel(float x, float y) {
   var nstr = levelstring[floor(y/Z)];
   return(nstr.charAt(floor(x/Z)));
 }
 
-void setlevel(int x, int y, int v) {
+void setlevel(float x, float y, char v) {
   var nstr = levelstring[floor(y/Z)];
-  levelstring[floor(y/Z)] = nstr.substr(0, floor(x/Z)) + v + nstr.substr(floor(x/Z)+1, 99);
+  levelstring[floor(y/Z)] = nstr.substring(0, floor(x/Z)) + v + nstr.substring(floor(x/Z)+1);
 }
 
 float astar(int x2, int y2, int x1, int y1) {
-  var aa = aap.slice(0);
+  //var aa = aap.slice(0);
+  int[] aa = aap.clone();
   //var q = [x1, y1];
   IntList q = new IntList();
   q.append(x1);
@@ -118,58 +117,60 @@ float astar(int x2, int y2, int x1, int y1) {
   }
 }
 
-function draw() {
+void draw() {
   background(color(0));
 
-  for (y=0; y<22; y++)
+  for (int y=0; y<22; y++)
   {
-    nstr = levelstring[y];
-    for (x=0; x<23; x++)
+    var nstr = levelstring[y];
+    for (int x=0; x<23; x++)
       if (aap[x+y*w] == -1) {
-        fill(color(64, 64, 255)) ;
+        fill(color(64, 64, 255));
         rect(x*Z, y*Z, Z, Z);
-      } else if (nstr.charAt(x) == " ") {
-        fill(color(255, 255, 190)) ;
-        ellipse(x*Z+Z/2, y*Z+Z/2, Z/4);
-      } else if (nstr.charAt(x) == "+") {
-        fill(color(255, 255, 0)) ;
-        ellipse(x*Z+Z/2, y*Z+Z/2, Z/2);
+      } else if (nstr.charAt(x) == ' ') {
+        fill(color(255, 255, 190));
+        ellipse(x*Z+Z/2, y*Z+Z/2, Z/4, Z/4);
+      } else if (nstr.charAt(x) == '+') {
+        fill(color(255, 255, 0));
+        ellipse(x*Z+Z/2, y*Z+Z/2, Z/2, Z/2);
       }
   }
 
   if ((pacx % Z < Z/T && pacy % Z < Z/T) || (pacmx == 0 && pacmy == 0))
   {
-    if (getlevel(pacx, pacy) == " ") score++;
-    if (getlevel(pacx, pacy) == "+") powerpellet = 500;
-    if (pacx >= 0) setlevel(pacx, pacy, "-");
+    if (getlevel(pacx, pacy) == ' ') score++;
+    if (getlevel(pacx, pacy) == '+') powerpellet = 500;
+    if (pacx >= 0) setlevel(pacx, pacy, '-');
     pacx = (pacx+lvlw) % lvlw;
-    if (getlevel(pacx, pacy) == " ") score++;
-    if (pacx >= 0) setlevel(pacx, pacy, "-");
+    if (getlevel(pacx, pacy) == ' ') score++;
+    if (pacx >= 0) setlevel(pacx, pacy, '-');
 
-    if (keyIsDown(LEFT_ARROW)) {
-      pacmy = 0 ;
-      pacmx = -Z/T ;
-      pacd = PI;
-    }
-    if (keyIsDown(RIGHT_ARROW)) {
-      pacmy = 0 ;
-      pacmx = Z/T ;
-      pacd = 0;
-    }
-    if (keyIsDown(UP_ARROW)) {
-      pacmy = -Z/T ;
-      pacmx = 0 ;
-      pacd = PI/2;
-    }
-    if (keyIsDown(DOWN_ARROW)) {
-      pacmy = Z/T ;
-      pacmx = 0 ;
-      pacd = PI*3/2;
+    if (keyPressed) {
+      if (keyCode == LEFT) {
+        pacmy = 0 ;
+        pacmx = -Z/T ;
+        pacd = PI;
+      }
+      if (keyCode == RIGHT) {
+        pacmy = 0 ;
+        pacmx = Z/T ;
+        pacd = 0;
+      }
+      if (keyCode == UP) {
+        pacmy = -Z/T ;
+        pacmx = 0 ;
+        pacd = PI/2;
+      }
+      if (keyCode == DOWN) {
+        pacmy = Z/T ;
+        pacmx = 0 ;
+        pacd = PI*3/2;
+      }
     }
 
-    x = pacx+pacmx*T ;
-    y = pacy+pacmy*T;
-    if (getlevel(x, y) == "1") {
+    int x = pacx+pacmx*T ;
+    int y = pacy+pacmy*T;
+    if (getlevel(x, y) == '1') {
       pacmx = 0 ;
       pacmy = 0;
     }
@@ -177,27 +178,28 @@ function draw() {
 
   powerpellet--;
 
-  for (i=0; i<4; i++)
+  int it = 0;
+  for (int i=0; i<4; i++)
   {
     if (ghoststate[i] == 1)
     {
-      for (ix=-1; ix<2; ix+=2)
+      for (int ix=-1; ix<2; ix+=2)
       {
         fill(color(255)) ;
         stroke(color(0));
-        ellipse(ghostx[i]+Z/2+ix*8, ghosty[i]+Z/2, 12);
+        ellipse(ghostx[i]+Z/2+ix*8, ghosty[i]+Z/2, 12, 12);
         fill(color(0));
-        ellipse(ghostx[i]+Z/2+ix*8+3*ghostmx[i], ghosty[i]+Z/2+3*ghostmy[i]+1, 4);
+        ellipse(ghostx[i]+Z/2+ix*8+3*ghostmx[i], ghosty[i]+Z/2+3*ghostmy[i]+1, 4, 4);
       }
 
       if (pacstate == 0)
       {
         it = 0 ;
-        pmx = ghostmx[i] ;
-        pmy = ghostmy[i];
+        var pmx = ghostmx[i] ;
+        var pmy = ghostmy[i];
         if ((ghostx[i] % Z < Z/GT[i] && ghosty[i] % Z < Z/GT[i]) || (ghostmx[i] == 0 && ghostmy[i] == 0))
         {
-          d = astar(floor(ghostx[i]/Z), floor(ghosty[i]/Z), 11, 10) ;
+          var d = astar(floor(ghostx[i]/Z), floor(ghosty[i]/Z), 11, 10) ;
           ghostmx[i] = cos(d) ;
           ghostmy[i] = sin(d);
           if (dist(ghostx[i], ghosty[i], 11*Z, 10*Z) < 10) ghoststate[i]++;
@@ -205,31 +207,30 @@ function draw() {
         ghostx[i] += ghostmx[i]*Z/GT[i] ;
         ghosty[i] += ghostmy[i]*Z/GT[i];
       }
-    } else
-    {
+    } else {
       noStroke();
-      fill((powerpellet > 0 && powerpellet % 20 > 10) || powerpellet > 100 ? color(0, 0, 255) : ghostcol[i])
-        ellipse(ghostx[i]+Z/2, ghosty[i]+Z/2, Z-4);
+      fill((powerpellet > 0 && powerpellet % 20 > 10) || powerpellet > 100 ? color(0, 0, 255) : ghostcol[i]);
+      ellipse(ghostx[i]+Z/2, ghosty[i]+Z/2, Z-4, Z-4);
       rect(ghostx[i]+2, ghosty[i]+Z/2, Z-4, Z/2);
-      for (ix=-1; ix<2; ix+=2)
+      for (int ix=-1; ix<2; ix+=2)
       {
         fill(color(255)) ;
         stroke(color(0));
-        ellipse(ghostx[i]+Z/2+ix*8, ghosty[i]+Z/2, 12);
+        ellipse(ghostx[i]+Z/2+ix*8, ghosty[i]+Z/2, 12, 12);
         fill(color(0));
-        ellipse(ghostx[i]+Z/2+ix*8+3*ghostmx[i], ghosty[i]+Z/2+3*ghostmy[i]+1, 4);
+        ellipse(ghostx[i]+Z/2+ix*8+3*ghostmx[i], ghosty[i]+Z/2+3*ghostmy[i]+1, 4, 4);
       }
 
       if (ghoststate[i] > 0)
       {
         ghoststate[i]++ ;
         if (ghoststate[i] > 200) ghoststate[i] = 0;
-        while ((ghostx[i] % Z < Z/GT[i] && ghosty[i] % Z < Z/GT[i] && (it++ == 0 || random() < .25)) || (ghostmx[i] == 0 && ghostmy[i] == 0))
+        while ((ghostx[i] % Z < Z/GT[i] && ghosty[i] % Z < Z/GT[i] && (it++ == 0 || random(1) < .25)) || (ghostmx[i] == 0 && ghostmy[i] == 0))
         {
-          ghostmx[i] = random() < .5 ? 1 : -1 ;
-          x = ghostx[i]+ghostmx[i]*Z ;
-          y = ghosty[i]+ghostmy[i]*Z;
-          if (getlevel(x, y) == "1") {
+          ghostmx[i] = random(1) < .5 ? 1 : -1 ;
+          var x = ghostx[i]+ghostmx[i]*Z ;
+          var y = ghosty[i]+ghostmy[i]*Z;
+          if (getlevel(x, y) == '1') {
             ghostmx[i] = 0 ;
             ghostmy[i] = 0;
           }
@@ -238,31 +239,31 @@ function draw() {
         if (pacstate == 0)
         {
           it = 0 ;
-          pmx = ghostmx[i] ;
-          pmy = ghostmy[i];
-          while ((ghostx[i] % Z < Z/GT[i] && ghosty[i] % Z < Z/GT[i] && (it++ == 0 || random() < .25)) || (ghostmx[i] == 0 && ghostmy[i] == 0))
+          var pmx = ghostmx[i] ;
+          var pmy = ghostmy[i];
+          while ((ghostx[i] % Z < Z/GT[i] && ghosty[i] % Z < Z/GT[i] && (it++ == 0 || random(1) < .25)) || (ghostmx[i] == 0 && ghostmy[i] == 0))
           {
             ghostmx[i] = 0 ;
             ghostmy[i] = 0 ;
             ghostx[i] = (ghostx[i]+lvlw) % lvlw;// ; ghosty[i] = round((ghosty[i]+lvlw) % lvlw)
-            if (random() < .4) {
-              d = astar(floor(ghostx[i]/Z), floor(ghosty[i]/Z), min(w-1, round(pacx/Z)), round(pacy/Z)) ;
+            if (random(1) < .4) {
+              var d = astar(floor(ghostx[i]/Z), floor(ghosty[i]/Z), min(w-1, round(pacx/Z)), round(pacy/Z)) ;
               if (powerpellet > 0) d += PI ;
               ghostmx[i] = cos(d) ;
               ghostmy[i] = sin(d);
             } else
-              if (random() < .5) {
+              if (random(1) < .5) {
                 ghostmx[i] = pmx ;
                 ghostmy[i] = pmy;
               } else
-                if (random() < .5) {
-                  ghostmx[i] = (random() < .5) ? 1 : -1;
+                if (random(1) < .5) {
+                  ghostmx[i] = (random(1) < .5) ? 1 : -1;
                 } else {
-                  ghostmy[i] = (random() < .5) ? 1 : -1;
+                  ghostmy[i] = (random(1) < .5) ? 1 : -1;
                 }
-            x = ghostx[i]+ghostmx[i]*Z ;
-            y = ghosty[i]+ghostmy[i]*Z;
-            if (getlevel(x, y) == "1") {
+            var x = ghostx[i]+ghostmx[i]*Z ;
+            var y = ghosty[i]+ghostmy[i]*Z;
+            if (getlevel(x, y) == '1') {
               ghostmx[i] = 0 ;
               ghostmy[i] = 0;
             }
@@ -289,13 +290,13 @@ function draw() {
       wacn += .5;
     else
       wacn = 3;
-    wac = abs((wacn % 10)-5)*PI/12;
+    var wac = abs((wacn % 10)-5)*PI/12;
 
     fill(color(255, 255, 0)) ;
     noStroke();
     beginShape(TRIANGLE_FAN);
     vertex(pacx+Z/2, pacy+Z/2);
-    for (d=pacd+wac; d<pacd-wac+PI*2; d+=PI/12);
+    for (var d=pacd+wac; d<pacd-wac+PI*2; d+=PI/12)
     {
       vertex(pacx+Z/2+Z/2*cos(d), pacy+Z/2-Z/2*sin(d));
     }
@@ -306,7 +307,7 @@ function draw() {
     noStroke();
     beginShape(TRIANGLE_FAN);
     vertex(pacx+Z/2, pacy+Z/2);
-    for (d=PI/2+pacstate*PI/100; d<PI*5/2-pacstate*PI/100; d+=PI/20)
+    for (var d=PI/2+pacstate*PI/100; d<PI*5/2-pacstate*PI/100; d+=PI/20)
     {
       vertex(pacx+Z/2+Z/2*cos(d), pacy+Z/2-Z/2*sin(d));
     }
@@ -321,8 +322,12 @@ function draw() {
       wacn = 0 ;
       pacstate = 0 ;
       life-- ;
-      ghostx = [9*Z, 10*Z, 11*Z, 12*Z] ;
-      ghosty = [10*Z, 10*Z, 10*Z, 10*Z];
+      //ghostx = [9*Z, 10*Z, 11*Z, 12*Z];
+      //ghosty = [10*Z, 10*Z, 10*Z, 10*Z];
+      int[] gx = {9*Z, 10*Z, 11*Z, 12*Z};
+      ghostx = gx;
+      int[] gy = {10*Z, 10*Z, 10*Z, 10*Z};
+      ghosty = gy;
     }
   }
 
