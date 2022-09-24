@@ -21,6 +21,12 @@ int[] ghostcol;
 int powerpellet = 0;
 int pacstate = 0;
 int life = 0;
+String[] levelstring;
+int w = 23;
+int h = 22;
+int lvlw = w*Z;
+int lvlh = h*Z;
+int[] aap;
 
 void setup() {
   background(100);
@@ -32,7 +38,7 @@ void setup() {
   }
   colorMode(RGB, 256) ;
 
-  levelstring = [
+  String[] str = {
     "11111111111111111111111",
     "1          1          1",
     "1+111 1111 1 1111 111+1",
@@ -54,37 +60,42 @@ void setup() {
     "1     1    1    1     1",
     "1 11111111 1 11111111 1",
     "1                     1",
-    "11111111111111111111111"];
-  w = 23 ;
-  h = 22;
-  lvlw = w*Z ;
-  lvlh = h*Z;
+    "11111111111111111111111"};
+  levelstring = str;
+
   windowWidth = lvlw ;
   windowHeight = lvlh;
-  createCanvas(windowWidth, windowHeight);
+  size(920, 880);
 
-  aap = [] ;
-  for (i=0; i<w*h; i++) aap.push(getlevel((i % w)*Z, Z*floor(i/w)) == "1" ? -1 : 0);
+  aap = new int[w*h];
+  for (i=0; i<w*h; i++) {
+    aap[i] = getlevel((i % w)*Z, Z*floor(i/w)) == "1" ? -1 : 0;
+  }
 }
 
-function getlevel(x, y) {
+int getlevel(int x, int y) {
   var nstr = levelstring[floor(y/Z)];
   return(nstr.charAt(floor(x/Z)));
 }
 
-function setlevel(x, y, v) {
+void setlevel(int x, int y, int v) {
   var nstr = levelstring[floor(y/Z)];
   levelstring[floor(y/Z)] = nstr.substr(0, floor(x/Z)) + v + nstr.substr(floor(x/Z)+1, 99);
 }
 
-function astar(x2, y2, x1, y1) {
+float astar(int x2, int y2, int x1, int y1) {
   var aa = aap.slice(0);
-  var q = [x1, y1];
+  //var q = [x1, y1];
+  IntList q = new IntList();
+  q.append(x1);
+  q.append(y1);
   //i = 0
   while (true)
   {
-    var x = q.shift() ;
-    var y = q.shift();
+    //var x = q.shift() ;
+    //var y = q.shift();
+    var x = q.remove(0);
+    var y = q.remove(0);
     if (aa[x+y*w] == 0)
     {
       if (abs(x-x2)+abs(y-y2) < 2)
@@ -94,7 +105,15 @@ function astar(x2, y2, x1, y1) {
       }
       aa[x+y*w] = 1;
       //text(i++,x*Z+Z/2,y*Z+Z/2)
-      q.push(x-1, y, x+1, y, x, y-1, x, y+1);
+      //q.push(x-1, y, x+1, y, x, y-1, x, y+1);
+      q.append(x-1);
+      q.append(y);
+      q.append(x+1);
+      q.append(y);
+      q.append(x);
+      q.append(y-1);
+      q.append(x);
+      q.append(y+1);
     }
   }
 }
