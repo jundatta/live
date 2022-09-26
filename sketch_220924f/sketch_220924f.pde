@@ -1,32 +1,32 @@
 // https://openprocessing.org/sketch/1170377
 
-final int Z = 40;
-final int T = 15;
-int pacx = 11*Z;
-int pacy = 16*Z;
-int pacmx = 0;
-int pacmy = 0;
+final float Z = 40;
+final float T = 15;
+float pacx = 11*Z;
+float pacy = 16*Z;
+float pacmx = 0;
+float pacmy = 0;
 float pacd = 0;
-int wacn = 0;
-int score = 0;
-int[] GT = {14, 16, 18, 20};
-int[] ghostx = {9*Z, 10*Z, 11*Z, 12*Z};
-int[] ghosty = {10*Z, 10*Z, 10*Z, 10*Z};
+float wacn = 0;
+float score = 0;
+float[] GT = {14, 16, 18, 20};
+float[] ghostx = {9*Z, 10*Z, 11*Z, 12*Z};
+float[] ghosty = {10*Z, 10*Z, 10*Z, 10*Z};
 float[] ghostmx = {1, -1, 0, 0};
 float[] ghostmy = {0, 0, 0, 0};
-int[] ghoststate = {0, 0, 0, 0};
+float[] ghoststate = {0, 0, 0, 0};
 // colorMode(HSB, 256)に置き換えておく。
 // int[] ghostcol = {color(00, 200, 255), color(220, 125, 255), color(120, 200, 255), color(20, 150, 255)};
 int[] ghostcol;
-int powerpellet = 0;
-int pacstate = 0;
-int life = 0;
+float powerpellet = 0;
+float pacstate = 0;
+float life = 0;
 String[] levelstring;
-int w = 23;
-int h = 22;
-int lvlw = w*Z;
-int lvlh = h*Z;
-int[] aap;
+float w = 23;
+float h = 22;
+float lvlw = w*Z;
+float lvlh = h*Z;
+float[] aap;
 
 void setup() {
   background(100);
@@ -65,9 +65,9 @@ void setup() {
 
   size(920, 880);
 
-  aap = new int[w*h];
-  for (int i=0; i<w*h; i++) {
-    aap[i] = getlevel((i % w)*Z, Z*floor(i/w)) == '1' ? -1 : 0;
+  aap = new float[(int)(w*h)];
+  for (float i=0; i<w*h; i++) {
+    aap[(int)i] = getlevel((i % w)*Z, Z*floor(i/w)) == '1' ? -1 : 0;
   }
 }
 
@@ -81,11 +81,11 @@ void setlevel(float x, float y, char v) {
   levelstring[floor(y/Z)] = nstr.substring(0, floor(x/Z)) + v + nstr.substring(floor(x/Z)+1);
 }
 
-float astar(int x2, int y2, int x1, int y1) {
+float astar(float x2, float y2, float x1, float y1) {
   //var aa = aap.slice(0);
-  int[] aa = aap.clone();
+  float[] aa = aap.clone();
   //var q = [x1, y1];
-  IntList q = new IntList();
+  FloatList q = new FloatList();
   q.append(x1);
   q.append(y1);
   //i = 0
@@ -95,14 +95,14 @@ float astar(int x2, int y2, int x1, int y1) {
     //var y = q.shift();
     var x = q.remove(0);
     var y = q.remove(0);
-    if (aa[x+y*w] == 0)
+    if (aa[(int)(x+y*w)] == 0)
     {
       if (abs(x-x2)+abs(y-y2) < 2)
       {
         //ellipse(x*Z+Z/2,y*Z+Z/2,Z/4)
         return(atan2(y-y2, x-x2));
       }
-      aa[x+y*w] = 1;
+      aa[(int)(x+y*w)] = 1;
       //text(i++,x*Z+Z/2,y*Z+Z/2)
       //q.push(x-1, y, x+1, y, x, y-1, x, y+1);
       q.append(x-1);
@@ -120,17 +120,17 @@ float astar(int x2, int y2, int x1, int y1) {
 void draw() {
   background(color(0));
 
-  for (int y=0; y<22; y++)
+  for (float y=0; y<h; y++)
   {
-    var nstr = levelstring[y];
-    for (int x=0; x<23; x++)
-      if (aap[x+y*w] == -1) {
+    var nstr = levelstring[(int)y];
+    for (float x=0; x<w; x++)
+      if (aap[(int)(x+y*w)] == -1) {
         fill(color(64, 64, 255));
         rect(x*Z, y*Z, Z, Z);
-      } else if (nstr.charAt(x) == ' ') {
+      } else if (nstr.charAt((int)x) == ' ') {
         fill(color(255, 255, 190));
         ellipse(x*Z+Z/2, y*Z+Z/2, Z/4, Z/4);
-      } else if (nstr.charAt(x) == '+') {
+      } else if (nstr.charAt((int)x) == '+') {
         fill(color(255, 255, 0));
         ellipse(x*Z+Z/2, y*Z+Z/2, Z/2, Z/2);
       }
@@ -168,8 +168,8 @@ void draw() {
       }
     }
 
-    int x = pacx+pacmx*T ;
-    int y = pacy+pacmy*T;
+    float x = pacx+pacmx*T ;
+    float y = pacy+pacmy*T;
     if (getlevel(x, y) == '1') {
       pacmx = 0 ;
       pacmy = 0;
@@ -195,8 +195,6 @@ void draw() {
       if (pacstate == 0)
       {
         it = 0 ;
-        var pmx = ghostmx[i] ;
-        var pmy = ghostmy[i];
         if ((ghostx[i] % Z < Z/GT[i] && ghosty[i] % Z < Z/GT[i]) || (ghostmx[i] == 0 && ghostmy[i] == 0))
         {
           var d = astar(floor(ghostx[i]/Z), floor(ghosty[i]/Z), 11, 10) ;
@@ -324,15 +322,12 @@ void draw() {
       life-- ;
       //ghostx = [9*Z, 10*Z, 11*Z, 12*Z];
       //ghosty = [10*Z, 10*Z, 10*Z, 10*Z];
-      int[] gx = {9*Z, 10*Z, 11*Z, 12*Z};
+      float[] gx = {9*Z, 10*Z, 11*Z, 12*Z};
       ghostx = gx;
-      int[] gy = {10*Z, 10*Z, 10*Z, 10*Z};
+      float[] gy = {10*Z, 10*Z, 10*Z, 10*Z};
       ghosty = gy;
     }
   }
 
   text("Score: "+score, 50, 25);
-  //; stroke(color(255))
-  //if (getlevel(mouseX,mouseY) != "1")
-  //{d = astar(floor(mouseX/Z),floor(mouseY/Z),floor(pacx/Z),floor(pacy/Z)) ; line(mouseX,mouseY,mouseX+50*cos(d),mouseY+50*sin(d))}
 }
