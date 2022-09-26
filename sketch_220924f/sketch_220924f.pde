@@ -28,7 +28,13 @@ float lvlw = w*Z;
 float lvlh = h*Z;
 float[] aap;
 
+PGraphics pg;
+
 void setup() {
+  //size(920, 880, P3D);
+  size(500, 800, P3D);
+  pg = createGraphics(920, 880, P3D);
+
   background(100);
   colorMode(HSB, 256);
   int[] col = {color(00, 200, 255), color(220, 125, 255), color(120, 200, 255), color(20, 150, 255)};
@@ -62,8 +68,6 @@ void setup() {
     "1                     1",
     "11111111111111111111111"};
   levelstring = str;
-
-  size(920, 880);
 
   aap = new float[(int)(w*h)];
   for (float i=0; i<w*h; i++) {
@@ -118,21 +122,22 @@ float astar(float x2, float y2, float x1, float y1) {
 }
 
 void draw() {
-  background(color(0));
+  pg.beginDraw();
+  pg.background(color(0));
 
   for (float y=0; y<h; y++)
   {
     var nstr = levelstring[(int)y];
     for (float x=0; x<w; x++)
       if (aap[(int)(x+y*w)] == -1) {
-        fill(color(64, 64, 255));
-        rect(x*Z, y*Z, Z, Z);
+        pg.fill(color(64, 64, 255));
+        pg.rect(x*Z, y*Z, Z, Z);
       } else if (nstr.charAt((int)x) == ' ') {
-        fill(color(255, 255, 190));
-        ellipse(x*Z+Z/2, y*Z+Z/2, Z/4, Z/4);
+        pg.fill(color(255, 255, 190));
+        pg.ellipse(x*Z+Z/2, y*Z+Z/2, Z/4, Z/4);
       } else if (nstr.charAt((int)x) == '+') {
-        fill(color(255, 255, 0));
-        ellipse(x*Z+Z/2, y*Z+Z/2, Z/2, Z/2);
+        pg.fill(color(255, 255, 0));
+        pg.ellipse(x*Z+Z/2, y*Z+Z/2, Z/2, Z/2);
       }
   }
 
@@ -185,11 +190,11 @@ void draw() {
     {
       for (int ix=-1; ix<2; ix+=2)
       {
-        fill(color(255)) ;
-        stroke(color(0));
-        ellipse(ghostx[i]+Z/2+ix*8, ghosty[i]+Z/2, 12, 12);
-        fill(color(0));
-        ellipse(ghostx[i]+Z/2+ix*8+3*ghostmx[i], ghosty[i]+Z/2+3*ghostmy[i]+1, 4, 4);
+        pg.fill(color(255)) ;
+        pg.stroke(color(0));
+        pg.ellipse(ghostx[i]+Z/2+ix*8, ghosty[i]+Z/2, 12, 12);
+        pg.fill(color(0));
+        pg.ellipse(ghostx[i]+Z/2+ix*8+3*ghostmx[i], ghosty[i]+Z/2+3*ghostmy[i]+1, 4, 4);
       }
 
       if (pacstate == 0)
@@ -206,17 +211,17 @@ void draw() {
         ghosty[i] += ghostmy[i]*Z/GT[i];
       }
     } else {
-      noStroke();
-      fill((powerpellet > 0 && powerpellet % 20 > 10) || powerpellet > 100 ? color(0, 0, 255) : ghostcol[i]);
-      ellipse(ghostx[i]+Z/2, ghosty[i]+Z/2, Z-4, Z-4);
-      rect(ghostx[i]+2, ghosty[i]+Z/2, Z-4, Z/2);
+      pg.noStroke();
+      pg.fill((powerpellet > 0 && powerpellet % 20 > 10) || powerpellet > 100 ? color(0, 0, 255) : ghostcol[i]);
+      pg.ellipse(ghostx[i]+Z/2, ghosty[i]+Z/2, Z-4, Z-4);
+      pg.rect(ghostx[i]+2, ghosty[i]+Z/2, Z-4, Z/2);
       for (int ix=-1; ix<2; ix+=2)
       {
-        fill(color(255)) ;
-        stroke(color(0));
-        ellipse(ghostx[i]+Z/2+ix*8, ghosty[i]+Z/2, 12, 12);
-        fill(color(0));
-        ellipse(ghostx[i]+Z/2+ix*8+3*ghostmx[i], ghosty[i]+Z/2+3*ghostmy[i]+1, 4, 4);
+        pg.fill(color(255)) ;
+        pg.stroke(color(0));
+        pg.ellipse(ghostx[i]+Z/2+ix*8, ghosty[i]+Z/2, 12, 12);
+        pg.fill(color(0));
+        pg.ellipse(ghostx[i]+Z/2+ix*8+3*ghostmx[i], ghosty[i]+Z/2+3*ghostmy[i]+1, 4, 4);
       }
 
       if (ghoststate[i] > 0)
@@ -290,26 +295,26 @@ void draw() {
       wacn = 3;
     var wac = abs((wacn % 10)-5)*PI/12;
 
-    fill(color(255, 255, 0)) ;
-    noStroke();
-    beginShape(TRIANGLE_FAN);
-    vertex(pacx+Z/2, pacy+Z/2);
+    pg.fill(color(255, 255, 0)) ;
+    pg.noStroke();
+    pg.beginShape(TRIANGLE_FAN);
+    pg.vertex(pacx+Z/2, pacy+Z/2);
     for (var d=pacd+wac; d<pacd-wac+PI*2; d+=PI/12)
     {
-      vertex(pacx+Z/2+Z/2*cos(d), pacy+Z/2-Z/2*sin(d));
+      pg.vertex(pacx+Z/2+Z/2*cos(d), pacy+Z/2-Z/2*sin(d));
     }
-    endShape();
+    pg.endShape();
   } else
   {
-    fill(color(255, 255, 0)) ;
-    noStroke();
-    beginShape(TRIANGLE_FAN);
-    vertex(pacx+Z/2, pacy+Z/2);
+    pg.fill(color(255, 255, 0)) ;
+    pg.noStroke();
+    pg.beginShape(TRIANGLE_FAN);
+    pg.vertex(pacx+Z/2, pacy+Z/2);
     for (var d=PI/2+pacstate*PI/100; d<PI*5/2-pacstate*PI/100; d+=PI/20)
     {
-      vertex(pacx+Z/2+Z/2*cos(d), pacy+Z/2-Z/2*sin(d));
+      pg.vertex(pacx+Z/2+Z/2*cos(d), pacy+Z/2-Z/2*sin(d));
     }
-    endShape();
+    pg.endShape();
 
     if (pacstate++ > 100) {
       pacx = 11*Z ;
@@ -329,5 +334,7 @@ void draw() {
     }
   }
 
-  text("Score: "+score, 50, 25);
+  pg.text("Score: "+score, 50, 25);
+  pg.endDraw();
+  image(pg, 0, 0, width, height);
 }
