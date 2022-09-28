@@ -33,14 +33,20 @@ color[] draw_colors = {#FDDA16, #6158c4, #a70310, #CCFF00};
 
 void setup() {
   P5JS.setup(this);
-  
+
   t = new XY[3];
   t[0] = new XY(320, 0);
   t[1] = new XY(528, 360);
   t[2] = new XY(112, 360);
 
   initializeFields();
-  size(800, 800, P2D);
+  size(800, 800, P3D);
+}
+
+void draw() {
+  // 適当にいい感じな切り替わりタイミングのつもりにゃ
+  randomSeed((long)(frameCount*0.02f));
+  
   background(77, 77, 255);
   noStroke();
   //noFill();
@@ -80,39 +86,6 @@ void setup() {
 
   stroke(254, 80, 0);
   strokeWeight(random(0.7, 1.5));
-}
-
-void draw() {
-  noLoop();
-  generateSierpinskiCircles(size_);
-  stroke(#C15EF2);
-  generateSierpinskiCircles(size_*2);
-  stroke(#ECE81A);
-  sierpinskiTriangle();
-  stroke(254, 80, 0);
-  generateSierpinskiCircles(size_/5);
-  generateSierpinskiCircles(size_*3);
-  generateSierpinskiCircles(size_*4);
-
-  strokeWeight(1);
-
-  stroke(#ECE81A);
-  push();
-  translate(width/2, height);
-  drawFractalTree(500);
-  stroke(P5JS.random(draw_colors));
-  sierpinskiTriangle();
-  translate(width/2, height/2);
-  stroke(P5JS.random(draw_colors));
-  sierpinskiTriangle();
-  generateSierpinskiCircles(size_*4);
-  translate(width/2, height/2);
-  stroke(255);
-  sierpinskiTriangle();
-  stroke(0);
-  generateSierpinskiCircles(size_*8);
-
-  pop();
 }
 
 void generateSierpinskiCarpet(float size) {
