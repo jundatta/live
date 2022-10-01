@@ -30,12 +30,11 @@ PathIterator createOutline(String text) {
 
   return iter;
 }
-void drawNormally(int deg) {
+void drawNormally(int deg, String text) {
   //  vertex(x*cos(-j), y, x*sin(-j));
   float xRad = cos(radians(-deg));
   float zRad = sin(radians(-deg));
-  //noFill();
-  fill(255, 0, 0);
+  noFill();
   float coords[] = new float[6];
   while (!iter.isDone()) {
     int type = iter.currentSegment(coords);
@@ -64,6 +63,7 @@ void drawNormally(int deg) {
     }
     iter.next();
   }
+  iter = createOutline(text);
 }
 
 /**
@@ -132,13 +132,17 @@ void setup() {
 void draw() {
   translate(width/2, height/2);
 
-  //background(bgColor);
+  background(bgColor);
 
   if (frameCount%200==0) {
     begin_r += angle;
     angle = int(random(30, 150));
     end_r = begin_r + angle;
+    //genTextToPoints();
   }
+  // 最初のdrawNormally()の呼び出しでiterを回し切ってしまう
+  // iterを先頭に戻せればいいんですけど。。。わかりゃん＼(^_^)／
+  // 。。。わかりゃん＼(^_^)／ので作り直すことにしましたw
   genTextToPoints();
 
   //cam.lookAt(0, 0, 0);
@@ -200,12 +204,12 @@ void expand() {
     //  vertex(x*cos(-j), y, x*sin(-j));
     //}
     //endShape();
-    drawNormally(j);
+    drawNormally(j, msg);
   }
 
-  noFill();
-  strokeWeight(2);
-  stroke(255);
+  //noFill();
+  //strokeWeight(2);
+  //stroke(255);
   //for (int i = 0; i < pts.length; i+=5) {
   //beginShape();
   //let p = pts[i];
@@ -254,7 +258,7 @@ void shrink() {
     //  vertex(x*cos(-j), y, x*sin(-j));
     //}
     //endShape();
-    drawNormally(j);
+    drawNormally(j, msg);
   }
 
   noFill();
