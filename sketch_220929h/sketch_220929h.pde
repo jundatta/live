@@ -1,7 +1,11 @@
-// こちらがオリジナルです
+// こちらがオリジナルです。
+// 【作者】Alminaさん
+// 【作品名】Degrees
 // https://neort.io/art/c8m5k8s3p9f0i94dfr80
 // こちらを参考にしています
 // https://wcs.hatenablog.com/entry/2014/08/02/184622
+// 【記事の執筆者】Alminaさん
+// 【記事のタイトル】Processingでフォントのアウトラインを読み取って再構築する
 
 import java.awt.Font;
 import java.awt.font.FontRenderContext;
@@ -128,14 +132,14 @@ void setup() {
 void draw() {
   translate(width/2, height/2);
 
-  background(bgColor);
+  //background(bgColor);
 
   if (frameCount%200==0) {
     begin_r += angle;
     angle = int(random(30, 150));
     end_r = begin_r + angle;
-    genTextToPoints();
   }
+  genTextToPoints();
 
   //cam.lookAt(0, 0, 0);
   //cam.setPosition(0, -300, 600);
