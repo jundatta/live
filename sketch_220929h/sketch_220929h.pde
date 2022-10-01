@@ -1,4 +1,7 @@
+// こちらがオリジナルです
 // https://neort.io/art/c8m5k8s3p9f0i94dfr80
+// こちらを参考にしています
+// https://turtar-fms.hatenablog.com/entry/2018/12/10/214017
 
 /**
  * color pallet
@@ -14,6 +17,93 @@ String msg; // text to write
 PVector[] pts; // store path data
 float angle;  // rotate angle
 float begin_r, end_r;  // begin / end rotate angle
+
+class Path {
+  int pathMode;
+  float[] vectorValues;
+
+  Path(int _pathMode, float[] _vectorValues) {
+    pathMode = _pathMode;
+    vectorValues = _vectorValues.clone();
+  }
+
+  float[] getVectorValues() {
+    return vectorValues;
+  }
+}
+class PathInfo {
+  ArrayList<Path> pathList;
+
+  PathInfo() {
+    pathList = new ArrayList<Path>();
+  }
+
+  void addPath(Path _path) {
+    pathList.add(_path);
+  }
+
+  ArrayList<Path> getPathList() {
+    return pathList;
+  }
+}
+
+import java.awt.Font;
+import java.awt.font.FontRenderContext;
+import java.awt.image.BufferedImage;
+import java.awt.geom.PathIterator;
+import java.awt.Shape;
+class FontShape {
+  ArrayList<ArrayList<PathInfo>> stringsPathInfoList;
+  int textSumWidth = 0;
+
+  FontShape(String _fontName, int _fontSize, String _drawText) {
+    stringsPathInfoList = new ArrayList<ArrayList<PathInfo>>();
+    makePathInfoList(_fontName, _fontSize, _drawText);
+  }
+
+  PathIterator createOutline(String _fontName, int _fontSize, String _drawString) {
+    FontRenderContext frc = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
+      .createGraphics()
+      .getFontRenderContext();
+
+    Shape stringShape = new Font(_fontName, Font.PLAIN, _fontSize)
+      .createGlyphVector(frc, _drawString)
+      .getOutline(textSumWidth, _fontSize);
+
+    int margin = 5;
+    textSumWidth += stringShape.getBounds().width + margin;
+    PathIterator iter = stringShape.getPathIterator(null);
+    return iter;
+  }
+  void makePathInfoList(String _fontName, int _fontSize, String _drawText) {
+    String[] drawStrings = _drawText.split("");
+
+    for (int i=0; i<drawStrings.length; i++) {
+      PathIterator iterator = createOutline(_fontName, _fontSize, drawStrings[i]);
+      float[] vectorValues = new float[6];
+
+      stringsPathInfoList.add(new ArrayList<PathInfo>());
+      PathInfo pathInfo = new PathInfo();
+
+      while (!iterator.isDone()) {
+        int type = iterator.currentSegment(vectorValues);
+        if (type == PathIterator.SEG_CLOSE) {
+          stringsPathInfoList.get(i).add(pathInfo);
+          iterator.next();
+          continue;
+        }
+
+        if (type == PathIterator.SEG_MOVETO) {
+          pathInfo = new PathInfo();
+        }
+        pathInfo.addPath(new Path(type, vectorValues));
+        iterator.next();
+      }
+    }
+  }
+}
+
+
 
 void preload() {
   // preload OTF font file
