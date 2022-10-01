@@ -8,7 +8,7 @@ import java.awt.font.FontRenderContext;
 import java.awt.image.BufferedImage;
 import java.awt.geom.PathIterator;
 
-String fontName = "HuiFont29.ttf";
+String fontName = "c8m5f1c3p9f0i94dfr70.ttf";
 int fontSize = 500;
 
 PathIterator iter;
@@ -26,27 +26,34 @@ PathIterator createOutline(String text) {
 
   return iter;
 }
-void drawNormally() {
-  noFill();
+void drawNormally(int deg) {
+  //  vertex(x*cos(-j), y, x*sin(-j));
+  float xRad = cos(radians(-deg));
+  float zRad = sin(radians(-deg));
+  //noFill();
   float coords[] = new float[6];
   while (!iter.isDone()) {
     int type = iter.currentSegment(coords);
     switch (type) {
     case PathIterator.SEG_MOVETO: // beginning of new path
       beginShape();
-      vertex(coords[0], coords[1]);
+      vertex(coords[0]*xRad, coords[1], coords[0]*zRad);
+      println(coords[0]*xRad + ", " + coords[1] + ", " + coords[0]*zRad);
       break;
     case PathIterator.SEG_LINETO:
-      vertex(coords[0], coords[1]);
+      vertex(coords[0]*xRad, coords[1], coords[0]*zRad);
       break;
     case PathIterator.SEG_CLOSE: // back to last MOVETO point.
       endShape();
       break;
     case PathIterator.SEG_QUADTO:
-      quadraticVertex(coords[0], coords[1], coords[2], coords[3]);
+      quadraticVertex(coords[0]*xRad, coords[1], coords[0]*zRad,
+        coords[2]*xRad, coords[3], coords[2]*zRad);
       break;
     case PathIterator.SEG_CUBICTO:
-      bezierVertex(coords[0], coords[1], coords[2], coords[3], coords[4], coords[5]);
+      bezierVertex(coords[0]*xRad, coords[1], coords[0]*zRad,
+        coords[2]*xRad, coords[3], coords[2]*zRad,
+        coords[4]*xRad, coords[5], coords[4]*zRad);
       break;
     default:
       throw new RuntimeException("should not reach here");
@@ -189,6 +196,7 @@ void expand() {
     //  vertex(x*cos(-j), y, x*sin(-j));
     //}
     //endShape();
+    drawNormally(j);
   }
 
   noFill();
@@ -242,6 +250,7 @@ void shrink() {
     //  vertex(x*cos(-j), y, x*sin(-j));
     //}
     //endShape();
+    drawNormally(j);
   }
 
   noFill();
