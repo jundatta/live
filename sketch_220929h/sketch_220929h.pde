@@ -31,6 +31,7 @@ void drawNormally(int deg) {
   float xRad = cos(radians(-deg));
   float zRad = sin(radians(-deg));
   //noFill();
+  fill(255, 0, 0);
   float coords[] = new float[6];
   while (!iter.isDone()) {
     int type = iter.currentSegment(coords);
@@ -38,7 +39,6 @@ void drawNormally(int deg) {
     case PathIterator.SEG_MOVETO: // beginning of new path
       beginShape();
       vertex(coords[0]*xRad, coords[1], coords[0]*zRad);
-      println(coords[0]*xRad + ", " + coords[1] + ", " + coords[0]*zRad);
       break;
     case PathIterator.SEG_LINETO:
       vertex(coords[0]*xRad, coords[1], coords[0]*zRad);
@@ -214,18 +214,18 @@ void expand() {
   //endShape();
   //}
 
-  push();
-  rotateY(radians(begin_r));
-  noStroke();
-  fill(250);
-  text(msg, 50, 0);
-  pop();
-  push();
-  rotateY(radians(r));
-  noStroke();
-  fill(250);
-  text(msg, 50, 0);
-  pop();
+  //push();
+  //rotateY(radians(begin_r));
+  //noStroke();
+  //fill(250);
+  //text(msg, 50, 0);
+  //pop();
+  //push();
+  //rotateY(radians(r));
+  //noStroke();
+  //fill(250);
+  //text(msg, 50, 0);
+  //pop();
 }
 
 void shrink() {
@@ -268,18 +268,18 @@ void shrink() {
   //endShape();
   //}
 
-  push();
-  rotateY(radians(end_r));
-  noStroke();
-  fill(250);
-  text(msg, 50, 0);
-  pop();
-  push();
-  rotateY(radians(r));
-  noStroke();
-  fill(250);
-  text(msg, 50, 0);
-  pop();
+  //push();
+  //rotateY(radians(end_r));
+  //noStroke();
+  //fill(250);
+  //text(msg, 50, 0);
+  //pop();
+  //push();
+  //rotateY(radians(r));
+  //noStroke();
+  //fill(250);
+  //text(msg, 50, 0);
+  //pop();
 }
 
 void genTextToPoints() {
