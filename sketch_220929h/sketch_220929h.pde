@@ -12,7 +12,8 @@ import java.awt.font.FontRenderContext;
 import java.awt.image.BufferedImage;
 import java.awt.geom.PathIterator;
 
-String fontName = "c8m5f1c3p9f0i94dfr70.ttf";
+//String fontName = "c8m5f1c3p9f0i94dfr70.ttf";
+String fontName = "HuiFont29.ttf";
 int fontSize = 500;
 
 PathIterator iter;
@@ -22,7 +23,7 @@ PathIterator createOutline(String text) {
     .createGraphics()
     .getFontRenderContext();
 
-  Font font = new Font(fontName, Font.PLAIN, fontSize);
+  Font font = new Font(fontName, Font.TRUETYPE_FONT, fontSize);
 
   PathIterator iter = font.createGlyphVector(frc, text)
     .getOutline(0, 0)
@@ -34,7 +35,7 @@ void drawNormally(int deg, String text) {
   //  vertex(x*cos(-j), y, x*sin(-j));
   float xRad = cos(radians(-deg));
   float zRad = sin(radians(-deg));
-  noFill();
+  //noFill();
   float coords[] = new float[6];
   while (!iter.isDone()) {
     int type = iter.currentSegment(coords);
@@ -75,7 +76,6 @@ IntList pal;
 color bgColor;
 
 PFont font;
-float fSize; // font size
 String msg; // text to write
 ArrayList<PVector> pts; // store path data
 float angle;  // rotate angle
@@ -120,11 +120,9 @@ void setup() {
   end_r = begin_r + angle;
 
   /** Font **/
-  fSize = 500;
-
-  textFont(font);
-  textSize(fontSize);
-  textLeading(110);
+  //textFont(font);
+  //textSize(fontSize);
+  //textLeading(110);
 
   genTextToPoints();
 }
@@ -222,18 +220,20 @@ void expand() {
   //endShape();
   //}
 
-  //push();
-  //rotateY(radians(begin_r));
-  //noStroke();
-  //fill(250);
+  push();
+  rotateY(radians(begin_r));
+  noStroke();
+  fill(250);
   //text(msg, 50, 0);
-  //pop();
-  //push();
-  //rotateY(radians(r));
-  //noStroke();
-  //fill(250);
+  drawNormally(0, msg);
+  pop();
+  push();
+  rotateY(radians(r));
+  noStroke();
+  fill(250);
   //text(msg, 50, 0);
-  //pop();
+  drawNormally(0, msg);
+  pop();
 }
 
 void shrink() {
@@ -276,18 +276,20 @@ void shrink() {
   //endShape();
   //}
 
-  //push();
-  //rotateY(radians(end_r));
-  //noStroke();
-  //fill(250);
+  push();
+  rotateY(radians(end_r));
+  noStroke();
+  fill(250);
   //text(msg, 50, 0);
-  //pop();
-  //push();
-  //rotateY(radians(r));
-  //noStroke();
-  //fill(250);
+  drawNormally(0, msg);
+  pop();
+  push();
+  rotateY(radians(r));
+  noStroke();
+  fill(250);
   //text(msg, 50, 0);
-  //pop();
+  drawNormally(0, msg);
+  pop();
 }
 
 void genTextToPoints() {
