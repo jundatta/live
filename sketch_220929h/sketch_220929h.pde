@@ -12,8 +12,7 @@ import java.awt.font.FontRenderContext;
 import java.awt.image.BufferedImage;
 import java.awt.geom.PathIterator;
 
-//String fontName = "c8m5f1c3p9f0i94dfr70.ttf";
-String fontName = "HuiFont29.ttf";
+String fontName = "Segoe UI";
 int fontSize = 500;
 
 PathIterator iter;
@@ -75,23 +74,12 @@ color[] curl = {#ff595e, #ffca3a, #8ac926, #1982c4, #6a4c93};
 IntList pal;
 color bgColor;
 
-PFont font;
 String msg; // text to write
 ArrayList<PVector> pts; // store path data
 float angle;  // rotate angle
 float begin_r, end_r;  // begin / end rotate angle
 
-
-
-void preload() {
-  // preload OTF font file
-  //font = loadFont('https://stat.neort.io/externalResource/c8m5f1c3p9f0i94dfr70.ttf');
-  font = createFont(fontName, 50, true);
-}
-
 void setup() {
-  preload();
-
   // createCanvas(600, 600);
   size(1112, 834, P3D);
   //angleMode(DEGREES);
@@ -118,11 +106,6 @@ void setup() {
   // angle = int(random(30, 150));
   begin_r = 0;
   end_r = begin_r + angle;
-
-  /** Font **/
-  //textFont(font);
-  //textSize(fontSize);
-  //textLeading(110);
 
   genTextToPoints();
 }
@@ -190,7 +173,6 @@ void expand() {
   line(0, 0, 0, cos(radians(-begin_r))*1e+4, 0, sin(radians(-begin_r))*1e+4);
   line(0, 0, 0, cos(radians(-r))*1e+4, 0, sin(radians(-r))*1e+4);
 
-  noFill();
   strokeWeight(2);
   stroke(255);
   for (int j = (int)begin_r; j <= r; j+=10) {
@@ -222,15 +204,15 @@ void expand() {
 
   push();
   rotateY(radians(begin_r));
-  noStroke();
-  fill(250);
+  //noStroke();
+  //fill(250);
   //text(msg, 50, 0);
   drawNormally(0, msg);
   pop();
   push();
   rotateY(radians(r));
-  noStroke();
-  fill(250);
+  //noStroke();
+  //fill(250);
   //text(msg, 50, 0);
   drawNormally(0, msg);
   pop();
@@ -246,7 +228,6 @@ void shrink() {
   line(0, 0, 0, cos(radians(-r))*1e+4, 0, sin(radians(-r))*1e+4);
   line(0, 0, 0, cos(radians(-end_r))*1e+4, 0, sin(radians(-end_r))*1e+4);
 
-  noFill();
   strokeWeight(2);
   stroke(255);
   for (int j = (int)r; j <= end_r; j+=10) {
@@ -278,15 +259,15 @@ void shrink() {
 
   push();
   rotateY(radians(end_r));
-  noStroke();
-  fill(250);
+  //noStroke();
+  //fill(250);
   //text(msg, 50, 0);
   drawNormally(0, msg);
   pop();
   push();
   rotateY(radians(r));
-  noStroke();
-  fill(250);
+  //noStroke();
+  //fill(250);
   //text(msg, 50, 0);
   drawNormally(0, msg);
   pop();
