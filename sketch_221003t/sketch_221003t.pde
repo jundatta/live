@@ -2,7 +2,35 @@
 // 【作者】中内　純(ハンドルネーム：JunKiyoshi)さん
 // 【作品名】Crevice torus. Draw by openFrameworks
 // https://junkiyoshi.com/2022/01/27/
+class MESH {
+  ArrayList<PVector> vertices;
+  IntList colors;
+  IntList indices;
 
+  MESH() {
+    clear();
+  }
+  void clear() {
+    vertices = new ArrayList();
+    colors = new IntList();
+    indices = new IntList();
+  }
+  void addVertices(ArrayList<PVector> vertices) {
+    for (PVector v : vertices) {
+      this.vertices.add(v);
+    }
+  }
+  int getNumVertices() {
+    return vertices.length;
+  }
+  void addColor(color c) {
+    colors.append(c);
+  }
+  void addIndex(int ix) {
+    indices.append(ix);
+  }
+}
+MESH face, line;
 
 //--------------------------------------------------------------
 void setup() {
@@ -14,8 +42,8 @@ void setup() {
 void update() {
   randomSeed(39);
 
-  this->face.clear();
-  this->line.clear();
+  face.clear();
+  line.clear();
 
   float R = 250;
   float r = R * 0.25;
@@ -39,34 +67,34 @@ void update() {
       vertices.add(new PVector(make_point(R, r, u + u_span * 0.5 - 1, v + 1.5)));
       vertices.add(new PVector(make_point(R, r, u - u_span * 0.5 + 1, v + 1.5)));
 
-      this->face.addVertices(vertices);
-      this->line.addVertices(vertices);
+      face.addVertices(vertices);
+      line.addVertices(vertices);
 
       for (int i = 0; i < 4; i++) {
-        this->face.addColor(ofColor(0));
-        this->line.addColor(ofColor(255));
+        face.addColor(color(0));
+        line.addColor(color(255));
       }
 
-      this->face.addIndex(this->face.getNumVertices() - 1);
-      this->face.addIndex(this->face.getNumVertices() - 2);
-      this->face.addIndex(this->face.getNumVertices() - 4);
-      this->face.addIndex(this->face.getNumVertices() - 3);
-      this->face.addIndex(this->face.getNumVertices() - 2);
-      this->face.addIndex(this->face.getNumVertices() - 4);
+      face.addIndex(face.getNumVertices() - 1);
+      face.addIndex(face.getNumVertices() - 2);
+      face.addIndex(face.getNumVertices() - 4);
+      face.addIndex(face.getNumVertices() - 3);
+      face.addIndex(face.getNumVertices() - 2);
+      face.addIndex(face.getNumVertices() - 4);
 
-      this->line.addIndex(this->line.getNumVertices() - 1);
-      this->line.addIndex(this->line.getNumVertices() - 4);
-      this->line.addIndex(this->line.getNumVertices() - 2);
-      this->line.addIndex(this->line.getNumVertices() - 3);
+      line.addIndex(line.getNumVertices() - 1);
+      line.addIndex(line.getNumVertices() - 4);
+      line.addIndex(line.getNumVertices() - 2);
+      line.addIndex(line.getNumVertices() - 3);
 
       if (next_noise_value < 0.45) {
-        this->line.addIndex(this->line.getNumVertices() - 1);
-        this->line.addIndex(this->line.getNumVertices() - 2);
+        line.addIndex(line.getNumVertices() - 1);
+        line.addIndex(line.getNumVertices() - 2);
       }
 
       if (prev_noise_value < 0.45) {
-        this->line.addIndex(this->line.getNumVertices() - 3);
-        this->line.addIndex(this->line.getNumVertices() - 4);
+        line.addIndex(line.getNumVertices() - 3);
+        line.addIndex(line.getNumVertices() - 4);
       }
     }
   }
