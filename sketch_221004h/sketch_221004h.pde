@@ -4,93 +4,77 @@
 // https://junkiyoshi.com/2022/01/18/
 //
 
-#include "ofApp.h"
+ofMesh face;
 
-  //--------------------------------------------------------------
-  void ofApp::setup() {
+//--------------------------------------------------------------
+void setup() {
+  size(720, 720, P3D);
 
-  ofSetFrameRate(30);
-  ofSetWindowTitle("openframeworks");
-
-  ofBackground(255);
-  ofSetLineWidth(2);
-  ofEnableDepthTest();
+  face = new ofMesh();
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
-
-  this->face.clear();
+void update() {
+  face.clear();
 
   int len = 300;
   int width = 1;
   for (int y = -1500; y <= 150; y += width) {
-
-    int start_param = ofMap(ofNoise(y * 0.0008, ofGetFrameNum() * 0.005), 0, 1, 0, 720);
+    int start_param = (int)map(openFrameworks.ofNoise(y * 0.0008, frameCount * 0.005), 0, 1, 0, 720);
     int end_param = start_param + 70;
 
     for (int param = start_param; param <= end_param; param++) {
+      ArrayList<PVector> vertices = new ArrayList();
+      PVector p = make_point(len, param);
+      vertices.add(new PVector(p.x, p.y, width * 0.5 + y));
+      p = make_point(len, param);
+      vertices.add(new PVector(p.x, p.y, width * -0.5 + y));
 
-      vector<glm::vec3> vertices;
-      vertices.push_back(glm::vec3(this->make_point(len, param), width * 0.5 + y));
-      vertices.push_back(glm::vec3(this->make_point(len, param), width * -0.5 + y));
-
-      this->face.addVertices(vertices);
+      face.addVertices(vertices);
 
       float value = 0;
       if (y < -500) {
-
-        value = ofMap(y, -500, -1500, 0, 255);
+        value = map(y, -500, -1500, 0, 255);
       }
 
-      this->face.addColor(ofColor(value));
-      this->face.addColor(ofColor(value));
+      face.addColor(color(value));
+      face.addColor(color(value));
 
       if (param > start_param) {
-
-        this->face.addIndex(this->face.getNumVertices() - 1);
-        this->face.addIndex(this->face.getNumVertices() - 2);
-        this->face.addIndex(this->face.getNumVertices() - 4);
-        this->face.addIndex(this->face.getNumVertices() - 1);
-        this->face.addIndex(this->face.getNumVertices() - 3);
-        this->face.addIndex(this->face.getNumVertices() - 4);
+        face.addIndex(face.getNumVertices() - 1);
+        face.addIndex(face.getNumVertices() - 2);
+        face.addIndex(face.getNumVertices() - 4);
+        face.addIndex(face.getNumVertices() - 1);
+        face.addIndex(face.getNumVertices() - 3);
+        face.addIndex(face.getNumVertices() - 4);
       }
     }
   }
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
 
-  this->cam.begin();
+  translate(width/2, height/2);
+  
+  background(255);
+  strokeWeight(2);
 
-  this->face.draw();
-
-  this->cam.end();
+  face.draw();
 }
 
 //--------------------------------------------------------------
-glm::vec2 ofApp::make_point(int len, int param) {
-
+PVector make_point(int len, int param) {
   param = param % 100;
   if (param < 25) {
-
-    return glm::vec2(ofMap(param, 0, 25, -len * 0.5, len * 0.5), -len * 0.5);
-  } else if (param < 50) {
-
-    return glm::vec2(len * 0.5, ofMap(param, 25, 50, -len * 0.5, len * 0.5));
-  } else if (param < 75) {
-
-    return glm::vec2(ofMap(param, 50, 75, len * 0.5, -len * 0.5), len * 0.5);
-  } else {
-
-    return glm::vec2(-len * 0.5, ofMap(param, 75, 100, len * 0.5, -len * 0.5));
+    return new PVector(map(param, 0, 25, -len * 0.5, len * 0.5), -len * 0.5);
   }
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
+  if (param < 50) {
+    return new PVector(len * 0.5, map(param, 25, 50, -len * 0.5, len * 0.5));
+  }
+  if (param < 75) {
+    return new PVector(map(param, 50, 75, len * 0.5, -len * 0.5), len * 0.5);
+  }
+  return new PVector(-len * 0.5, map(param, 75, 100, len * 0.5, -len * 0.5));
 }
