@@ -48,11 +48,11 @@ class MESH {
     }
     shape(sh);
   }
-  // デフォルトのOF_PRIMITIVE_TRIANGLE_STRIPの解釈で描画する
+  // デフォルトのOF_PRIMITIVE_TRIANGLESの解釈で描画する
   void draw() {
     PShape sh = createShape();
     sh.setStroke(false);
-    sh.beginShape(TRIANGLE_STRIP);
+    sh.beginShape(TRIANGLES);
     for (int i : indices) {
       PVector v = vertices.get(i);
       sh.vertex(v.x, v.y, v.z);
@@ -80,9 +80,9 @@ void setup() {
 void update() {
   translate(width/2, height/2);
 
-  background(255);
+  background(255, 0, 0);
   strokeWeight(3);
-  
+
   randomSeed(39);
 
   face.clear();

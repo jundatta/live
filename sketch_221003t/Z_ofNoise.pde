@@ -483,7 +483,7 @@ static class openFrameworks { //<>//
 
     /*  if(t1 < 0.0f) t1 = 0.0f; // this never happens for the 1D case */
     t1 *= t1;
-//    n1 = t1 * t1 * grad1(perm[i1 & 0xff], x1);
+    //    n1 = t1 * t1 * grad1(perm[i1 & 0xff], x1);
     n1 = t1 * t1 * grad1(perm[abs(i1) % 256], x1);
     /* The maximum value of this noise is 8*(3/4)^4 = 2.53125 */
     /* A factor of 0.395 would scale to fit exactly within [-1,1], but */
