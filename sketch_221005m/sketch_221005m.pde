@@ -1,7 +1,15 @@
+// こちらがオリジナルです。
+// 【作者】reona396さん
+// 【作品名】curve vertexes
+// https://openprocessing.org/sketch/1330664
+//
+
 final int mypointsNum = 500;
 MyPoint[] mypoints = new MyPoint[mypointsNum];
 float maxR;
 final color[] palette = {#ffffff, #000000};
+
+PGraphics mk;
 
 void setup() {
   size(1112, 834);
@@ -13,13 +21,27 @@ void setup() {
   }
 
   noStroke();
+
+  mk = createGraphics(width, height);
 }
 
 void draw() {
-  background(0);
+  push();
+  colorMode(HSB, 360, 100, 100);
+  for (int i = 0; i < height; i++) {
+    int h = (int)map(i, 0, height, 0, 360);
+    color c = color(h, 100, 100);
+    stroke(c);
+    line(0, i, width-1, i);
+  }
+  pop();
 
-  for (var j = 0; j < palette.length; j++) {
-    fill(palette[j]);
+  mk.beginDraw();
+  mk.background(0);
+  //  for (var j = 0; j < palette.length; j++) {
+  for (var j = 0; j < 1; j++) {
+    //fill(palette[j]);
+    mk.fill(255);
     //if (j == 0) {
     //  let gradientFill = drawingContext.createLinearGradient(
     //    0,
@@ -34,18 +56,20 @@ void draw() {
 
     //  drawingContext.fillStyle = gradientFill;
     //}
-    push();
-    translate(width / 2, height / 2);
-    rotate(TWO_PI * j / palette.length);
+    mk.push();
+    mk.translate(width / 2, height / 2);
+    mk.rotate(TWO_PI * j / palette.length);
 
-    beginShape();
+    mk.beginShape();
     for (var i = 0; i < mypoints.length; i++) {
       mypoints[i].move();
-      curveVertex(mypoints[i].x, mypoints[i].y);
+      mk.curveVertex(mypoints[i].x, mypoints[i].y);
     }
-    endShape(CLOSE);
-    pop();
+    mk.endShape(CLOSE);
+    mk.pop();
   }
+  mk.endDraw();
+  mask(mk);
 }
 
 class MyPoint {
