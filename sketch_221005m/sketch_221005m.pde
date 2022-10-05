@@ -9,7 +9,7 @@ MyPoint[] mypoints = new MyPoint[mypointsNum];
 float maxR;
 final color[] palette = {#ffffff, #000000};
 
-PGraphics mk;
+PGraphics pg, mk;
 
 void setup() {
   size(1112, 834);
@@ -22,26 +22,29 @@ void setup() {
 
   noStroke();
 
+  pg = createGraphics(width, height);
   mk = createGraphics(width, height);
 }
 
 void draw() {
+  background(0);
+  
   push();
   colorMode(HSB, 360, 100, 100);
+  pg.beginDraw();
   for (int i = 0; i < height; i++) {
     int h = (int)map(i, 0, height, 0, 360);
     color c = color(h, 100, 100);
-    stroke(c);
-    line(0, i, width-1, i);
+    pg.stroke(c);
+    pg.line(0, i, width-1, i);
   }
+  pg.endDraw();
   pop();
 
   mk.beginDraw();
   mk.background(0);
-  //  for (var j = 0; j < palette.length; j++) {
-  for (var j = 0; j < 1; j++) {
-    //fill(palette[j]);
-    mk.fill(255);
+  for (var j = 0; j < palette.length; j++) {
+    mk.fill(palette[j]);
     //if (j == 0) {
     //  let gradientFill = drawingContext.createLinearGradient(
     //    0,
@@ -69,7 +72,8 @@ void draw() {
     mk.pop();
   }
   mk.endDraw();
-  mask(mk);
+  pg.mask(mk);
+  image(pg, 0, 0);
 }
 
 class MyPoint {
