@@ -3,96 +3,84 @@
 // 【作品名】Character ripple. Draw by openFrameworks
 // https://junkiyoshi.com/2022/01/15/
 
-#include "ofApp.h"
+final int font_size = 40;
+final String[] words = {
+  "A", "B", "C", "D", "E",
+  "F", "G", "H", "I", "J",
+  "K", "L", "M", "N", "O",
+  "P", "Q", "R", "S", "T",
+  "U", "V", "W", "X", "Y", "Z",
+};
 
-  //--------------------------------------------------------------
-  void ofApp::setup() {
+class Word {
+  PVector location;
+  int index;
+  boolean param;
+  Word(PVector location, int index, boolean param) {
+    this.location = location;
+    this.index = index;
+    this.param = param;
+  }
+}
+ArrayList<Word> wordList;
 
-  ofSetFrameRate(30);
-  ofSetWindowTitle("openframeworks");
+//--------------------------------------------------------------
+void setup() {
+  size(720, 720, P3D);
 
-  ofBackground(0);
-  ofSetColor(255);
+  PFont font = createFont("HuiFont29.ttf", 50, true);
+  textFont(font);
+  textSize(font_size);
 
-  this->font_size = 40;
-  ofTrueTypeFontSettings font_settings("fonts/HuiFont29.ttf", this->font_size);
-  this->font.load(font_settings);
-
-  this->words = {
-
-    "A", "B", "C", "D", "E",
-    "F", "G", "H", "I", "J",
-    "K", "L", "M", "N", "O",
-    "P", "Q", "R", "S", "T",
-    "U", "V", "W", "X", "Y", "Z",
-  };
-
-  for (int x = this->font_size * -15; x <= this->font_size * 15; x += this->font_size * 0.8) {
-
-    for (int y = this->font_size * -15; y <= this->font_size * 15; y += this->font_size * 1.2) {
-
-      this->location_list.push_back(glm::vec2(x - this->font_size * 0.2, y - this->font_size * 0.5));
-      this->index_list.push_back(0.f);
-      this->param_list.push_back(true);
+  wordList = new ArrayList();
+  for (int x = font_size * -15; x <= font_size * 15; x += font_size * 0.8) {
+    for (int y = font_size * -15; y <= font_size * 15; y += font_size * 1.2) {
+      PVector loc = new PVector(x - font_size * 0.2, y - font_size * 0.5);
+      Word wd = new Word(loc, 0, true);
+      wordList.add(wd);
     }
   }
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
-
-  ofSeedRandom(39);
-
-  for (auto& param : this->param_list) {
-
-    param = false;
+void update() {
+  randomSeed(39);
+  for (Word wd : wordList) {
+    wd.param = false;
   }
 
   for (int f = 0; f < 2; f++) {
-
-    auto radius = ((ofGetFrameNum() * 10) + f * 500) % 1000;
-
-    for (int i = 0; i < this->location_list.size(); i++) {
-
-      if (glm::length(this->location_list[i]) > radius - 50 && glm::length(this->location_list[i]) < radius + 50) {
-
-        this->index_list[i] += ofRandom(1, 5);
-
-        this->index_list[i] = (int)this->index_list[i] % this->words.size();
-        this->param_list[i] = true;
+    var radius = ((frameCount * 10) + f * 500) % 1000;
+    for (int i = 0; i < wordList.size(); i++) {
+      Word wd = wordList.get(i);
+      if (wd.location.mag() > radius - 50 && wd.location.mag() < radius + 50) {
+        wd.index += random(1, 5);
+        wd.index = wd.index % words.length;
+        wd.param = true;
       }
     }
   }
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
 
-  this->cam.begin();
-  ofTranslate(this->font_size * 0.5, this->font_size * 0.5);
+  translate(width/2, height/2);
+  background(0);
+  fill(255);
 
-  for (int i = 0; i < this->location_list.size(); i++) {
+  translate(font_size * 0.5, font_size * 0.5);
 
-    ofPushMatrix();
-    ofTranslate(this->location_list[i]);
-
-    if (this->param_list[i]) {
-
-      ofRotateY(ofMap(ofNoise(this->location_list[i].y * 0.005, ofGetFrameNum() * 0.01), 0, 1, -360, 360));
-      ofRotateX(ofMap(ofNoise(this->location_list[i].x * 0.005, ofGetFrameNum() * 0.01), 0, 1, -360, 360));
+  for (int i = 0; i < wordList.size(); i++) {
+    Word wd = wordList.get(i);
+    pushMatrix();
+    translate(wd.location.x, wd.location.y);
+    if (wd.param) {
+      rotateY(map(openFrameworks.ofNoise(wd.location.y * 0.005, frameCount * 0.01), 0, 1, -360, 360));
+      rotateX(map(openFrameworks.ofNoise(wd.location.x * 0.005, frameCount * 0.01), 0, 1, -360, 360));
     }
-
-    this->font.drawString(this->words[this->index_list[i]], this->font_size * -0.5, this->font_size * -0.5);
-
-    ofPopMatrix();
+    text(words[wd.index], font_size * -0.5, font_size * -0.5);
+    popMatrix();
   }
-
-  this->cam.end();
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
