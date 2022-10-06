@@ -8,7 +8,7 @@ ofMesh face, line;
 //--------------------------------------------------------------
 void setup() {
   size(720, 720, P3D);
-  
+
   face = new ofMesh();
   line = new ofMesh();
 }
@@ -113,18 +113,16 @@ void update() {
 
 //--------------------------------------------------------------
 void draw() {
+  update();
+
   translate(width/2, height/2);
-  
+
   background(255);
   strokeWeight(1.5);
 
   rotateX(radians(270));
   rotateZ(radians(frameCount));
 
-  stroke(255);
-  fill(0);
-  face.draw();
-
-  //stroke(255);
-  //this->line.draw();
+  face.drawFill(color(0));
+  line.drawLine(color(255));
 }
