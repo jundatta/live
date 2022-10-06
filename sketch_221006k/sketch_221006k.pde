@@ -55,22 +55,22 @@ void draw() {
   rotateX(radians(270));
 
   strokeWeight(1);
-  mesh.drawFill(255);
+  mesh.draw(color(255));
 
   translate(0, 0, 0.01);
-  mesh.drawLine(0);
+  mesh.drawWireframe(color(0));
 
-  //strokeWeight(3);
+  strokeWeight(3);
 
-  //translate(0, 400, 0);
-  //rotateX(radians(90));
+  translate(0, 400, 0);
+  rotateX(radians(90));
 
-  //noFill();
-  //stroke(0);
-  //circle(0, 0, 250);
+  noFill();
+  stroke(0);
+  circle(0, 0, 250 * 2.0f);
 
-  //fill(255);
-  //circle(0, 0, 249.5);
+  fill(255);
+  circle(0, 0, 249.5 * 2.0f);
 }
 
 //--------------------------------------------------------------
