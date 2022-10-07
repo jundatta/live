@@ -18,24 +18,36 @@
  One line (262 characters):
  
  */
-t=0;
-z=0;
-setup=_=> {
-  createCanvas(w=500, w, WEBGL);
-  camera(w, 0, 99, 0, 0, 0, 0, 0, -1);
-  noFill()
-};
-draw=_=> {
+float t=0;
+float z=0;
+void setup() {
+  size(500, 500, P3D);
+  //camera(w, 0, 99, 0, 0, 0, 0, 0, -1);
+  noFill();
+}
+void draw() {
+  translate(width/2, height/2);
+
+  camera(width, 0, 99, 0, 0, 0, 0, 0, -1);
+  ambientLight(255, 255, 255);
+  ambientLight(255, 255, 255);
+  ambientLight(255, 255, 255);
+  ambientLight(255, 255, 255);
+  ambientLight(255, 255, 255);
+  ambientLight(255, 255, 255);
+  ambientLight(255, 255, 255);
+
   background(0);
-  for (r=0; r<999; r+=2) {
-    stroke(c=64*sin(t+r/9)+64, c+64, c+128, 50);
-    circle(0, 0, r)
+  for (float r=0; r<999; r+=2) {
+    int c = (int)(64*sin(t+r/9.0f)+64);
+    stroke(c, c+64, c+128, 255 * 0.75f);
+    circle(0, 0, r);
   }
   t-=0.1;
   push();
   translate(0, 0, 9*cos(z));
-  fill("#204060");
+  fill(#204060);
   sphere(45);
   pop();
-  z+=PI/30
+  z+=PI/30.0f;
 }
