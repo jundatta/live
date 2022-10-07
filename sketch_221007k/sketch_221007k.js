@@ -9,7 +9,8 @@ function preload() {
 }
 
 function setup() {
-  img.resize(windowHeight, 0);
+  //img.resize(windowHeight, 0);
+  img.resize(1112, 834);
   createCanvas(img.height, img.width);
   interval = img.height / 50;
   angleMode(DEGREES);

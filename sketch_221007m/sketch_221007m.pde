@@ -14,18 +14,20 @@ void preload() {
 }
 
 void setup() {
-  size(1112, 834);
+  preload();
+
+  size(1112, 834, P3D);
   img.resize(width, height);
   interval = img.height / 50.0f;
   //angleMode(DEGREES);
   noStroke();
   for (float y = interval / 2; y <= img.height; y += interval) {
     for (float x = interval / 2; x <= img.width; x += interval) {
-      color c = img.get(x, y);
-      int a = alpha(c);
-      int r = red(c);
-      int g = green(c);
-      int b = blue(c);
+      color c = img.get((int)x, (int)y);
+      int a = (int)alpha(c);
+      int r = (int)red(c);
+      int g = (int)green(c);
+      int b = (int)blue(c);
       a = 200;
       int id = r + g + b;
       if (id > 0) {
@@ -37,8 +39,6 @@ void setup() {
 }
 
 void draw() {
-  preload();
-  
   counter += 2;
   background(0);
   for (Pixel d : drips) {
