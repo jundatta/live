@@ -3,38 +3,45 @@
 // 【作品名】Photo Fragments
 // https://openprocessing.org/sketch/973470
 
-var img;
-var drips = [];
-var interval;
-let counter = 0;
+PImage img;
+ArrayList<Pixel> drips = new ArrayList();
+float interval;
+int counter = 0;
 
-function preload() {
+void preload() {
   //img = loadImage("Monroe-Square.png");
   img = loadImage("IMG_0103.JPG");
 }
 
-function setup() {
-  img.resize(windowHeight, 0);
-  createCanvas(img.height, img.width);
-  interval = img.height / 50;
-  angleMode(DEGREES);
+void setup() {
+  size(1112, 834);
+  img.resize(width, height);
+  interval = img.height / 50.0f;
+  //angleMode(DEGREES);
   noStroke();
-  for (let y = interval / 2; y <= img.height; y += interval) {
-    for (let x = interval / 2; x <= img.width; x += interval) {
-      let c = img.get(x, y);
-      c[3] = 200;
-      let id = c[0] + c[1] + c[2];
+  for (float y = interval / 2; y <= img.height; y += interval) {
+    for (float x = interval / 2; x <= img.width; x += interval) {
+      color c = img.get(x, y);
+      int a = alpha(c);
+      int r = red(c);
+      int g = green(c);
+      int b = blue(c);
+      a = 200;
+      int id = r + g + b;
       if (id > 0) {
-        drips.push(new Pixel(x, y, c, id));
+        c = color(r, g, b, a);
+        drips.add(new Pixel(x, y, c, id));
       }
     }
   }
 }
 
-function draw() {
+void draw() {
+  preload();
+  
   counter += 2;
   background(0);
-  for (let d of drips) {
+  for (Pixel d : drips) {
     if (d.id < counter) {
       d.move();
       if (d.y > 0) {
