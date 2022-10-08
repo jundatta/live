@@ -3,37 +3,25 @@
 // 【作品名】Rotating rectangles. Draw by openFrameworks
 // https://junkiyoshi.com/2022/01/04/
 
+ofMesh face, frame;
 
-#include "ofApp.h"
-
-  //--------------------------------------------------------------
-  void ofApp::setup() {
-
-  ofSetFrameRate(60);
-  ofSetWindowTitle("openframeworks");
-
-  ofBackground(255);
-  ofEnableDepthTest();
-
-  this->frame.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
+//--------------------------------------------------------------
+void setup() {
 }
 //--------------------------------------------------------------
-void ofApp::update() {
+void update() {
 
-  ofSeedRandom(39);
+  randomSeed(39);
 
-  this->face.clear();
-  this->frame.clear();
+  face.clear();
+  frame.clear();
 
   int y = 200;
   for (int x = -300 * 3; x <= 300 * 3; x += 300) {
-
-    auto noise_seed = ofRandom(1000);
+    auto noise_seed = random(1000);
     for (int i = 1; i >= -1; i -= 2) {
-
       for (auto radius = 50; radius <= 150; radius += 5) {
-
-        auto noise_value = ofNoise(noise_seed, radius * 0.00085 + ofGetFrameNum() * 0.0015);
+        var noise_value = openFrameworks.ofNoise(noise_seed, radius * 0.00085 + frameCount * 0.0015);
         auto rotation = glm::rotate(glm::mat4(), ofMap(noise_value, 0, 1, -720, 720) * (float)DEG_TO_RAD, glm::vec3(1, 0, 0));
 
         ofColor face_color;
@@ -50,7 +38,9 @@ void ofApp::update() {
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  translate(width/2, height/2);
+  background(255);
 
   this->cam.begin();
   ofRotateX(90);
