@@ -24,7 +24,6 @@ Tree[] trees; // this will store an array of information about trees to be drawn
 
 void setup() {
   P5JS.setup(this);
-
   size(800, 800, P3D);
 
   createTrees();
@@ -42,6 +41,7 @@ void draw() {
   //turn the earth slowly.  You can also use the mouse.
   rotateY(frameCount / 100.0f);
 
+  directionalLight(150, 100, 0, -1, -0.5, 0.2);
   directionalLight(150, 100, 0, -1, -0.5, 0.2);
   ambientLight(180, 150, 150);
   ambient(100, 255, 100);
@@ -67,18 +67,19 @@ void drawTree(Tree tree) {
   translate(tree.height / 2, 0, 0);
   box(tree.height, 3, 3);
 
-  fill(tree.colour);
   translate(tree.height / 2, 0, 0);
   //sphere(10, 5, 5);
-  scale(1, 0.5f, 0.5f);
-  sphere(10);
+  tex.set(0, 0, tree.colour);
+  sphere.setTexture(tex);
+  shape(sphere);
   pop();
 }
 
 //generate information about each tree that we will eventually display.
 //what height and colour is it?  What angles will we have to rotate by before translating to put it in place?
 
-
+PShape sphere;
+PImage tex;
 void createTrees() {
   push();
   colorMode(HSB);
@@ -92,4 +93,11 @@ void createTrees() {
     trees[i] = tree;
   }
   pop();
+
+  sphereDetail(5, 5);
+  sphere = createShape(SPHERE, 10);
+  sphereDetail(30);
+  sphere.setStroke(false);
+  sphere.setFill(#ffffff);
+  tex = createImage(1, 1, ARGB);
 }
