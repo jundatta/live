@@ -41,23 +41,25 @@ void setup() {
   cylinder.setStroke(false);
   cylinder.setTexture(img3);
 
-  box1 = createShape(BOX, 60);
+  //box1 = createShape(BOX, 60);
+  box1 = createShape(BOX, 1);
   box1.setTexture(img);
   box1.setStroke(color(0, 0, 100));
 
-  box2 = createShape(BOX, 60);
+  //box2 = createShape(BOX, 60);
+  box2 = createShape(BOX, 1);
   box2.setTexture(img2);
   box2.setStroke(color(0, 0, 100));
 }
 
 void draw() {
   translate(width/2, height/2);
-    background(220, 80, 20);
+  background(220, 80, 20);
 
   // orbitControl();
 
   // 背景
-  //shape(cylinder);
+  shape(cylinder);
 
   // 箱1
   for (Box box : boxes) {
@@ -66,6 +68,7 @@ void draw() {
     rotateX(radians((box.x + frameCount) / 3.0f));
     rotateY(radians((box.y + frameCount) / 4.0f));
     rotateZ(radians((box.z + frameCount) / 5.0f));
+    scale(60);
     shape(box1);
 
     box.y = box.y + 3;
@@ -82,6 +85,7 @@ void draw() {
     rotateX(radians((box.x + frameCount) / 3.0f));
     rotateY(radians((box.y + frameCount) / 4.0f));
     rotateZ(radians((box.z + frameCount) / 5.0f));
+    scale(60);
     shape(box2);
     pop();
 
