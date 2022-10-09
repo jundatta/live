@@ -41,14 +41,21 @@ void draw() {
   //turn the earth slowly.  You can also use the mouse.
   rotateY(frameCount / 100.0f);
 
+  push();
   directionalLight(150, 100, 0, -1, -0.5, 0.2);
   directionalLight(150, 100, 0, -1, -0.5, 0.2);
   ambientLight(180, 150, 150);
   ambient(100, 255, 100);
 
   //the basic world sphere
-  sphere(100);
+  //sphere(100);
+  pop();
 
+  pointLight(255, 255, 255, -1, -0.5, +150);
+  push();
+  translate(-1, -0.5, +150);
+  sphere(10);
+  pop();
   //draw the trees!
   for (var tree : trees) {
     drawTree(tree);
@@ -98,6 +105,6 @@ void createTrees() {
   sphere = createShape(SPHERE, 10);
   sphereDetail(30);
   sphere.setStroke(false);
-  sphere.setFill(#ffffff);
+  sphere.setFill(false);
   tex = createImage(1, 1, ARGB);
 }
