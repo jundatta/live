@@ -3,100 +3,95 @@
 // 【作品名】Ripple on fonts. Draw by openFrameworks
 // https://junkiyoshi.com/2022/01/02/
 
+final int font_size = 40;
+final String[] words = {
+  "H", "A", "P", "P", "Y",
+  "N", "E", "W",
+  "Y", "E", "A", "R"
+};
+
+class Word {
+  PVector location;
+  int index;
+  boolean param;
+  Word(PVector location, int index, boolean param) {
+    this.location = location;
+    this.index = index;
+    this.param = param;
+  }
+}
+ArrayList<Word> word_list = new ArrayList();
+
+class Wave {
+  PVector first;
+  float second;
+  Wave(PVector first, float second) {
+    this.first = first;
+    this.second = second;
+  }
+}
+ArrayList<Wave> wave_list = new ArrayList();
+
 //--------------------------------------------------------------
-void ofApp::setup() {
+void setup() {
+  size(720, 720, P3D);
+  
+  PFont font = createFont("HuiFont29.ttf", 50, true);
+  textFont(font);
 
-  ofSetFrameRate(30);
-  ofSetWindowTitle("openframeworks");
-
-  ofBackground(255);
-
-  this->font_size = 20;
-  ofTrueTypeFontSettings font_settings("HuiFont29.ttf", this->font_size);
-  this->font.load(font_settings);
-
-  this->words = {
-
-    "H", "A", "P", "P", "Y",
-    "N", "E", "W",
-    "Y", "E", "A", "R"
-  };
-
-  for (int x = this->font_size * -15; x <= this->font_size * 15; x += this->font_size * 0.8) {
-
-    for (int y = this->font_size * -15; y <= this->font_size * 15; y += this->font_size * 1.2) {
-
-      this->location_list.push_back(glm::vec2(x - this->font_size * 0.2, y - this->font_size * 0.5));
-      this->index_list.push_back(ofRandom(this->words.size()));
-      this->param_list.push_back(true);
+  for (int x = font_size * -15; x <= font_size * 15; x += font_size * 0.8) {
+    for (int y = font_size * -15; y <= font_size * 15; y += font_size * 1.2) {
+      Word w = new Word(new PVector(x - font_size * 0.2, y - font_size * 0.5),
+        (int)random(words.length), true);
+      word_list.add(w);
     }
   }
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
-
-  if (ofGetFrameNum() % 15 == 0) {
-
-    auto l = glm::vec2(ofRandom(-250, 250), ofRandom(-250, 250));
-    auto f = 5;
-    this->wave_list.push_back(make_pair(l, f));
+void update() {
+  if (frameCount % 20 == 0) {
+    var l = new PVector(random(-250, 250), random(-250, 250));
+    float f = 5;
+    wave_list.add(new Wave(l, f));
   }
 
-  for (auto& param : this->param_list) {
-
-    param = false;
+  for (Word w : word_list) {
+    w.param = false;
   }
 
-  auto max_height = 150;
-  for (auto& wave : this->wave_list) {
-
-    for (int i = 0; i < this->location_list.size(); i++) {
-
-      auto distance = glm::distance(wave.first, this->location_list[i]);
-      if (distance > wave.second - this->font_size * 1.2 && distance < wave.second + this->font_size * 1.2) {
-
-        this->index_list[i] = (this->index_list[i] + 1) % this->words.size();
-        this->param_list[i] = true;
+  for (Wave wave : wave_list) {
+    for (Word w : word_list) {
+      var distance = wave.first.dist(w.location);
+      if (distance > wave.second - font_size * 1.2 && distance < wave.second + font_size * 1.2) {
+        w.index = (w.index + 1) % words.length;
+        w.param = true;
       }
     }
-
     wave.second += 12;
   }
 
-  for (int i = this->wave_list.size() - 1; i >= 0; i--) {
-
-    if (this->wave_list[i].second > 650) {
-
-      this->wave_list.erase(this->wave_list.begin() + i);
+  for (int i = wave_list.size() - 1; i >= 0; i--) {
+    if (wave_list.get(i).second > 650) {
+      wave_list.remove(i);
     }
   }
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
 
-  this->cam.begin();
+  translate(width/2, height/2);
+  background(255);
+  textSize(font_size);
 
-  for (int i = 0; i < this->location_list.size(); i++) {
-
-    if (this->param_list[i]) {
-
-      ofSetColor(0);
+  for (Word w : word_list) {
+    if (w.param) {
+      fill(0);
     } else {
-
-      ofSetColor(128);
+      fill(128);
     }
-
-    this->font.drawString(this->words[this->index_list[i]], this->location_list[i].x, this->location_list[i].y);
+    text(words[w.index], w.location.x, w.location.y);
   }
-
-  this->cam.end();
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
