@@ -9,46 +9,53 @@
 //See the parent sketch for a more even distribution of trees:
 // https://www.openprocessing.org/sketch/1020962
 
-let myCamera;
-let trees; // this will store an array of information about trees to be drawn
+class Tree {
+  float height;
+  float zRot, yRot;
+  color colour;
+  Tree(float height, float zRot, float yRot, color colour) {
+    this.height = height;
+    this.zRot = zRot;
+    this.yRot = yRot;
+    this.colour = colour;
+  }
+}
+Tree[] trees; // this will store an array of information about trees to be drawn
 
-function setup() {
-  createCanvas(800, 800, WEBGL);
+void setup() {
+  P5JS.setup(this);
 
-  //optional
-  debugMode(AXES); // Add an axes guide.  RGB indicate XYZ, respectively (so Red is X axis. Direction of the stick outward indicates +ve on that axis.)
-
-  //Set up a non-default camera position and facing.  You *can* delete these and accept the defaults
-  myCamera = createCamera();
-  myCamera.setPosition(0, 10, 300);
-  myCamera.lookAt(0, 0, 0);
+  size(800, 800, P3D);
 
   createTrees();
 }
 
+void draw() {
+  translate(width/2, height/2);
 
-function draw() {
+  //Set up a non-default camera position and facing.  You *can* delete these and accept the defaults
+  camera(0, 10, 300, 0, 0, 0, 0, 1, 0);
+
   background(60);
   noStroke();
-  orbitControl(5, 5);
 
   //turn the earth slowly.  You can also use the mouse.
-  rotateY(frameCount / 100);
+  rotateY(frameCount / 100.0f);
 
-  directionalLight(color(150, 100, 0), createVector(-1, -0.5, 0.2));
+  directionalLight(150, 100, 0, -1, -0.5, 0.2);
   ambientLight(180, 150, 150);
-  ambientMaterial(color(100, 255, 100));
+  ambient(100, 255, 100);
 
   //the basic world sphere
   sphere(100);
 
   //draw the trees!
-  for (let tree of trees) {
+  for (var tree : trees) {
     drawTree(tree);
   }
 }
 
-function drawTree(tree) {
+void drawTree(Tree tree) {
   push();
   rotateY(tree.yRot);
   rotateZ(tree.zRot);
@@ -62,29 +69,27 @@ function drawTree(tree) {
 
   fill(tree.colour);
   translate(tree.height / 2, 0, 0);
-  sphere(10, 5, 5);
+  //sphere(10, 5, 5);
+  scale(1, 0.5f, 0.5f);
+  sphere(10);
   pop();
 }
 
 //generate information about each tree that we will eventually display.
 //what height and colour is it?  What angles will we have to rotate by before translating to put it in place?
-function createTrees() {
+
+
+void createTrees() {
   push();
   colorMode(HSB);
-  trees = [];
-  const numberOfTreesToCreate = 200;
-  for (let i = 0; i < numberOfTreesToCreate; i++) {
-    const tree = {
-    height:
-    random(13, 23),
-    zRot:
-    random(TWO_PI),
-    yRot:
-    random(TWO_PI),
-    colour:
-    color(random([50, 100]), random(80, 100), random(70, 100))
-  };
-  trees.push(tree);
-}
-pop();
+  trees = new Tree[200];
+  for (int i = 0; i < trees.length; i++) {
+    float h = random(13, 23);
+    float zRot = random(TWO_PI);
+    float yRot = random(TWO_PI);
+    color colour = color(P5JS.random(50, 100), random(80, 100), random(70, 100));
+    Tree tree = new Tree(h, zRot, yRot, colour);
+    trees[i] = tree;
+  }
+  pop();
 }
