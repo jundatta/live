@@ -48,14 +48,11 @@ void draw() {
   ambient(100, 255, 100);
 
   //the basic world sphere
-  //sphere(100);
+  sphere(100);
   pop();
 
-  pointLight(255, 255, 255, -1, -0.5, +150);
-  push();
-  translate(-1, -0.5, +150);
-  sphere(10);
-  pop();
+  ambientLight(255, 255, 255);
+  ambientLight(255, 255, 255);
   //draw the trees!
   for (var tree : trees) {
     drawTree(tree);
@@ -69,24 +66,29 @@ void drawTree(Tree tree) {
   translate(100, 0, 0);
   colorMode(HSB);
 
-  fill(11, 40, 32);
-  noStroke();
+  //fill(11, 40, 32);
+  color hsb = color(11, 40, 32);
+  tex.set(0, 0, hsb);
+  //noStroke();
   translate(tree.height / 2, 0, 0);
-  box(tree.height, 3, 3);
+  //box(tree.height, 3, 3);
+  push();
+  scale(tree.height, 3, 3);
+  shape(trunk);
+  pop();
 
   translate(tree.height / 2, 0, 0);
   //sphere(10, 5, 5);
   tex.set(0, 0, tree.colour);
-  sphere.setTexture(tex);
-  shape(sphere);
+  shape(leaf);
   pop();
 }
 
 //generate information about each tree that we will eventually display.
 //what height and colour is it?  What angles will we have to rotate by before translating to put it in place?
 
-PShape sphere;
 PImage tex;
+PShape trunk, leaf;
 void createTrees() {
   push();
   colorMode(HSB);
@@ -101,10 +103,17 @@ void createTrees() {
   }
   pop();
 
-  sphereDetail(5, 5);
-  sphere = createShape(SPHERE, 10);
-  sphereDetail(30);
-  sphere.setStroke(false);
-  sphere.setFill(false);
   tex = createImage(1, 1, ARGB);
+
+  trunk = createShape(BOX, 1);
+  trunk.setStroke(false);
+  //trunk.setFill(false);
+  trunk.setTexture(tex);
+
+  sphereDetail(5, 5);
+  leaf = createShape(SPHERE, 10);
+  sphereDetail(30);
+  leaf.setStroke(false);
+  //leaf.setFill(false);
+  leaf.setTexture(tex);
 }
