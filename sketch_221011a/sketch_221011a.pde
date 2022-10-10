@@ -3,25 +3,20 @@
 // 【作品名】10 PRINT on Sphere. Draw by openFrameworks
 // https://junkiyoshi.com/2021/12/29/
 
+ofMesh frame;
+
 //--------------------------------------------------------------
-void ofApp::setup() {
+void setup() {
+  size(720, 720, P3D);
 
-  ofSetFrameRate(30);
-  ofSetWindowTitle("openFrameworks");
-
-  ofBackground(255);
-  ofSetLineWidth(3);
-  ofEnableDepthTest();
-
-  this->frame.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
+  frame = new ofMesh();
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
+void update() {
+  randomSeed(39);
 
-  ofSeedRandom(39);
-
-  this->frame.clear();
+  frame.clear();
 
   float phi_deg_step = 5;
   float theta_deg_step = 5;
@@ -29,68 +24,56 @@ void ofApp::update() {
   float radius = 250;
 
   for (float phi_deg = 0; phi_deg < 360; phi_deg += phi_deg_step) {
-
     for (float theta_deg = 0; theta_deg <= 180; theta_deg += theta_deg_step) {
-
-      auto location = glm::vec3(
-        radius * sin(theta_deg * DEG_TO_RAD) * cos(phi_deg * DEG_TO_RAD),
-        radius * sin(theta_deg * DEG_TO_RAD) * sin(phi_deg * DEG_TO_RAD),
-        radius * cos(theta_deg * DEG_TO_RAD));
-
-      auto noise_value = ofNoise(ofRandom(1000));
-
+      var noise_value = openFrameworks.ofNoise(random(1000));
       if (noise_value < 0.5) {
-
-        this->frame.addVertex(glm::vec3(
+        frame.addVertex(new PVector(
           radius * sin((theta_deg - theta_deg_step * 0.5) * DEG_TO_RAD) * cos((phi_deg + phi_deg_step * 0.5) * DEG_TO_RAD),
           radius * sin((theta_deg - theta_deg_step * 0.5) * DEG_TO_RAD) * sin((phi_deg + phi_deg_step * 0.5) * DEG_TO_RAD),
           radius * cos((theta_deg - theta_deg_step * 0.5) * DEG_TO_RAD)));
-        this->frame.addVertex(glm::vec3(
+        frame.addVertex(new PVector(
           radius * sin((theta_deg + theta_deg_step * 0.5) * DEG_TO_RAD) * cos((phi_deg - phi_deg_step * 0.5) * DEG_TO_RAD),
           radius * sin((theta_deg + theta_deg_step * 0.5) * DEG_TO_RAD) * sin((phi_deg - phi_deg_step * 0.5) * DEG_TO_RAD),
           radius * cos((theta_deg + theta_deg_step * 0.5) * DEG_TO_RAD)));
       } else {
-
-        this->frame.addVertex(glm::vec3(
+        frame.addVertex(new PVector(
           radius * sin((theta_deg - theta_deg_step * 0.5) * DEG_TO_RAD) * cos((phi_deg - phi_deg_step * 0.5) * DEG_TO_RAD),
           radius * sin((theta_deg - theta_deg_step * 0.5) * DEG_TO_RAD) * sin((phi_deg - phi_deg_step * 0.5) * DEG_TO_RAD),
           radius * cos((theta_deg - theta_deg_step * 0.5) * DEG_TO_RAD)));
-        this->frame.addVertex(glm::vec3(
+        frame.addVertex(new PVector(
           radius * sin((theta_deg + theta_deg_step * 0.5) * DEG_TO_RAD) * cos((phi_deg + phi_deg_step * 0.5) * DEG_TO_RAD),
           radius * sin((theta_deg + theta_deg_step * 0.5) * DEG_TO_RAD) * sin((phi_deg + phi_deg_step * 0.5) * DEG_TO_RAD),
           radius * cos((theta_deg + theta_deg_step * 0.5) * DEG_TO_RAD)));
       }
-
-      this->frame.addIndex(this->frame.getNumVertices() - 1);
-      this->frame.addIndex(this->frame.getNumVertices() - 2);
+      frame.addIndex(frame.getNumVertices() - 1);
+      frame.addIndex(frame.getNumVertices() - 2);
     }
   }
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
 
-  this->cam.begin();
-  ofRotateX(90);
-  ofRotateZ(ofGetFrameNum() * 0.6666666666666);
+  translate(width/2, height/2);
+  background(255);
+  strokeWeight(3);
 
-  ofSetColor(255);
-  ofDrawSphere(248);
+  rotateX(radians(90));
+  rotateZ(radians(frameCount * 0.6666666666666));
 
-  ofSetColor(0);
-  this->frame.draw();
+  push();
+  noStroke();
+  fill(255);
+  sphere(248);
+  pop();
 
-  for (auto& vertex : this->frame.getVertices()) {
+  frame.drawWireframe(color(0));
 
-    ofDrawSphere(vertex, 3);
+  noFill();
+  stroke(0);
+  strokeWeight(8);
+  for (var vertex : frame.getVertices()) {
+    point(vertex.x, vertex.y, vertex.z);
   }
-
-  this->cam.end();
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
