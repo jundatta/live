@@ -44,42 +44,62 @@ void update() {
     next_rotation_y.rotateY(next_angle_y);
 
     ArrayList<PVector> vertices = new ArrayList();
-    vertices.add(glm::vec4(x, 10, 0, 0) * rotation_y * rotation_x);
-    vertices.push_back(glm::vec4(next_x, 10, 0, 0)* next_rotation_y* next_rotation_x);
-    vertices.push_back(glm::vec4(next_x, -10, 0, 0) * next_rotation_y * next_rotation_x);
-    vertices.push_back(glm::vec4(x, -10, 0, 0) * rotation_y * rotation_x);
+    //vertices.push_back(glm::vec4(x, 10, 0, 0) * rotation_y * rotation_x);
+    PVector v = new PVector(x, 10, 0);
+    PMatrix3D rotation_yx = new PMatrix3D(rotation_y);
+    rotation_yx.apply(rotation_x);
+    v = rotation_yx.mult(v, null);
+    vertices.add(v);
+    //vertices.push_back(glm::vec4(next_x, 10, 0, 0)* next_rotation_y* next_rotation_x);
+    v = new PVector(next_x, 10, 0);
+    PMatrix3D next_rotation_yx = new PMatrix3D(next_rotation_y);
+    next_rotation_yx.apply(next_rotation_x);
+    v = next_rotation_yx.mult(v, null);
+    vertices.add(v);
+    //vertices.push_back(glm::vec4(next_x, -10, 0, 0) * next_rotation_y * next_rotation_x);
+    v = new PVector(next_x, -10, 0);
+    v = next_rotation_yx.mult(v, null);
+    vertices.add(v);
+    //vertices.push_back(glm::vec4(x, -10, 0, 0) * rotation_y * rotation_x);
+    v = new PVector(x, -10, 0);
+    v = rotation_yx.mult(v, null);
+    vertices.add(v);
 
-    this->face.addVertices(vertices);
-    this->line.addVertices(vertices);
+    face.addVertices(vertices);
+    line.addVertices(vertices);
 
-    auto color = ofColor();
-    auto next_color = ofColor();
+    push();
+    colorMode(HSB, 255, 255, 255);
+    //color.setHsb(ofMap((int)(x + ofGetFrameNum() * 1) % 128, 1, 128, 0, 255), 180, 255);
+    int h = (int)map((int)(x + ofGetFrameNum() * 1) % 128, 1, 128, 0, 255);
+    color col = color(h, 180, 255);
+    //next_color.setHsb(ofMap((int)(next_x + ofGetFrameNum() * 1) % 128, 1, 128, 0, 255), 180, 255);
+    h = (int)map((int)(next_x + ofGetFrameNum() * 1) % 128, 1, 128, 0, 255);
+    color next_col = color(h, 180, 255);
+    pop();
 
-    color.setHsb(ofMap((int)(x + ofGetFrameNum() * 1) % 128, 1, 128, 0, 255), 180, 255);
-    next_color.setHsb(ofMap((int)(next_x + ofGetFrameNum() * 1) % 128, 1, 128, 0, 255), 180, 255);
+    face.addColor(col);
+    face.addColor(next_col);
+    face.addColor(next_col);
+    face.addColor(col);
 
-    this->face.addColor(color);
-    this->face.addColor(next_color);
-    this->face.addColor(next_color);
-    this->face.addColor(color);
+    face.addIndex(index + 0);
+    face.addIndex(index + 1);
+    face.addIndex(index + 2);
+    face.addIndex(index + 0);
+    face.addIndex(index + 2);
+    face.addIndex(index + 3);
 
-    this->face.addIndex(index + 0);
-    this->face.addIndex(index + 1);
-    this->face.addIndex(index + 2);
-    this->face.addIndex(index + 0);
-    this->face.addIndex(index + 2);
-    this->face.addIndex(index + 3);
-
-    this->line.addIndex(index + 0);
-    this->line.addIndex(index + 1);
-    this->line.addIndex(index + 2);
-    this->line.addIndex(index + 3);
+    line.addIndex(index + 0);
+    line.addIndex(index + 1);
+    line.addIndex(index + 2);
+    line.addIndex(index + 3);
   }
 
-  this->line.addIndex(start_index + 0);
-  this->line.addIndex(start_index + 3);
-  this->line.addIndex(this->line.getNumVertices() - 2);
-  this->line.addIndex(this->line.getNumVertices() - 3);
+  line.addIndex(start_index + 0);
+  line.addIndex(start_index + 3);
+  line.addIndex(line.getNumVertices() - 2);
+  line.addIndex(line.getNumVertices() - 3);
 }
 
 //--------------------------------------------------------------
