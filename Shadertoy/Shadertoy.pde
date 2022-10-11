@@ -1,7 +1,7 @@
 // こちらがオリジナルです。
 // 【作者】Kaliさん
-// 【作品名】Hot Shower
-// https://www.shadertoy.com/view/4lf3Rj
+// 【作品名】Liberation of the True Self
+// https://www.shadertoy.com/view/tlGfzd
 
 PShader sd;
 int startMillis;
@@ -11,13 +11,10 @@ void setup() {
   noStroke();
   textureWrap(REPEAT);
 
-
   sd = loadShader("Shadertoy.glsl");
   sd.set("iResolution", (float)width, (float)height, 0.0f);
   // 最初のミリ秒を取り込んでおく
   startMillis = millis();
-  sd.set("iChannel0", loadImage("iChannel0.png"));
-  sd.set("iChannel1", loadImage("iChannel1.png"));
 }
 
 void draw() {
