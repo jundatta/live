@@ -111,6 +111,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 	v*=.025;
 	float col=min(1.,.05+v+s*l);
 	col=sqrt(col)*2.05-.5;
+	// Shadertoy‚³‚ñ‚Í“§–¾“x‚Íg‚í‚ê‚Ä‚¨‚ç‚ê‚È‚¢‚Ì‚Åa=1.0‚ğ–¾¦‚µ‚½B
 //	fragColor = vec4(col*min(1.,iTime*.2));
 	float gray = col*min(1.,iTime*.2);
 	fragColor = vec4(gray, gray, gray, 1.0);
