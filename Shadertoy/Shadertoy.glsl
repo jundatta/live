@@ -1,120 +1,119 @@
 // Ç±ÇøÇÁÇ™ÉIÉäÉWÉiÉãÇ≈Ç∑ÅB
 // ÅyçÏé“ÅzKaliÇ≥ÇÒ
-// ÅyçÏïiñºÅzCreepy Mountains
-// https://www.shadertoy.com/view/Xlf3Rj
+// ÅyçÏïiñºÅzExit the Matrix
+// https://www.shadertoy.com/view/NlsXDH
 
 uniform vec3 iResolution;
 uniform vec4 iMouse;
 uniform float iTime;
-uniform sampler2D iChannel0;
 
-float noise( vec2 p )
+float det=.001,t, boxhit;
+vec3 adv, boxp;
+
+float hash(vec2 p)
 {
-	return texture(iChannel0,p).x; 
-}
-
-float fnoise(vec2 uv, vec4 sc) {
-	float f  = sc.x*noise( uv ); uv = 2.*uv+.11532185;
-		  f += sc.y*noise( uv ); uv = 2.*uv+.23548563;
-		  f += sc.z*noise( uv ); uv = 2.*uv+.12589452;
-		  f += sc.w*noise( uv ); uv = 2.*uv+.26489542;
-	return f;
+	vec3 p3  = fract(vec3(p.xyx) * .1031);
+    p3 += dot(p3, p3.yzx + 33.33);
+    return fract((p3.x + p3.y) * p3.z);
 }
 
 
-float terrain(float x) {
-	float w=0.;
-	float a=1.;
-	x*=20.;
-	w+=sin(x*.3521)*4.;
-	for (int i=0; i<5; i++) {
-		x*=1.53562;
-		x+=7.56248;
-		w+=sin(x)*a;		
-		a*=.5;
-	}
-	return .2+w*.015;	
+mat2 rot(float a)
+{
+    float s=sin(a), c=cos(a);
+    return mat2(c,s,-s,c);
 }
 
-float bird(vec2 p) {
-	p.x+=iTime*.05;
-	float t=iTime*.05+noise(vec2(floor(p.x/.4-.2)*.7213548))*.7;
-	p.x=mod(p.x,.4)-.2;
-	p*=2.-mod(t,1.)*2.;
-	p.y+=.6-mod(t,1.);
-	p.y+=pow(abs(p.x),2.)*20.*(.2+sin(iTime*20.));
-	float s=step(0.003-abs(p.x)*.1,abs(p.y));	
-	return min(s,step(0.005,length(p+vec2(0.,.0015))));
+vec3 path(float t)
+    {
+    vec3 p=vec3(vec2(sin(t*.1),cos(t*.05))*10.,t);
+    p.x+=smoothstep(.0,.5,abs(.5-fract(t*.02)))*10.;
+    return p;
 }
 
-float tree(vec2 p, float tx) {
-	float noisev=noise(p.xx*.1+.552121)*.25;
-	p.x=mod(p.x,.2)-.1;
-	p*=15.+noise(vec2(tx*1.72561))*10.;
-	float ot=1000.;
-	float a=radians(-60.+noise(vec2(tx))*30.);
-	for (int i=0; i<7; i++) {
-		ot=min(ot,length(max(vec2(0.),abs(p)-vec2(-a*.15,.9))));
-		float s=(sign(p.x)+1.)*.25;
-		p.x=abs(p.x);
-		p=p*1.3-vec2(0.,1.+noisev);		
-		a*=.8;
-		a-=(noise(vec2(float(i+2)*.55170275+tx,s))-.5)*.2;
-		mat2 rot=mat2(cos(a),sin(a),-sin(a),cos(a));
-		p*=rot;
-	}
-	return step(0.05,ot);
+float fractal(vec2 p)
+{
+    p=abs(5.-mod(p*.2,10.))-5.;
+    float ot=1000.;
+    for (int i=0; i<7; i++)
+    {
+        p=abs(p)/clamp(p.x*p.y,.25,2.)-1.;
+        if(i>0)ot=min(ot,abs(p.x)+.7*fract(abs(p.y)*.05+t*.05+float(i)*.3));
+        
+    }
+    ot=exp(-10.*ot);
+    return ot;
+}
+
+float box(vec3 p, vec3 l)
+{
+    vec3 c=abs(p)-l;
+    return length(max(vec3(0.),c))+min(0.,max(c.x,max(c.y,c.z)));
+}
+
+float de(vec3 p)
+{
+    boxhit=0.;
+    vec3 p2=p-adv;
+    p2.xz*=rot(t*.2);
+    p2.xy*=rot(t*.1);
+    p2.yz*=rot(t*.15);
+    float b=box(p2,vec3(1.));
+    p.xy-=path(p.z).xy;
+    float s=sign(p.y);
+    p.y=-abs(p.y)-3.;
+    p.z=mod(p.z,20.)-10.;
+    for (int i=0; i<5; i++)
+    {
+        p=abs(p)-1.;
+        p.xz*=rot(radians(s*-45.));
+        p.yz*=rot(radians(90.));
+    }
+    float f=-box(p,vec3(5.,5.,10.));
+    float d=min(f,b);
+    if (d==b) boxp=p2, boxhit=1.;
+    return d*.7;
 }
 
 
-float scene(vec2 p) {
-	float t=terrain(p.x);
-	float s=step(0.,p.y+t);
-	float tx=floor(p.x/.2)*.2+.1;
-	if (noise(vec2(tx*3.75489))>.55) s=min(s,tree(p+vec2(0.,terrain(tx)),.42+tx*4.5798523));
-	s=min(s,bird(p));
-	return s;
+vec3 march(vec3 from, vec3 dir)
+{
+    vec3 p,n,g=vec3(0.);
+    float d, td=0.;
+    for (int i=0; i<80; i++)
+    {
+        p=from+td*dir;
+        d=de(p)*(1.-hash(gl_FragCoord.xy+t)*.3);
+        if (d<det && boxhit<.5) break;
+        td+=max(det,abs(d));
+        float f=fractal(p.xy)+fractal(p.xz)+fractal(p.yz);
+        //boxp*=.5;
+        float b=fractal(boxp.xy)+fractal(boxp.xz)+fractal(boxp.yz);
+        vec3 colf=vec3(f*f,f,f*f*f);
+        vec3 colb=vec3(b+.1,b*b+.05,0.);
+        g+=colf/(3.+d*d*2.)*exp(-.0015*td*td)*step(5.,td)/2.*(1.-boxhit);
+        g+=colb/(10.+d*d*20.)*boxhit*.5;
+    }
+    return g;
 }
 
-float aascene(vec2 p) {
-	vec2 pix=vec2(0.,max(.25,6.-iTime)/iResolution.x);
-	float aa=scene(p);
-	aa+=scene(p+pix.xy);
-	aa+=scene(p+pix.yy);
-	aa+=scene(p+pix.yx);
-	return aa*.25;	
+mat3 lookat(vec3 dir, vec3 up) 
+{
+	dir=normalize(dir);vec3 rt=normalize(cross(dir,normalize(up)));
+    return mat3(rt,cross(rt,dir),dir);
 }
+
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
-	vec2 uv = fragCoord.xy / iResolution.xy-.5;
-	uv.x*=iResolution.x/iResolution.y;
-	float v=0., l;
-	float t=iTime*.05;
-	vec2 c=vec2(-t,0.);
-	vec2 p;
-	float sc=clamp(t*t*.5,.05,.15);
-	uv.y-=.25;
-	uv.x-=.2;
-	for (int i=0; i<50; i++) {
-		p=uv*sc;
-		l=pow(max(0.,1.-length(p)*2.),15.);
-		l=.02+l*.8;
-		v+=scene(p+c)*pow(float(i+1)/30.,2.)*l;			
-		sc+=.006;
-	}
-	float clo=fnoise((uv-vec2(t,0.))*vec2(.03,.15),vec4(.8,.6,.3,.1))*max(0.,1.-uv.y*3.);
-	float tx=uv.x-t*.5;
-	float ter=.5+step(0.,uv.y-fnoise(vec2(tx)*.015,
-			  vec4(1.,.5,.3,.1))*(.23*(1.+sin(tx*3.2342)*.25))+.5);
-	float s=aascene(p+c)*(ter+clo*.4);
-	v*=.025;
-	float col=min(1.,.05+v+s*l);
-	col=sqrt(col)*2.05-.5;
-	// ShadertoyÇ≥ÇÒÇÕìßñæìxÇÕégÇÌÇÍÇƒÇ®ÇÁÇÍÇ»Ç¢ÇÃÇ≈a=1.0Çñæé¶ÇµÇΩÅB
-//	fragColor = vec4(col*min(1.,iTime*.2));
-	float gray = col*min(1.,iTime*.2);
-	fragColor = vec4(gray, gray, gray, 1.0);
+    vec2 uv = (fragCoord-iResolution.xy*.5)/iResolution.y;
+    t=iTime*7.;
+    vec3 from=path(t);
+    adv=path(t+6.+sin(t*.1)*3.);
+    vec3 dir=normalize(vec3(uv,.7));
+    dir=lookat(adv-from,vec3(0.,1.,0.))*dir;
+    vec3 col=march(from, dir);
+    fragColor=vec4(col,1.0);
 }
 
 void main() {

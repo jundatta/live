@@ -1,7 +1,7 @@
 // こちらがオリジナルです。
 // 【作者】Kaliさん
-// 【作品名】Creepy Mountains
-// https://www.shadertoy.com/view/Xlf3Rj
+// 【作品名】Exit the Matrix
+// https://www.shadertoy.com/view/NlsXDH
 
 PShader sd;
 int startMillis;
@@ -15,7 +15,6 @@ void setup() {
   sd.set("iResolution", (float)width, (float)height, 0.0f);
   // 最初のミリ秒を取り込んでおく
   startMillis = millis();
-  sd.set("iChannel0", loadImage("iChannel0.png"));
 }
 
 void draw() {
