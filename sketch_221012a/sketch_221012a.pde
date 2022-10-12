@@ -6,6 +6,8 @@
 ofMesh face, line;
 //--------------------------------------------------------------
 void setup() {
+  size(720, 720, P3D);
+
   face = new ofMesh();
   line = new ofMesh();
 }
@@ -17,7 +19,7 @@ void update() {
   face.clear();
   line.clear();
 
-  var noise_seed = new PVector(ofRandom(1000), ofRandom(1000));
+  var noise_seed = new PVector(random(1000), random(1000));
   int start_index = face.getNumVertices();
   for (float x = 128; x < 255; x += 1) {
     float next_x = x + 1;
@@ -35,10 +37,10 @@ void update() {
 
     float next_angle_x = map(openFrameworks.ofNoise(noise_seed.x, next_x * 0.0035 + frameCount * 0.01), 0, 1, PI * -2, PI * 2);
     //auto next_rotation_x = glm::rotate(glm::mat4(), next_angle_x, glm::vec3(1, 0, 0));
-    PMatrix3D next_angle_x = new PMatrix3D();
-    next_angle_x.rotateX(next_angle_x);
+    PMatrix3D next_rotation_x = new PMatrix3D();
+    next_rotation_x.rotateX(next_angle_x);
 
-    float next_angle_y = map(openFrameworks.ofNoise(noise_seed.y, next_x * 0.0035 + ofGetFrameNum() * 0.01), 0, 1, PI * -2, PI * 2);
+    float next_angle_y = map(openFrameworks.ofNoise(noise_seed.y, next_x * 0.0035 + frameCount * 0.01), 0, 1, PI * -2, PI * 2);
     //auto next_rotation_y = glm::rotate(glm::mat4(), next_angle_y, glm::vec3(0, 1, 0));
     PMatrix3D next_rotation_y = new PMatrix3D();
     next_rotation_y.rotateY(next_angle_y);
@@ -71,10 +73,10 @@ void update() {
     push();
     colorMode(HSB, 255, 255, 255);
     //color.setHsb(ofMap((int)(x + ofGetFrameNum() * 1) % 128, 1, 128, 0, 255), 180, 255);
-    int h = (int)map((int)(x + ofGetFrameNum() * 1) % 128, 1, 128, 0, 255);
+    int h = (int)map((int)(x + frameCount * 1) % 128, 1, 128, 0, 255);
     color col = color(h, 180, 255);
     //next_color.setHsb(ofMap((int)(next_x + ofGetFrameNum() * 1) % 128, 1, 128, 0, 255), 180, 255);
-    h = (int)map((int)(next_x + ofGetFrameNum() * 1) % 128, 1, 128, 0, 255);
+    h = (int)map((int)(next_x + frameCount * 1) % 128, 1, 128, 0, 255);
     color next_col = color(h, 180, 255);
     pop();
 
@@ -110,23 +112,11 @@ void draw() {
   background(0);
   strokeWeight(2);
 
-  this->cam.begin();
-  ofRotateY(270);
+  rotateY(radians(270));
 
   for (int i = 0; i < 8; i++) {
-
-    ofRotateX(45);
-
-    this->line.drawWireframe();
-    this->face.draw();
+    rotateX(radians(45));
+    line.drawWireframe(color(255));
+    face.draw();
   }
-
-  this->cam.end();
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
