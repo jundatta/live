@@ -1,3 +1,7 @@
+// こちらがオリジナルです。
+// 【作者】Francisさん
+// 【作品名】Night Sky
+// https://openprocessing.org/sketch/192695
 
 //stars
 float starsCount = 10000;
@@ -36,7 +40,7 @@ void initStars() {
   gStars =  createGraphics(width + starsoffset, height+ starsoffset);
   gStars.beginDraw();
   gStars.background(0);
-  gStars.stroke(255,0,0);
+  //gStars.stroke(255);
   for (int i = 0; i < starsCount; i++) {
     float standardDev  = 120;
     float x = randomGaussian() * standardDev + gStars.width/2 ;
@@ -50,7 +54,7 @@ void initStars() {
     } else {
       size = 2.4;
     }
-    //gStars.stroke(size);
+    gStars.stroke(size);
     gStars.ellipse(x, y, size, size);
   }
   gStars.endDraw();
@@ -63,8 +67,8 @@ void initMoon() {
   float totalRadius = radius + glowOffset;
   float vx=0, vy=0; //noise control
   float opacity = 0f;
-  moon_x = width / 10 * 7  - totalRadius;
-  moon_y = height / 7 * 4 - totalRadius;
+  moon_x = width / 10.0f * 7  - totalRadius;
+  moon_y = height / 7.0f * 4 - totalRadius;
   gMoon = createGraphics((int)totalDimension, (int)totalDimension);
   gMoon.beginDraw();
   for (int x = 0; x < totalDimension; x++) {
@@ -76,9 +80,9 @@ void initMoon() {
         if (distance<=radius) {
           //main
           opacity = 255;
-          varNoise = map(noise(vx, vy), 0, 1, 0, 60);
+          varNoise = map(noise(vx, vy), 0, 1, 0, 55);
         } else if (distance<= totalRadius) {
-          opacity = map(distance, totalRadius, radius, 0, 100);
+          opacity = map(distance, totalRadius, radius, 0, 75);
           varNoise = 0;
         }
         float brightness = 200   + varNoise;
@@ -123,7 +127,7 @@ void draw() {
   background(0);
   smooth();
   drawStars();
-  //drawNebula();
+  drawNebula();
   drawMoon();
   drawGround();
   drawTree();
@@ -149,7 +153,7 @@ void drawNebula() {
 }
 
 PImage createNebula() {
-  PImage imgNebula = createImage(width, height, RGB);
+  PImage imgNebula = createImage(width, height, ARGB);
   imgNebula.loadPixels();
   tx = 0f;
   for (int x = 0; x < width; x++) {
