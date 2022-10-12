@@ -32,20 +32,17 @@ class Actor {
       //int retry = next_index_list[this->select_index].size();
       IntList index_list = next_index_list.get(this.select_index);
       int retry = index_list.size();
-      this->next_index = next_index_list[this->select_index][(int)ofRandom(next_index_list[this->select_index].size())];
+      //this->next_index = next_index_list[this->select_index][(int)ofRandom(next_index_list[this->select_index].size())];
+      this.next_index = index_list.get(random(index_list.size()));
       while (--retry > 0) {
-
-        auto destination_itr = find(destination_list.begin(), destination_list.end(), this->next_index);
-        if (destination_itr == destination_list.end()) {
-
-          if (tmp_index != this->next_index) {
-
-            destination_list.push_back(this->next_index);
+        if (!destination_list.hasValue(this.next_index)) {
+          if (tmp_index != this.next_index) {
+            destination_list.add(this.next_index);
             break;
           }
         }
-
-        this->next_index = next_index_list[this->select_index][(this->next_index + 1) % next_index_list[this->select_index].size()];
+        //this->next_index = next_index_list[this->select_index][(this->next_index + 1) % next_index_list[this->select_index].size()];
+        this.next_index = index_list.get((this.next_index+1) % index_list.size());
       }
       if (retry <= 0) {
 
