@@ -3,6 +3,12 @@
 // 【作品名】Active boxes colorful. Draw by openFrameworks
 // https://junkiyoshi.com/2021/12/26/
 
+ArrayList<PVector> location_list;
+ArrayList<IntList> next_index_list;
+IntList destination_list;
+
+ArrayList<Actor> actor_list;
+
 //--------------------------------------------------------------
 class Actor {
   int select_index;
@@ -45,88 +51,64 @@ class Actor {
         this.next_index = index_list.get((this.next_index+1) % index_list.size());
       }
       if (retry <= 0) {
-
-        destination_list.push_back(this->select_index);
-        this->next_index = this->select_index;
+        destination_list.add(this.select_index);
+        this.next_index = this.select_index;
       }
     }
 
-    auto param = ofGetFrameNum() % frame_span;
-    auto distance = location_list[this->next_index] - location_list[this->select_index];
-    this->location = location_list[this->select_index] + distance / frame_span * param;
-
-    this->log.push_front(this->location);
-    while (this->log.size() > 50) {
-      this->log.pop_back();
-    }
+    var param = frameCount % frame_span;
+    var distance = location_list.get(this.next_index) - location_list.get(this.select_index);
+    this.location = location_list.get(this.select_index) + distance / frame_span * param;
   }
 
   //--------------------------------------------------------------
-  glm::vec3 Actor::getLocation() {
-
-    return this->location;
+  PVector getLocation() {
+    return this.location;
   }
 
   //--------------------------------------------------------------
-  bool Actor::isActive() {
-
-    return this->select_index != this->next_index;
+  boolean isActive() {
+    return this.select_index != this.next_index;
   }
 
   //--------------------------------------------------------------
-  float Actor::getHue() {
-
-    return this->hue;
+  float getHue() {
+    return this.hue;
   }
 }
+
 //--------------------------------------------------------------
-void ofApp::setup() {
-
-  ofSetFrameRate(30);
-  ofSetWindowTitle("openFrameworks");
-
-  ofBackground(0);
-  ofSetLineWidth(1.5);
-  ofEnableDepthTest();
-
+void setup() {
   for (int x = -250; x <= 250; x += 25) {
-
     for (int y = -250; y <= 250; y += 25) {
-
       for (int z = -250; z <= 250; z += 25) {
-
-        if (glm::length(glm::vec3(x, y, z)) < 250) {
-
-          this->location_list.push_back(glm::vec3(x, y, z));
+        PVector v = new PVector(x, y, z);
+        if (v.mag() < 250) {
+          this.location_list.add(v);
         }
       }
     }
   }
 
-  for (auto& location : this->location_list) {
-
-    vector<int> next_index = vector<int>();
+  for (PVector location : this.location_list) {
+    IntList next_index = IntList();
     int index = -1;
-    for (auto& other : this->location_list) {
-
+    for (PVector other : this.location_list) {
       index++;
       if (location == other) {
         continue;
       }
-
-      float distance = glm::distance(location, other);
+      float distance = PVector.dist(location, other);
       if (distance <= 25) {
-
-        next_index.push_back(index);
+        next_index.add(index);
       }
     }
-
-    this->next_index_list.push_back(next_index);
+    this.next_index_list.add(next_index);
   }
 
   for (int i = 0; i < 3500; i++) {
-
-    this->actor_list.push_back(make_unique<Actor>(this->location_list, this->next_index_list, this->destination_list));
+    //this->actor_list.push_back(make_unique<Actor>(this->location_list, this->next_index_list, this->destination_list));
+    Actor a = new Actor(this.location_list, this.destination_list);
   }
 }
 
@@ -153,7 +135,11 @@ void ofApp::update() {
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
+  translate(width/2, height/2);
+  background(0);
+  strokeWeight(1.5);
 
   this->cam.begin();
   ofRotateY(ofGetFrameNum() * 0.6666666666666666);
