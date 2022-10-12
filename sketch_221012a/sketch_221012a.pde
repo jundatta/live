@@ -48,23 +48,31 @@ void update() {
     ArrayList<PVector> vertices = new ArrayList();
     //vertices.push_back(glm::vec4(x, 10, 0, 0) * rotation_y * rotation_x);
     PVector v = new PVector(x, 10, 0);
-    PMatrix3D rotation_yx = new PMatrix3D(rotation_y);
-    rotation_yx.apply(rotation_x);
-    v = rotation_yx.mult(v, null);
+    //PMatrix3D rotation_yx = new PMatrix3D(rotation_y);
+    //rotation_yx.apply(rotation_x);
+    //v = rotation_yx.mult(v, null);
+    v = rotation_y.mult(v, null);
+    v = rotation_x.mult(v, null);
     vertices.add(v);
     //vertices.push_back(glm::vec4(next_x, 10, 0, 0)* next_rotation_y* next_rotation_x);
     v = new PVector(next_x, 10, 0);
-    PMatrix3D next_rotation_yx = new PMatrix3D(next_rotation_y);
-    next_rotation_yx.apply(next_rotation_x);
-    v = next_rotation_yx.mult(v, null);
+    //PMatrix3D next_rotation_yx = new PMatrix3D(next_rotation_y);
+    //next_rotation_yx.apply(next_rotation_x);
+    //v = next_rotation_yx.mult(v, null);
+    v = next_rotation_y.mult(v, null);
+    v = next_rotation_x.mult(v, null);
     vertices.add(v);
     //vertices.push_back(glm::vec4(next_x, -10, 0, 0) * next_rotation_y * next_rotation_x);
     v = new PVector(next_x, -10, 0);
-    v = next_rotation_yx.mult(v, null);
+    //v = next_rotation_yx.mult(v, null);
+    v = next_rotation_y.mult(v, null);
+    v = next_rotation_x.mult(v, null);
     vertices.add(v);
     //vertices.push_back(glm::vec4(x, -10, 0, 0) * rotation_y * rotation_x);
     v = new PVector(x, -10, 0);
-    v = rotation_yx.mult(v, null);
+    //v = rotation_yx.mult(v, null);
+    v = rotation_y.mult(v, null);
+    v = rotation_x.mult(v, null);
     vertices.add(v);
 
     face.addVertices(vertices);
@@ -112,10 +120,10 @@ void draw() {
   background(0);
   strokeWeight(2);
 
-  rotateY(radians(270));
+  //rotateY(radians(270));
 
   for (int i = 0; i < 8; i++) {
-    rotateX(radians(45));
+    //rotateX(radians(45));
     line.drawWireframe(color(255));
     face.draw();
   }
