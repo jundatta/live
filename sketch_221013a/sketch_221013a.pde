@@ -18,10 +18,10 @@ class Actor {
   PVector location;
 
   Actor(ArrayList<PVector> location_list, IntList destination_list) {
-    this.select_index = random(location_list.size());
+    this.select_index = (int)random(location_list.size());
     while (true) {
       if (!destination_list.hasValue(this.select_index)) {
-        destination_list.add(this.select_index);
+        destination_list.append(this.select_index);
         break;
       }
       this.select_index = (this.select_index + 1) % location_list.size();
@@ -39,11 +39,11 @@ class Actor {
       IntList index_list = next_index_list.get(this.select_index);
       int retry = index_list.size();
       //this->next_index = next_index_list[this->select_index][(int)ofRandom(next_index_list[this->select_index].size())];
-      this.next_index = index_list.get(random(index_list.size()));
+      this.next_index = index_list.get((int)random(index_list.size()));
       while (--retry > 0) {
         if (!destination_list.hasValue(this.next_index)) {
           if (tmp_index != this.next_index) {
-            destination_list.add(this.next_index);
+            destination_list.append(this.next_index);
             break;
           }
         }
@@ -51,14 +51,20 @@ class Actor {
         this.next_index = index_list.get((this.next_index+1) % index_list.size());
       }
       if (retry <= 0) {
-        destination_list.add(this.select_index);
+        destination_list.append(this.select_index);
         this.next_index = this.select_index;
       }
     }
 
     var param = frameCount % frame_span;
-    var distance = location_list.get(this.next_index) - location_list.get(this.select_index);
-    this.location = location_list.get(this.select_index) + distance / frame_span * param;
+    //var distance = location_list.get(this.next_index) - location_list.get(this.select_index);
+    PVector nextV = location_list.get(this.next_index);
+    PVector selectV = location_list.get(this.select_index);
+    var distance = PVector.sub(nextV, selectV);
+    //this.location = location_list.get(this.select_index) + distance / frame_span * param;
+    PVector mov = PVector.div(distance, frame_span);
+    mov = PVector.mult(mov, param);
+    this.location = PVector.add(selectV, mov);
   }
 
   //--------------------------------------------------------------
@@ -80,7 +86,8 @@ class Actor {
 //--------------------------------------------------------------
 void setup() {
   size(720, 720, P3D);
-  
+
+  this.location_list = new ArrayList();
   for (int x = -250; x <= 250; x += 25) {
     for (int y = -250; y <= 250; y += 25) {
       for (int z = -250; z <= 250; z += 25) {
@@ -92,8 +99,9 @@ void setup() {
     }
   }
 
+  this.next_index_list = new ArrayList();
   for (PVector location : this.location_list) {
-    IntList next_index = IntList();
+    IntList next_index = new IntList();
     int index = -1;
     for (PVector other : this.location_list) {
       index++;
@@ -102,15 +110,18 @@ void setup() {
       }
       float distance = PVector.dist(location, other);
       if (distance <= 25) {
-        next_index.add(index);
+        next_index.append(index);
       }
     }
     this.next_index_list.add(next_index);
   }
 
+  this.destination_list = new IntList();
+  this.actor_list = new ArrayList();
   for (int i = 0; i < 3500; i++) {
     //this->actor_list.push_back(make_unique<Actor>(this->location_list, this->next_index_list, this->destination_list));
     Actor a = new Actor(this.location_list, this.destination_list);
+    this.actor_list.add(a);
   }
 }
 
@@ -143,13 +154,13 @@ void draw() {
   background(0);
   strokeWeight(1.5);
 
-  ofRotateY(radians(frameCount * 0.6666666666666666));
+  rotateY(radians(frameCount * 0.6666666666666666));
 
   for (Actor actor : actor_list) {
     push();
-    color(HSB, 255, 255, 255);
+    colorMode(HSB, 255, 255, 255);
     color fill_color = #000000;
-    if (actor->isActive()) {
+    if (actor.isActive()) {
       if (frameCount % 20 < 10) {
         fill_color = color(actor.getHue(), 130, map(frameCount % 20, 0, 10, 0, 255));
       } else {
