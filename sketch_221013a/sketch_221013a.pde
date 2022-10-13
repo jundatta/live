@@ -79,6 +79,8 @@ class Actor {
 
 //--------------------------------------------------------------
 void setup() {
+  size(720, 720, P3D);
+  
   for (int x = -250; x <= 250; x += 25) {
     for (int y = -250; y <= 250; y += 25) {
       for (int z = -250; z <= 250; z += 25) {
@@ -113,24 +115,24 @@ void setup() {
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
+void update() {
 
   int frame_span = 20;
   int prev_index_size = 0;
 
-  if (ofGetFrameNum() % frame_span == 0) {
-
-    prev_index_size = this->destination_list.size();
+  if (frameCount % frame_span == 0) {
+    prev_index_size = destination_list.size();
   }
 
-  for (auto& actor : this->actor_list) {
-
-    actor->update(frame_span, this->location_list, this->next_index_list, this->destination_list);
+  for (Actor actor : actor_list) {
+    actor.update(frame_span, this.location_list, this.next_index_list, this.destination_list);
   }
 
   if (prev_index_size != 0) {
-
-    this->destination_list.erase(this->destination_list.begin(), this->destination_list.begin() + prev_index_size);
+    //this.destination_list.erase(this.destination_list.begin(), this.destination_list.begin() + prev_index_size);
+    for (int i = 0; i < prev_index_size; i++) {
+      this.destination_list.remove(0);
+    }
   }
 }
 
@@ -141,55 +143,41 @@ void draw() {
   background(0);
   strokeWeight(1.5);
 
-  this->cam.begin();
-  ofRotateY(ofGetFrameNum() * 0.6666666666666666);
+  ofRotateY(radians(frameCount * 0.6666666666666666));
 
-  for (auto& actor : this->actor_list) {
-
-    ofColor fill_color;
-
+  for (Actor actor : actor_list) {
+    push();
+    color(HSB, 255, 255, 255);
+    color fill_color = #000000;
     if (actor->isActive()) {
-
-      if (ofGetFrameNum() % 20 < 10) {
-
-        fill_color.setHsb(actor->getHue(), 130, ofMap(ofGetFrameNum() % 20, 0, 10, 0, 255));
-        ofSetColor(fill_color);
+      if (frameCount % 20 < 10) {
+        fill_color = color(actor.getHue(), 130, map(frameCount % 20, 0, 10, 0, 255));
       } else {
 
-        fill_color.setHsb(actor->getHue(), 130, ofMap(ofGetFrameNum() % 20, 10, 20, 255, 0));
-        ofSetColor(fill_color);
+        fill_color = color(actor.getHue(), 130, map(frameCount % 20, 10, 20, 255, 0));
       }
-    } else {
-
-      ofSetColor(0);
     }
-    ofFill();
-    ofDrawBox(actor->getLocation(), 23);
+    noStroke();
+    fill(fill_color);
+    PVector v = actor.getLocation();
+    translate(v.x, v.y, v.z);
+    box(23);
+    pop();
 
-    if (actor->isActive()) {
-
-      if (ofGetFrameNum() % 20 < 10) {
-
-        ofSetColor(ofMap(ofGetFrameNum() % 20, 0, 10, 255, 0));
+    color stroke_color = #ffffff;
+    if (actor.isActive()) {
+      if (frameCount % 20 < 10) {
+        stroke_color = color(map(frameCount % 20, 0, 10, 255, 0));
       } else {
-
-        ofSetColor(ofMap(ofGetFrameNum() % 20, 10, 20, 0, 255));
+        stroke_color = color(map(frameCount % 20, 10, 20, 0, 255));
       }
-    } else {
-
-      ofSetColor(255);
     }
-    ofNoFill();
-    ofDrawBox(actor->getLocation(), 23);
+    stroke(stroke_color);
+    noFill();
+    push();
+    v = actor.getLocation();
+    translate(v.x, v.y, v.z);
+    box(23);
+    pop();
   }
-
-  this->cam.end();
-}
-
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
