@@ -3,63 +3,61 @@
 // 【作品名】Connection bubble. Draw by openFrameworks
 // https://junkiyoshi.com/2021/12/20/
 
+ofMesh mesh;
+ArrayList<PVector> circle_list;
 //--------------------------------------------------------------
-void ofApp::setup() {
+void setup() {
+  size(720, 720, P3D);
 
-  ofSetFrameRate(30);
-  ofSetWindowTitle("openFrameworks");
-
-  ofBackground(0);
-
-  this->mesh.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
+  mesh = new ofMesh();
+  circle_list = new ArrayList();
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
+void update() {
+  randomSeed(39);
 
-  ofSeedRandom(39);
+  mesh.clear();
+  circle_list.clear();
 
-  this->mesh.clear();
-  this->circle_list.clear();
-
-  vector<glm::vec2> location_list;
+  ArrayList<PVector> location_list;
   for (int i = 0; i < 120; i++) {
-
-    auto location = glm::vec2(ofMap(ofNoise(ofRandom(1000), ofGetFrameNum() * 0.0035), 0, 1, -300, 300), ofMap(ofNoise(ofRandom(1000), ofGetFrameNum() * 0.0035), 0, 1, -300, 300));
-    location_list.push_back(location);
+    var location = new PVector(map(openFrameworks.ofNoise(random(1000), frameCount * 0.0035), 0, 1, -300, 300),
+      map(openFrameworks.ofNoise(random(1000), frameCount * 0.0035), 0, 1, -300, 300));
+    location_list.add(location);
   }
 
   for (int i = 0; i < location_list.size(); i++) {
-
-    this->circle_list.push_back(glm::vec3(location_list[i], 0));
-    auto near_count = 0;
+    int near_count = 0;
     for (int k = 0; k < location_list.size(); k++) {
-
       if (i == k) {
         continue;
       }
 
-      auto distance = glm::distance(location_list[i], location_list[k]);
+      float distance = PVector.dist(location_list.get(i), location_list.get(k));
       if (distance < 50) {
+        mesh.addVertex(location_list.get(i));
+        mesh.addVertex(location_list.get(k));
 
-        this->mesh.addVertex(glm::vec3(location_list[i], 0));
-        this->mesh.addVertex(glm::vec3(location_list[k], 0));
-
-        this->mesh.addIndex(this->mesh.getNumVertices() - 1);
-        this->mesh.addIndex(this->mesh.getNumVertices() - 2);
+        mesh.addIndex(mesh.getNumVertices() - 1);
+        mesh.addIndex(mesh.getNumVertices() - 2);
 
         near_count++;
       }
     }
-
-    this->circle_list.back().z = pow(1.5, near_count);
+    PVector loc = location_list.get(i);
+    PVector cir = new PVector(loc.x, loc.y, pow(1.5, near_count));
+    circle_list.add(cir);
   }
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
+  translate(width/2, height/2);
+  background(0);
 
-  ofTranslate(ofGetWidth() * 0.5, ofGetHeight() * 0.5);
+  translate(width * 0.5, height * 0.5);
 
   ofSetLineWidth(0.5);
   this->mesh.drawWireframe();
