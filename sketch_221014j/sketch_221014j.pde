@@ -40,9 +40,9 @@ class Particle {
         fill(P5JS.random(colors));
         beginShape();
         var ww = this.v.y+random(-5, 5);
-        vertex(0, 0);
+        curveVertex(0, 0);
         curveVertex(ww/2.0f, 5);
-        vertex(ww, 0);
+        curveVertex(ww, 0);
         curveVertex(ww/2.0f, -5);
         endShape(CLOSE);
         pop();
@@ -106,7 +106,6 @@ void generateNewBamboo() {
 }
 
 void draw() {
-  background(0);
   for (Particle p : particles) {
     p.update();
     p.draw();

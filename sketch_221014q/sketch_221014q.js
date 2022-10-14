@@ -114,7 +114,6 @@ function generateNewBamboo() {
 }
 
 function draw() {
-  background(0);
   particles.forEach(p=> {
     p.update()
       p.draw()
