@@ -30,20 +30,20 @@ class Particle {
     fill(this.col);
     rect(0, 0, this.r, this.v.y);
     rectMode(CENTER);
-    rect(this.r/2, this.v.y, this.r+2, 2);
-    rect(this.r/2, 0, this.r+2, 2);
+    rect(this.r/2.0f, this.v.y, this.r+2, 2);
+    rect(this.r/2.0f, 0, this.r+2, 2);
     if (random(1)>0.7) {
       var count = int(random(2, 4));
       for (var i=0; i<count; i++) {
         push();
-        rotate((i*2-1)/1.2* this.v.heading()/(1+random(2))*random(-1, 1)+PI*0.5 );
+        rotate((i*2-1)/1.2* this.v.heading()/(float)(1+random(2))*random(-1, 1)+PI*0.5 );
         fill(P5JS.random(colors));
         beginShape();
         var ww = this.v.y+random(-5, 5);
         vertex(0, 0);
-        curveVertex(ww/2, 5);
+        curveVertex(ww/2.0f, 5);
         vertex(ww, 0);
-        curveVertex(ww/2, -5);
+        curveVertex(ww/2.0f, -5);
         endShape(CLOSE);
         pop();
       }
@@ -76,7 +76,6 @@ class Particle {
   }
 }
 
-
 ArrayList<Particle> particles = new ArrayList();
 
 void setup() {
@@ -90,7 +89,7 @@ void setup() {
 
   //  drawingContext.shadowColor = color(30, 70, 80, 235);
   //drawingContext.shadowBlur =30;
-  for (var i=0; i<50; i++)  generateNewBamboo();
+  for (var i=0; i<1; i++)  generateNewBamboo();
 }
 
 void generateNewBamboo() {
@@ -107,6 +106,7 @@ void generateNewBamboo() {
 }
 
 void draw() {
+  background(0);
   for (Particle p : particles) {
     p.update();
     p.draw();
@@ -119,13 +119,10 @@ void draw() {
     newPs.add(p);
   }
   particles = newPs;
-  var psSize = particles.size();
   if (frameCount%20 == 0) {
-    for (var n = 0; n < psSize; n++) {
-      fill(0, 1);
-      rect(0, 0, width, height);
-      for (var i=0; i<2; i++) generateNewBamboo();
-    }
+    fill(0, 1);
+    rect(0, 0, width, height);
+    for (var i=0; i<2; i++) generateNewBamboo();
   }
 }
 
