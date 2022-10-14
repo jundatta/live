@@ -92,9 +92,10 @@ void setup() {
   noStroke();
   rect(0, 0, width, height);
 
+  // ※drawingContextは超えられない壁＼(^_^)／
   //  drawingContext.shadowColor = color(30, 70, 80, 235);
   //drawingContext.shadowBlur =30;
-  for (var i=0; i<1; i++)  generateNewBamboo();
+  for (var i=0; i<50; i++)  generateNewBamboo();
 }
 
 void generateNewBamboo() {
@@ -131,6 +132,9 @@ void draw() {
     rect(0, 0, width, height);
     for (var i=0; i<2; i++) generateNewBamboo();
   }
+  // ※drawingContextは超えられない壁＼(^_^)／
+  // （。。。私ごときでは太刀打ちできません...orz）
+  filter(BLUR, 1);
 }
 
 void mousePressed() {

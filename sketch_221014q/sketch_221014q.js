@@ -87,7 +87,7 @@ let particles = []
 
     drawingContext.shadowColor = color(30, 70, 80, 235);
   drawingContext.shadowBlur =30;
-  for (var i=0; i<1; i++)  generateNewBamboo()
+  for (var i=0; i<50; i++)  generateNewBamboo()
 }
 
 function generateNewBamboo() {
