@@ -38,11 +38,16 @@ class Particle {
         push();
         rotate((i*2-1)/1.2* this.v.heading()/(float)(1+random(2))*random(-1, 1)+PI*0.5 );
         fill(P5JS.random(colors));
+        // ※なぜかわかりゃん＼(^_^)／がこれでなんかいい感じになった。
+        // １．curveVertex()とvertex()が混ざっていたらすべてcurveVertex()に変える
+        // ２．最初と最後のcurveVertex()は2回連続で呼ぶように変える
         beginShape();
         var ww = this.v.y+random(-5, 5);
         curveVertex(0, 0);
+        curveVertex(0, 0);
         curveVertex(ww/2.0f, 5);
         curveVertex(ww, 0);
+        curveVertex(ww/2.0f, -5);
         curveVertex(ww/2.0f, -5);
         endShape(CLOSE);
         pop();
@@ -94,7 +99,10 @@ void setup() {
 
 void generateNewBamboo() {
   var p = new Particle( new PVector(random(width), height +random(50, 100)),
-    new PVector(random(-6, 6), random(-30, -100)),
+    //new PVector(random(-6, 6), random(-30, -100)),
+    // ※p5.js(JavaScript)はrandom()の引数が大きい、小さいの順でもいい感じの値を返すように見える
+    // ※Processing javaは大きい、小さいの順ではいい感じの値を返さない
+    new PVector(random(-6, 6), random(-100, -30)),
     random(8, 18), random(20, 30), P5JS.random(colors));
   if (random(1)<0.1) {
     p.v.mult(0.5);

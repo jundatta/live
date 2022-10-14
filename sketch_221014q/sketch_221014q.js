@@ -79,7 +79,7 @@ let particles = []
 
   function setup() {
   //frameRate(10)
-    createCanvas(800, 800);
+  createCanvas(800, 800);
   background(50)
     fill("#222");
   noStroke()
@@ -110,6 +110,7 @@ function generateNewBamboo() {
       p.child=true
       p.color = color("#e5c677")
   }
+  console.log(p.v.y);
   particles.push(p)
 }
 
