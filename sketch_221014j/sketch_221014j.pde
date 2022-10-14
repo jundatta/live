@@ -10,13 +10,14 @@ class Particle {
   color col;
   boolean child;
   PVector lastP;
-  Particle() {
-    p = new PVector(0, 0);
-    v = new PVector(0, 0);
+
+  Particle(PVector p, PVector v, float r, float w, color col) {
+    this.p = p;
+    this.v = v;
     a = new PVector(0, 0);
-    r = 4;
-    w = 10;
-    col = color(255);
+    this.r = r;
+    this.w = w;
+    this.col = col;
     child = false;
     lastP = new PVector(0, 0);
   }
@@ -47,7 +48,7 @@ class Particle {
     }
 
     for (var o=0; o<this.r; o+=1) {
-      let c = color(random(colors));
+      color c = color(random(colors));
       c.setAlpha(random(80));
       stroke(c);
       line(o, 0, o, this.v.y/random(1.5, 2.5));
@@ -73,42 +74,33 @@ class Particle {
 }
 
 
-let particles = []
+ArrayList<Particle> particles = new ArrayList();
 
-  function setup() {
-  frameRate(10)
-    createCanvas(800, 800);
-  background(50)
-    fill("#222");
-  noStroke()
-    rect(0, 0, width, height)
+void setup() {
+  P5JS.setup(this);
+  
+  size(800, 800);
+  background(50);
+  fill(#222222);
+  noStroke();
+  rect(0, 0, width, height);
 
-    drawingContext.shadowColor = color(30, 70, 80, 235);
-  drawingContext.shadowBlur =30;
-  for (var i=0; i<50; i++)  generateNewBamboo()
+  //  drawingContext.shadowColor = color(30, 70, 80, 235);
+  //drawingContext.shadowBlur =30;
+  for (var i=0; i<50; i++)  generateNewBamboo();
 }
 
-function generateNewBamboo() {
-  let p = new Particle( {
-  p:
-    createVector(random(width), height +random(50, 100)),
-    v:
-    createVector(random(-6, 6), random(-30, -100)),
-    r:
-    random(8, 18),
-    w:
-    random(20, 30),
-    color:
-    random(colors)
+void generateNewBamboo() {
+  var p = new Particle( new PVector(random(width), height +random(50, 100)),
+    new PVector(random(-6, 6), random(-30, -100)),
+    random(8, 18), random(20, 30), P5JS.random(colors));
+  if (random(1)<0.1) {
+    p.v.mult(0.5);
+    p.r*=3;
+    p.child=true;
+    p.col = color(#e5c677);
   }
-  )
-  if (random()<0.1) {
-    p.v.mult(0.5)
-      p.r*=3
-      p.child=true
-      p.color = color("#e5c677")
-  }
-  particles.push(p)
+  particles.add(p);
 }
 
 function draw() {
