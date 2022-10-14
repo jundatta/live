@@ -3,80 +3,73 @@
 // 【作品名】200421 Energetic Bamboo
 // https://openprocessing.org/sketch/878972
 
-let colors = "cdf2ba-77af5b-76a855-c4e878-e8f78a-dded63-f1f4e6".split("-").map(a=>"#"+a)
-  class Particle {
-  constructor(args) {
-    let def = {
-    p:
-    createVector(0, 0),
-    v:
-    createVector(0, 0),
-    a:
-    createVector(0, 0),
-    r:
-    4,
-    w:
-    10,
-    color:
-    color(255),
-    child:
-    false,
-    lastP:
-    createVector(0, 0),
+color[] colors = {#cdf2ba, #77af5b, #76a855, #c4e878, #e8f78a, #dded63, #f1f4e6};
+class Particle {
+  PVector p, v, a;
+  float r, w;
+  color col;
+  boolean child;
+  PVector lastP;
+  Particle() {
+    p = new PVector(0, 0);
+    v = new PVector(0, 0);
+    a = new PVector(0, 0);
+    r = 4;
+    w = 10;
+    col = color(255);
+    child = false;
+    lastP = new PVector(0, 0);
   }
-  Object.assign(def, args)
-    Object.assign(this, def)
-}
-draw() {
-  push()
-    translate(this.p.x, this.p.y)
-    rotate(this.v.heading()-PI*1.5)
-    fill(this.color)
-    rect(0, 0, this.r, this.v.y)
-    rectMode(CENTER)
-    rect(this.r/2, this.v.y, this.r+2, 2)
-    rect(this.r/2, 0, this.r+2, 2)
+  void draw() {
+    push();
+    translate(this.p.x, this.p.y);
+    rotate(this.v.heading()-PI*1.5);
+    fill(this.col);
+    rect(0, 0, this.r, this.v.y);
+    rectMode(CENTER);
+    rect(this.r/2, this.v.y, this.r+2, 2);
+    rect(this.r/2, 0, this.r+2, 2);
     if (random()>0.7) {
-    let count = int(random(2, 4))
+      let count = int(random(2, 4));
       for (var i=0; i<count; i++) {
-      push()
-        rotate((i*2-1)/1.2* this.v.heading()/(1+random(2))*random(-1, 1)+PI*0.5 )
-        fill(random(colors))
-        beginShape()
-        let ww = this.v.y+random(-5, 5)
-        vertex(0, 0)
-        curveVertex(ww/2, 5)
-        vertex(ww, 0)
-        curveVertex(ww/2, -5)
-        endShape(CLOSE)
-        pop()
+        push();
+        rotate((i*2-1)/1.2* this.v.heading()/(1+random(2))*random(-1, 1)+PI*0.5 );
+        fill(random(colors));
+        beginShape();
+        let ww = this.v.y+random(-5, 5);
+        vertex(0, 0);
+        curveVertex(ww/2, 5);
+        vertex(ww, 0);
+        curveVertex(ww/2, -5);
+        endShape(CLOSE);
+        pop();
+      }
     }
-  }
 
-  for (var o=0; o<this.r; o+=1) {
-    let c = color(random(colors))
-      c.setAlpha(random(80))
-      stroke(c)
-      line(o, 0, o, this.v.y/random(1.5, 2.5))
-  }
+    for (var o=0; o<this.r; o+=1) {
+      let c = color(random(colors));
+      c.setAlpha(random(80));
+      stroke(c);
+      line(o, 0, o, this.v.y/random(1.5, 2.5));
+    }
 
-  pop()
-}
-update() {
-  this.lastP=this.p.copy()
-    this.p.add(this.v)
-    this.v.add(this.a)
-    this.v.mult(0.99)
+    pop();
+  }
+  void update() {
+    this.lastP=this.p.copy();
+    this.p.add(this.v);
+    this.v.add(this.a);
+    this.v.mult(0.99);
     if (this.p.y<-50) {
-    this.dead=true
-  }
-  if (this.child) {
-    this.r-=4
+      this.dead=true;
+    }
+    if (this.child) {
+      this.r-=4;
       if (this.r<1) {
-      this.dead=true
+        this.dead=true;
+      }
     }
   }
-}
 }
 
 
