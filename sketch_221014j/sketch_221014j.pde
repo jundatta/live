@@ -10,6 +10,7 @@ class Particle {
   color col;
   boolean child;
   PVector lastP;
+  boolean dead;
 
   Particle(PVector p, PVector v, float r, float w, color col) {
     this.p = p;
@@ -20,6 +21,7 @@ class Particle {
     this.col = col;
     child = false;
     lastP = new PVector(0, 0);
+    dead = false;
   }
   void draw() {
     push();
@@ -30,14 +32,14 @@ class Particle {
     rectMode(CENTER);
     rect(this.r/2, this.v.y, this.r+2, 2);
     rect(this.r/2, 0, this.r+2, 2);
-    if (random()>0.7) {
-      let count = int(random(2, 4));
+    if (random(1)>0.7) {
+      var count = int(random(2, 4));
       for (var i=0; i<count; i++) {
         push();
         rotate((i*2-1)/1.2* this.v.heading()/(1+random(2))*random(-1, 1)+PI*0.5 );
-        fill(random(colors));
+        fill(P5JS.random(colors));
         beginShape();
-        let ww = this.v.y+random(-5, 5);
+        var ww = this.v.y+random(-5, 5);
         vertex(0, 0);
         curveVertex(ww/2, 5);
         vertex(ww, 0);
@@ -48,8 +50,9 @@ class Particle {
     }
 
     for (var o=0; o<this.r; o+=1) {
-      color c = color(random(colors));
-      c.setAlpha(random(80));
+      color c = color(P5JS.random(colors));
+      //c.setAlpha(random(80));
+      c = color(red(c), green(c), blue(c), random(80));
       stroke(c);
       line(o, 0, o, this.v.y/random(1.5, 2.5));
     }
@@ -78,7 +81,7 @@ ArrayList<Particle> particles = new ArrayList();
 
 void setup() {
   P5JS.setup(this);
-  
+
   size(800, 800);
   background(50);
   fill(#222222);
@@ -103,21 +106,29 @@ void generateNewBamboo() {
   particles.add(p);
 }
 
-function draw() {
-  particles.forEach(p=> {
-    p.update()
-      p.draw()
+void draw() {
+  for (Particle p : particles) {
+    p.update();
+    p.draw();
   }
-  )
-  particles = particles.filter((p)=>random()<0.99 && !p.dead)
-    if (frameCount%20==0) {
-    fill(0, 1)
-      rect(0, 0, width, height)
-      for (var i=0; i<2; i++) generateNewBamboo()
+  ArrayList<Particle> newPs = new ArrayList();
+  for (Particle p : particles) {
+    if (p.dead) {
+      continue;
+    }
+    newPs.add(p);
+  }
+  particles = newPs;
+  var psSize = particles.size();
+  if (frameCount%20 == 0) {
+    for (var n = 0; n < psSize; n++) {
+      fill(0, 1);
+      rect(0, 0, width, height);
+      for (var i=0; i<2; i++) generateNewBamboo();
+    }
   }
 }
 
-
-function mousePressed() {
-  for (var i=0; i<5; i++) generateNewBamboo()
+void mousePressed() {
+  for (var i=0; i<5; i++) generateNewBamboo();
 }
