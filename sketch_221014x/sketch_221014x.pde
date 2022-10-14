@@ -3,42 +3,46 @@
 // 【作品名】PPPP
 // https://neort.io/art/c8pk8sc3p9f0i94dgpcg
 
-let balloons = [];
-let colors = ["#000000", "#ED4141", "#2B8BDF", "#159670", '#ffffff'];
-let bsSize;
+ArrayList<Balloon> balloons = new ArrayList();
+color[] colors = {#000000, #ED4141, #2B8BDF, #159670, #ffffff};
+float bsSize;
 
-function setup() {
+void setup() {
+  P5JS.setup(this);
+
   // createCanvas(1080, 1080);
-  createCanvas(windowWidth, windowHeight);
-  bsSize = (width * height) / 900;
-  for (let i = 0; i < 132; i++) {
-    balloons.push(new Balloon());
+  size(1112, 834);
+  bsSize = (width * height) / 900.0f;
+  for (int i = 0; i < 132; i++) {
+    balloons.add(new Balloon());
   }
 }
 
-function draw() {
-  background('#FECA16');
+void draw() {
+  background(#FECA16);
   noStroke();
   fill(255);
-  for (let b of balloons) {
+  for (Balloon b : balloons) {
     b.run();
   }
-  for (let i = 0; i < balloons.length; i++) {
-    let b = balloons[i];
+  for (int i = 0; i < balloons.size(); i++) {
+    Balloon b = balloons.get(i);
     if (b.isDead) {
-      balloons.splice(i, 1);
-      balloons.push(new Balloon());
+      balloons.remove(i);
+      balloons.add(new Balloon());
     }
   }
 }
 
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
-  bsSize = min(width, height);
-}
-
 class Balloon {
-  constructor() {
+  float x0, x1, x, y0, y1, y;
+  float d;
+  int t, t1, t2;
+  ArrayList<Pop> pops;
+  boolean isDead;
+  color col;
+
+  Balloon() {
     this.x0 = random(width);
     this.x1 = random(width);
     this.x = this.x0;
@@ -49,56 +53,54 @@ class Balloon {
     this.t = -int(random(200));
     this.t1 = int(random(100, 200));
     this.t2 = this.t1 + 60;
-    this.pops = [];
-    let pn = int(random(10, 20))
-      for (let i = 0; i < pn; i++) {
-      this.pops.push(new Pop(this.x1, this.y1, this.d));
+    this.pops = new ArrayList();
+    int pn = int(random(10, 20));
+    for (int i = 0; i < pn; i++) {
+      this.pops.add(new Pop(this.x1, this.y1, this.d));
     }
     this.isDead = false;
-    this.col = random(colors);
+    this.col = P5JS.random(colors);
   }
 
-  show() {
+  void show() {
     if (this.t < this.t1) {
       fill(this.col);
       noStroke();
       circle(this.x, this.y, this.d);
     } else if (this.t < this.t2) {
-      for (let p of this.pops) {
+      for (Pop p : this.pops) {
         p.show(this.col);
         p.move();
-        // p.show();
-        // this.pops
-        // let a = map(i, 0, this.nh, 0, TAU);
-        // circle(this.x + this.mcl[i] * cos(a), this.y + this.mcl[i] * sin(a), this.mcs[i]);
       }
     }
   }
 
-  move() {
+  void move() {
     if (0 < this.t && this.t < this.t1) {
-      // this.x -= this.xStep;
-      // this.y -= this.yStep;
-      let amt = norm(this.t, 0, this.t1 - 1);
-      this.x = lerp(this.x0, this.x1, amt ** 0.3);
-      this.y = lerp(this.y0, this.y1, amt ** 0.3);
+      var amt = norm(this.t, 0, this.t1 - 1);
+      this.x = lerp(this.x0, this.x1, pow(amt, 0.3f));
+      this.y = lerp(this.y0, this.y1, pow(amt, 0.3f));
     }
-    // if(this.t < this.t1){
-    // }
     this.t++;
     if (this.t > this.t2) {
       this.isDead = true;
     }
   }
 
-  run() {
+  void run() {
     this.show();
     this.move();
   }
 }
 
 class Pop {
-  constructor(x, y, d) {
+  float x, y, d0, d;
+  int n;
+  float r, tr;
+  int t, t1;
+  float a;
+
+  Pop(float x, float y, float d) {
     this.x = x;
     this.y = y;
     this.d0 = d * random(0.1, 0.5);
@@ -111,7 +113,7 @@ class Pop {
     this.a = random(TAU);
   }
 
-  show(col) {
+  void show(color col) {
     if (this.t < this.t1) {
       fill(col);
       noStroke();
@@ -119,11 +121,11 @@ class Pop {
     }
   }
 
-  move() {
+  void move() {
     if (this.t < this.t1) {
-      let amt = norm(this.t, 0, this.t1 - 1);
-      this.d = lerp(this.d0, 0, amt ** 0.5);
-      this.r = lerp(0, this.tr, amt ** 0.5);
+      var amt = norm(this.t, 0, this.t1 - 1);
+      this.d = lerp(this.d0, 0, pow(amt, 0.5f));
+      this.r = lerp(0, this.tr, pow(amt, 0.5f));
       this.t++;
     }
   }

@@ -1,8 +1,8 @@
 let balloons = [];
 let colors = ["#000000", "#ED4141", "#2B8BDF", "#159670", '#ffffff'];
-let bsSize
+let bsSize;
 
-  function setup() {
+function setup() {
   // createCanvas(1080, 1080);
   createCanvas(windowWidth, windowHeight);
   bsSize = (width * height) / 900;
