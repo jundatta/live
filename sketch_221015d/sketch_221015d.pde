@@ -6,6 +6,8 @@
 PVector[] vertices;
 //--------------------------------------------------------------
 void setup() {
+  size(720, 720, P3D);
+  
   vertices = loadOutline("5.txt");
 }
 
@@ -23,19 +25,22 @@ void draw() {
   rotateY(radians(frameCount * 0.66666666666666666));
 
   for (int i = 0; i < 1; i++) {
-    int x = random(-300, 300);
-    int y = random(-300, 300);
-    int z = random(-300, 300);
-    int rad_x = random(-TAU, TAU);
-    int rad_y = random(-TAU, TAU);
-    int rad_z = random(-TAU, TAU);
+    float x = random(-300, 300);
+    float y = random(-300, 300);
+    float z = random(-300, 300);
+    float rad_x = random(-TAU, TAU);
+    float rad_y = random(-TAU, TAU);
+    float rad_z = random(-TAU, TAU);
 
-    var translate_location = PVector.normalize(new PVector(x, y, z)) * random(540);
-    var len = (int)(PVector.mag(translate_location) + frameCount * 2) % 540;
-    translate_location = PVector.normalize(translate_location) * len;
+    var translate_location = new PVector(x, y, z);
+    translate_location.normalize();
+    translate_location.mult(random(540));
+    var len = (int)(translate_location.mag() + frameCount * 2) % 540;
+    translate_location.normalize();
+    translate_location.mult(len);
 
     pushMatrix();
-    translate(translate_location);
+    translate(translate_location.x, translate_location.y, translate_location.z);
     rotateZ(rad_z);
     rotateY(rad_y);
     rotateX(rad_x);
@@ -43,26 +48,31 @@ void draw() {
     ArrayList<PVector> mesh_vertices = new ArrayList();
     ArrayList<PVector> base_location_list = new ArrayList();
 
-    for (int vertices_index = 0; vertices_index < vertices.size(); vertices_index++) {
-      auto base_location = glm::vec3(this->font.stringWidth(word) * 0.5, this->font.stringHeight(word) * 0.5, 0);
-      auto location = vertices[vertices_index] - glm::vec2(this->font.stringWidth(word) * 0.5, this->font.stringHeight(word) * 0.5);
-
-      mesh_vertices.push_back(location);
-      base_location_list.push_back(base_location);
+    float stringWidth = 37;
+    float stringHeight = 49;
+    for (int vertices_index = 0; vertices_index < vertices.length; vertices_index++) {
+      var base_location = new PVector(stringWidth * 0.5, stringHeight * 0.5, 0);
+      var location = PVector.sub(vertices[vertices_index], base_location);
+      mesh_vertices.add(location);
+      base_location_list.add(base_location);
     }
 
-    ofMesh face, line;
-    line.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
+    ofMesh face = new ofMesh();
+    ofMesh line = new ofMesh();
     for (int k = 0; k < mesh_vertices.size(); k++) {
-
-      face.addVertex(base_location_list[k] + glm::vec3(mesh_vertices[k] - glm::vec3(0, 0, 5)));
-      face.addVertex(base_location_list[k] + glm::vec3(mesh_vertices[k] + glm::vec3(0, 0, 5)));
-
-      line.addVertex(base_location_list[k] + glm::vec3(mesh_vertices[k] - glm::vec3(0, 0, 5)));
-      line.addVertex(base_location_list[k] + glm::vec3(mesh_vertices[k] + glm::vec3(0, 0, 5)));
+      //face.addVertex(base_location_list[k] + glm::vec3(mesh_vertices[k] - glm::vec3(0, 0, 5)));
+      PVector wV = new PVector(0, 0, 5);
+      PVector v = PVector.sub(mesh_vertices.get(k), wV);
+      v = PVector.add(base_location_list.get(k), v);
+      face.addVertex(v);
+      line.addVertex(v);
+      //face.addVertex(base_location_list[k] + glm::vec3(mesh_vertices[k] + glm::vec3(0, 0, 5)));
+      v = PVector.add(mesh_vertices.get(k), wV);
+      v = PVector.add(base_location_list.get(k), v);
+      face.addVertex(v);
+      line.addVertex(v);
 
       if (k > 0) {
-
         face.addIndex(face.getNumVertices() - 1);
         face.addIndex(face.getNumVertices() - 2);
         face.addIndex(face.getNumVertices() - 4);
@@ -89,22 +99,13 @@ void draw() {
     line.addIndex(line.getNumVertices() - 2);
     line.addIndex(0);
 
-    ofColor color;
-    color.setHsb(ofRandom(255), 130, 255);
-    ofSetColor(color);
-    face.draw();
+    push();
+    colorMode(HSB, 255, 255, 255);
+    color col = color(random(255), 130, 255);
+    pop();
+    face.draw(col);
 
-    ofSetColor(255);
-    line.drawWireframe();
+    line.drawWireframe(color(255));
     popMatrix();
   }
-
-  this->cam.end();
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
