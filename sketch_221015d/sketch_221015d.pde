@@ -3,122 +3,100 @@
 // 【作品名】Fives. Draw by openFrameworks
 // https://junkiyoshi.com/2021/12/15/
 
+PVector[] vertices;
 //--------------------------------------------------------------
-void ofApp::setup() {
-
-  ofSetFrameRate(30);
-  ofSetWindowTitle("openFrameworks");
-
-  ofBackground(255);
-  ofEnableDepthTest();
-
-  this->font.loadFont("fonts/Kazesawa-Bold.ttf", 50, true, true, true);
+void setup() {
+  vertices = loadOutline("5.txt");
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
-
-  ofSeedRandom(39);
+void update() {
+  randomSeed(39);
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
+  translate(width/2, height/2);
+  background(255);
 
-  this->cam.begin();
-  ofRotateY(ofGetFrameNum() * 0.66666666666666666);
-
-  auto word = "5";
-  int sample_count = 200;
-  vector<ofPath> word_path = this->font.getStringAsPoints(word, true, false);
+  rotateY(radians(frameCount * 0.66666666666666666));
 
   for (int i = 0; i < 1; i++) {
+    int x = random(-300, 300);
+    int y = random(-300, 300);
+    int z = random(-300, 300);
+    int rad_x = random(-TAU, TAU);
+    int rad_y = random(-TAU, TAU);
+    int rad_z = random(-TAU, TAU);
 
-    int x = ofRandom(-300, 300);
-    int y = ofRandom(-300, 300);
-    int z = ofRandom(-300, 300);
-    int deg_x = ofRandom(-360, 360);
-    int deg_y = ofRandom(-360, 360);
-    int deg_z = ofRandom(-360, 360);
+    var translate_location = PVector.normalize(new PVector(x, y, z)) * random(540);
+    var len = (int)(PVector.mag(translate_location) + frameCount * 2) % 540;
+    translate_location = PVector.normalize(translate_location) * len;
 
-    auto translate_location = glm::normalize(glm::vec3(x, y, z)) * ofRandom(540);
-    auto len = (int)(glm::length(translate_location) + ofGetFrameNum() * 2) % 540;
-    translate_location = glm::normalize(translate_location) * len;
+    pushMatrix();
+    translate(translate_location);
+    rotateZ(rad_z);
+    rotateY(rad_y);
+    rotateX(rad_x);
 
-    ofPushMatrix();
-    ofTranslate(translate_location);
-    ofRotateZ(deg_z);
-    ofRotateY(deg_y);
-    ofRotateX(deg_x);
+    ArrayList<PVector> mesh_vertices = new ArrayList();
+    ArrayList<PVector> base_location_list = new ArrayList();
 
-    for (int word_index = 0; word_index < word_path.size(); word_index++) {
+    for (int vertices_index = 0; vertices_index < vertices.size(); vertices_index++) {
+      auto base_location = glm::vec3(this->font.stringWidth(word) * 0.5, this->font.stringHeight(word) * 0.5, 0);
+      auto location = vertices[vertices_index] - glm::vec2(this->font.stringWidth(word) * 0.5, this->font.stringHeight(word) * 0.5);
 
-      vector<ofPolyline> outline = word_path[word_index].getOutline();
-      for (int outline_index = 0; outline_index < outline.size(); outline_index++) {
+      mesh_vertices.push_back(location);
+      base_location_list.push_back(base_location);
+    }
 
-        outline[outline_index] = outline[outline_index].getResampledByCount(sample_count);
-        vector<glm::vec3> vertices = outline[outline_index].getVertices();
-        vector<glm::vec3> mesh_vertices;
-        vector<glm::vec3> base_location_list;
-        vector<glm::highp_mat4x4> rotate_vertices;
+    ofMesh face, line;
+    line.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
+    for (int k = 0; k < mesh_vertices.size(); k++) {
 
-        for (int vertices_index = 0; vertices_index < vertices.size(); vertices_index++) {
+      face.addVertex(base_location_list[k] + glm::vec3(mesh_vertices[k] - glm::vec3(0, 0, 5)));
+      face.addVertex(base_location_list[k] + glm::vec3(mesh_vertices[k] + glm::vec3(0, 0, 5)));
 
-          auto base_location = glm::vec3(this->font.stringWidth(word) * 0.5, this->font.stringHeight(word) * 0.5, 0);
-          auto location = vertices[vertices_index] - glm::vec2(this->font.stringWidth(word) * 0.5, this->font.stringHeight(word) * 0.5);
+      line.addVertex(base_location_list[k] + glm::vec3(mesh_vertices[k] - glm::vec3(0, 0, 5)));
+      line.addVertex(base_location_list[k] + glm::vec3(mesh_vertices[k] + glm::vec3(0, 0, 5)));
 
-          mesh_vertices.push_back(location);
-          base_location_list.push_back(base_location);
-        }
+      if (k > 0) {
 
-        ofMesh face, line;
-        line.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
-        for (int k = 0; k < mesh_vertices.size(); k++) {
-
-          face.addVertex(base_location_list[k] + glm::vec3(mesh_vertices[k] - glm::vec3(0, 0, 5)));
-          face.addVertex(base_location_list[k] + glm::vec3(mesh_vertices[k] + glm::vec3(0, 0, 5)));
-
-          line.addVertex(base_location_list[k] + glm::vec3(mesh_vertices[k] - glm::vec3(0, 0, 5)));
-          line.addVertex(base_location_list[k] + glm::vec3(mesh_vertices[k] + glm::vec3(0, 0, 5)));
-
-          if (k > 0) {
-
-            face.addIndex(face.getNumVertices() - 1);
-            face.addIndex(face.getNumVertices() - 2);
-            face.addIndex(face.getNumVertices() - 4);
-            face.addIndex(face.getNumVertices() - 1);
-            face.addIndex(face.getNumVertices() - 3);
-            face.addIndex(face.getNumVertices() - 4);
-
-            line.addIndex(line.getNumVertices() - 1);
-            line.addIndex(line.getNumVertices() - 3);
-            line.addIndex(line.getNumVertices() - 2);
-            line.addIndex(line.getNumVertices() - 4);
-          }
-        }
-
-        face.addIndex(face.getNumVertices() - 1);
-        face.addIndex(0);
-        face.addIndex(1);
         face.addIndex(face.getNumVertices() - 1);
         face.addIndex(face.getNumVertices() - 2);
-        face.addIndex(2);
+        face.addIndex(face.getNumVertices() - 4);
+        face.addIndex(face.getNumVertices() - 1);
+        face.addIndex(face.getNumVertices() - 3);
+        face.addIndex(face.getNumVertices() - 4);
 
         line.addIndex(line.getNumVertices() - 1);
-        line.addIndex(1);
+        line.addIndex(line.getNumVertices() - 3);
         line.addIndex(line.getNumVertices() - 2);
-        line.addIndex(0);
-
-        ofColor color;
-        color.setHsb(ofRandom(255), 130, 255);
-        ofSetColor(color);
-        face.draw();
-
-        ofSetColor(255);
-        line.drawWireframe();
+        line.addIndex(line.getNumVertices() - 4);
       }
     }
 
-    ofPopMatrix();
+    face.addIndex(face.getNumVertices() - 1);
+    face.addIndex(0);
+    face.addIndex(1);
+    face.addIndex(face.getNumVertices() - 1);
+    face.addIndex(face.getNumVertices() - 2);
+    face.addIndex(2);
+
+    line.addIndex(line.getNumVertices() - 1);
+    line.addIndex(1);
+    line.addIndex(line.getNumVertices() - 2);
+    line.addIndex(0);
+
+    ofColor color;
+    color.setHsb(ofRandom(255), 130, 255);
+    ofSetColor(color);
+    face.draw();
+
+    ofSetColor(255);
+    line.drawWireframe();
+    popMatrix();
   }
 
   this->cam.end();
