@@ -24,7 +24,7 @@ void draw() {
 
   rotateY(radians(frameCount * 0.66666666666666666));
 
-  for (int i = 0; i < 1; i++) {
+  for (int i = 0; i < 150 * 0.5f; i++) {
     float x = random(-300, 300);
     float y = random(-300, 300);
     float z = random(-300, 300);
