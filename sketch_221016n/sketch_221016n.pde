@@ -3,39 +3,33 @@
 // 【作品名】Shaving spheres. Draw by openFrameworks
 // https://junkiyoshi.com/2021/12/16/
 
+ofMesh face, frame;
 //--------------------------------------------------------------
-void ofApp::setup() {
+void setup() {
+  size(720, 720, P3D);
 
-  ofSetFrameRate(30);
-  ofSetWindowTitle("openFrameworks");
-
-  ofBackground(0);
-  ofSetLineWidth(1.5);
-  ofEnableDepthTest();
-
-  this->frame.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
+  face = new ofMesh();
+  frame = new ofMesh();
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
+void update() {
+  randomSeed(39);
 
-  ofSeedRandom(39);
-
-  this->face.clear();
-  this->frame.clear();
+  face.clear();
+  frame.clear();
 
   float phi_deg_step = 5;
   float theta_deg_step = 5;
 
-  vector<glm::vec3> noise_location_list;
+  ArrayList<PVector> noise_location_list = new ArrayList();
 
   for (int i = 0; i < 20; i++) {
-
-    auto noise_location = glm::vec3(
-      ofMap(ofNoise(ofRandom(1000), ofGetFrameNum() * 0.005), 0, 1, -250, 250),
-      ofMap(ofNoise(ofRandom(1000), ofGetFrameNum() * 0.005), 0, 1, -250, 250),
-      ofMap(ofNoise(ofRandom(1000), ofGetFrameNum() * 0.005), 0, 1, -250, 250));
-    noise_location_list.push_back(noise_location);
+    var noise_location = new PVector(
+      map(openFrameworks.ofNoise(random(1000), ofGetFrameNum() * 0.005), 0, 1, -250, 250),
+      map(openFrameworks.ofNoise(random(1000), ofGetFrameNum() * 0.005), 0, 1, -250, 250),
+      map(openFrameworks.ofNoise(random(1000), ofGetFrameNum() * 0.005), 0, 1, -250, 250));
+    noise_location_list.add(noise_location);
   }
 
   for (float radius = 50; radius <= 250; radius += 15) {
@@ -106,7 +100,11 @@ void ofApp::update() {
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
+  translate(width/2, height/2);
+  background(0);
+  strokeWeight(1.5);
 
   this->cam.begin();
   ofRotateX(90);
