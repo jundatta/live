@@ -1,4 +1,7 @@
-// https://neort.io/art/c83b7lk3p9f3k6tgvhig
+// こちらがオリジナルです。
+// 【作者】Kamoshikaさん
+// 【作品名】Tornado
+// https://neort.io/art/ca0f77c3p9fbkmo5pn50
 
 PShader s;
 int startMillis;
