@@ -13,12 +13,57 @@ float offset = 50;
 float[] h;
 float N = 100;
 
-int mode = 0;
+class KAKIGOURI {
+  void draw() {
+  }
+}
+class GARIGARI extends KAKIGOURI {
+  void draw() {
+    int n;
+    float angle;
+    for (var i=0; i<N; i++) {
+      n = int(P5JS.randomGaussian(width/2, upper/6));
+      angle = random(0, PI);
+      if (0 <= n && n < h.length) {
+        stroke(255);
+        line(n+10*cos(angle), height-(h[n]+10*sin(angle)), n-10*cos(angle), height-(h[n]-10*sin(angle)));
+        h[n] += 1;
+        if (h[n] >=height-offset) {
+          kaki = new SYRUP();
+        }
+      }
+    }
+  }
+}
+class SYRUP extends KAKIGOURI {
+  void draw() {
+    int n;
+    float angle;
+    for (var i=0; i<N; i++) {
+      n = int(P5JS.randomGaussian(width/2, upper/12)/2)*2;
+      angle = random(0, PI);
+      stroke(#F73576);
+      line(n+10*cos(angle), height-(h[n]+10*sin(angle)), n-10*cos(angle), height-(h[n]-10*sin(angle)));
+      h[n] -= 2;
+      if (h[width/2] <= height/2) {
+        kaki = new DEKIAGARI();
+      }
+    }
+  }
+}
+class DEKIAGARI extends KAKIGOURI {
+  void draw() {
+    ;  // くらえ＼(^_^)／
+  }
+}
+
+KAKIGOURI kaki;
 
 void setup() {
   P5JS.setup(this);
 
-  size(800, 600, P2D);
+  //size(800, 600, P3D);
+  size(500, 800, P3D);
   h = new float[width];
   background(cols[int(random(cols.length))]);
 
@@ -29,43 +74,17 @@ void setup() {
       h[i] = offset+depth-10;
     }
   }
+
+  kaki = new GARIGARI();
 }
 
 void draw() {
   stroke(255);
   strokeWeight(0.5);
-  for (var i=0; i<N; i++) {
-    int n;
-    float angle;
-    if (mode == 0) {
-      n = int(P5JS.randomGaussian(width/2, upper/6));
-      angle = random(0, PI);
-      //if (h[n] != null) {
-      if (0 <= n && n < h.length) {
-        stroke(255);
-        line(n+10*cos(angle), height-(h[n]+10*sin(angle)), n-10*cos(angle), height-(h[n]-10*sin(angle)));
-        h[n] += 1;
-        if (h[n] >=height-offset) {
-          mode = 1;
-        }
-      }
-      //}
-    } else if (mode == 1) {
-      n = int(P5JS.randomGaussian(width/2, upper/12)/2)*2;
-      angle = random(0, PI);
-      stroke(#F73576);
-      line(n+10*cos(angle), height-(h[n]+10*sin(angle)), n-10*cos(angle), height-(h[n]-10*sin(angle)));
-      h[n] -= 2;
-      if (h[width/2] <= height/2) {
-        mode = -1;  // なにもしない。に遷移する
-      }
-    } else {
-      ;  // なにもしない＼(^_^)／
-    }
-  }
-  if (mode != -1) {
-    noStroke();
-    fill(240);
-    quad(width/2-bottom/2, height-offset, width/2+bottom/2, height-offset, width/2+upper/2, height-(offset+depth), width/2-upper/2, height-(offset+depth));
-  }
+
+  kaki.draw();
+
+  noStroke();
+  fill(240);
+  quad(width/2-bottom/2, height-offset, width/2+bottom/2, height-offset, width/2+upper/2, height-(offset+depth), width/2-upper/2, height-(offset+depth));
 }
