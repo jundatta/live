@@ -608,8 +608,8 @@ vec3 calc_Iv( Ray view_ray, inout AtmOut atm_out, mat4 camera, LameTweaks lame_t
 	atm_out.vod_attn = vec3( 1.0 );
 	atm_out.Iv = vec3( 0.0 );
 
-//	vec3 spacecolor = MAGENTA; // debug
-	vec3 spacecolor = BLACK;
+	vec3 spacecolor = MAGENTA; // debug
+//	vec3 spacecolor = BLACK;
 
 	if ( ta.x == FLT_MAX ) return spacecolor; // view_ray line doesn't intersect a (and therefore, e since e is inside a)
 	if ( ta.y <= 0.0 ) return spacecolor; // return mix(SPACECOLOR,WHITE,0.7);	// view_ray line intersects a(atm) but behind us
