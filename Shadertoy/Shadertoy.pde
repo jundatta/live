@@ -29,7 +29,7 @@ void draw() {
   // iMouseのz,wはそれぞれマウスドラッグ時のx,y座標になるが
   // シミュレートをあきらめる
   // このためz,wにはそれぞれ0.0fを固定で渡す
-  sd.set("iMouse", (float)mouseX, (float)mouseY, 0.0f, 0.0f);
+  //sd.set("iMouse", (float)mouseX, (float)mouseY, 0.0f, 0.0f);
   shader(sd);
   rect(0, 0, width, height);
   resetShader();

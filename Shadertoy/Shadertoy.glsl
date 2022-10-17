@@ -22,9 +22,9 @@ uniform sampler2D iChannel1;
 // The shader tries to make the most of shadertoy's mushroom texture using layering,
 // tiling, bombing of vortex distortions and silly exaggerations to make clouds shine more in the penumbra zone.
 
-#define CAMERA_TIME_RESET // make camera predictable by resetting
 #define CAMERA_PERIOD 30.0 // time we stay on each camera, in seconds
-#define GLOBALTIME (iTime+0.0) // offset sets initial view
+//#define GLOBALTIME (iTime+0.0) // offset sets initial view
+#define GLOBALTIME (CAMERA_CLOUDS * CAMERA_PERIOD + 1.0/* •b */) // offset sets initial view
 
 #define CAMERA_NUM 8.0
 
@@ -38,7 +38,6 @@ uniform sampler2D iChannel1;
 #define CAMERA_ORBITING_CLOSE   6.0
 #define CAMERA_MOON_WIP         7.0 // moon has no surface shader yet...
 
-#define CLOUD_FLOW
 #define EARTH_ROTATION
 
 #define PI			3.141592654
@@ -438,9 +437,7 @@ float cloudSphereMap( vec2 p, mat4 camera, vec3 n, float bias, LameTweaks lame_t
 //	q += vortex_bombing( q.xy, 64.0, 1.0, 1.0, 0.0 ) * POW6( 0.5 ); // 7
 
 	vec2 qoff = vec2( 0.0, 0 );
-#ifdef CLOUD_FLOW
 	qoff.x = lame_tweaks.cloud_flow_time * earth_angular_velocity; //cloud flow (doesn't fix black line)
-#endif
 
 	NoiseTiledParams ntp;
 	ntp.eye = camera[3].xyz;
@@ -471,9 +468,8 @@ float cloudSphereMap( vec2 p, mat4 camera, vec3 n, float bias, LameTweaks lame_t
 float cloudMap( vec3 n, mat4 camera, float bias, LameTweaks lame_tweaks )
 {
 	vec3 n0 = n;
-#ifdef EARTH_ROTATION
 	n.xy = rotate_with_angle( n.xy, lame_tweaks.earth_rot_time * earth_angular_velocity );
-#endif
+
 	float theta = acos( n.z );
 	float phi = calc_angle( n.xy ) + PI; // assume range 0,1
 
@@ -653,16 +649,10 @@ vec3 calc_Iv( Ray view_ray, inout AtmOut atm_out, mat4 camera, LameTweaks lame_t
 			vec2 ta_sun = sphere_trace( sun_ray, earth_radius + atm_max, earth_center );
 			tppc = opticalDepth( sun_ray, 0.0/*p*/, ta_sun.y/*pc*/ ); // note: ta_sun.y > 0.0
 			vec6 tmp;
-			#if 1
 			// note: this is not the correct way to combine the r,m transmittance at all, but too late to fix
 			tmp.r = rho.x * exp( -tppc.r - tppa.r );
 			tmp.m = rho.y * exp( -tppc.m - tppa.m );
-			#else
-			// normally attenuation should affect both
-			vec3 tr = exp( -tppc.r - tppa.r - tppc.m - tppa.m );
-			tmp.r = rho.x * tr;
-			tmp.m = rho.y * tr;
-			#endif
+
 			add_vec6( Iv_sum, tmp, dl * ( ( i == 0 || i == num_view_ray_segments ) ? 0.5 : 1.0 ) );
 		}
 		add_vec6( tppa, mkvec6( rho ), dl );
@@ -943,16 +933,12 @@ KeplerOrbitRetval get_earth_camera_path_kepler( float t, in KeplerOrbit ko )
 	float n = 2.0 * PI / ko.period;
 	vec2 p = kepler_orbit( t, kepler_orbit_calc_p( ko.rmin, ko.e ), ko.e, n );
 	p = perp( p ); // start on y, where the sun is, symmetry more convenient to tweak orbit period
-#if 1
+
 	// define trajectory plane here (theta must be non zero if you want an inclination)
-//	mat4 rep = zup_spherical_lookat2( radians( 90.0 ), radians( 90.0 ) ); // circle around penumbra zone
 	mat4 rep = zup_spherical_lookat2( radians( 0.0 ), radians( 0.0 ) ); // trajectory inclination
 	ret.orbit_plane_normal = rep[2].xyz;
 	ret.orbit_position = ( rep * xy01( p ) ).xyz;
-#else
-	ret.orbit_plane_normal = vec3( 0, 0, 1 );
-	ret.orbit_position = xy0( xx );
-#endif
+
 	return ret;
 }
 
@@ -1046,9 +1032,7 @@ mat4 get_earth_camera( inout float tan_half_fovy
 	lame_tweaks.specular_hack = 0.25;
 	lame_tweaks.cloud_hack = vec3( 2.0, 0.12, 0.5 );
 
-#ifdef CAMERA_TIME_RESET
 	time = camera_time;
-#endif
 
 	float mouse_ctrl = 1.0;
 	vec2 mm_offset = vec2( 0.0, 0.0 );
@@ -1063,9 +1047,9 @@ mat4 get_earth_camera( inout float tan_half_fovy
 		ko.period = 60.0 * 180.0;
 		ko.e = 0.0024;
 		float t = time * 20.0;
-#ifdef CAMERA_TIME_RESET
+
 		t = bounce_time( t, ko.period, fade );
-#endif
+
 		// time = 0; // eye should be on y=0,1,0 at time=0
 		KeplerOrbitRetval kr = get_earth_camera_path_kepler( t, ko );
 		eye = kr.orbit_position;
@@ -1090,9 +1074,9 @@ mat4 get_earth_camera( inout float tan_half_fovy
 		ko.period = 60.0 * 25.0;
 		ko.e = 0.0024;
 		float t = time * 10.0;
-#ifdef CAMERA_TIME_RESET
+
 		t = bounce_time( t, ko.period, fade );
-#endif
+
 		KeplerOrbitRetval kr = get_earth_camera_path_kepler( t, ko );
 		eye = kr.orbit_position;
 		up = normalize( cross( kr.orbit_plane_normal, eye ) );
