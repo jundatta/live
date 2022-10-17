@@ -7,7 +7,7 @@ PShader sd;
 int startMillis;
 
 void setup() {
-  size(787, 442, P3D);
+  size(693, 389, P3D);
   noStroke();
   textureWrap(REPEAT);
 

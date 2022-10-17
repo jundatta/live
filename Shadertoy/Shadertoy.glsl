@@ -751,16 +751,19 @@ vec3 calc_Iv( Ray view_ray, inout AtmOut atm_out, mat4 camera, LameTweaks lame_t
 	float earth_diffuse = 0.008;  // controls blue depth
 
 	return ( 0.0
-			 + earth_diffuse * s
-			 + specular * ( 1.0 - saturate( cloud ) ) * lame_tweaks.specular_hack * s * s
+//			 + earth_diffuse * s
+//			 + specular * ( 1.0 - saturate( cloud ) ) * lame_tweaks.specular_hack * s * s
 			 + cloud
+#if 0
 			 * // this add specks of gold to the clouds in the penumbra zone
 			 ( 1.0
 			   + smoothstep( -0.02, 0.012, dp )
 			   * exp( ( cloud - cloud_shadow ) * lame_tweaks.cloud_hack.x )
 			   * lame_tweaks.cloud_hack.y ) * lame_tweaks.cloud_hack.z
 
-			) * Ie * exp( -tPaPb.r - tPaPb.m )
+			) * Ie * exp( -tPaPb.r - tPaPb.m
+#endif
+			)
 
 		   + Iv * ( 2.4 - ( 1.0 - s ) * 0.7 );
 }
@@ -791,7 +794,7 @@ vec3 earthShader( Ray view_ray, mat4 camera, LameTweaks lame_tweaks, float expos
 	AtmOut atm_out;
 
 	vec3 ret = calc_Iv( view_ray, atm_out, camera, lame_tweaks );
-
+#if 0
 	vec3 sun_color = atm_out.vod_attn * vec3( 1.0, 0.85, 0.71 );
 	float sun_intensity = 0.0;
 
@@ -883,7 +886,7 @@ vec3 earthShader( Ray view_ray, mat4 camera, LameTweaks lame_tweaks, float expos
 
 //	float scene_luminance = 0.0;
 //	scene_luminance = max( 0.0, dot( view_ray.d, sun_direction ) );
-
+#endif
 	ret = 1.0 - exp( -exposure * ret );
 	return ret;
 }
