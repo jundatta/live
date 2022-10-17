@@ -169,15 +169,13 @@ mat4 z_rotation( float angle )
 // project this on line (O,d), d is assumed to be unit length
 vec3 project_on_line1( vec3 P, vec3 O, vec3 d ) { return O + d * dot( P - O, d ); }
 
-#define layered5_pass_scale(func,p,a)((func(p,POW0(2.0),a)*POW1(0.5)+func(p,POW1(2.0),a)*POW2(0.5)+func(p,POW2(2.0),a)*POW3(0.5)+func(p,POW3(2.0),a)*POW4(0.5)+func(p,POW4(2.0),a)*POW5(0.5))*(1.0/(1.0-POW5(0.5))))
+vec2 grid3( vec2 x, vec2 r ) { return smoothstep( r, vec2( 1.0 ), abs( ( fract( x ) - vec2( 0.5 ) ) * 2.0 ) ); }
 
 struct NoiseTiledParams
 {
 	vec3 eye, n, p;
 	float bias;
 };
-
-vec2 grid3( vec2 x, vec2 r ) { return smoothstep( r, vec2( 1.0 ), abs( ( fract( x ) - vec2( 0.5 ) ) * 2.0 ) ); }
 
 float tile_tex( in vec2 uv, float s, NoiseTiledParams ntp )
 {
@@ -203,7 +201,32 @@ float tile_tex( in vec2 uv, float s, NoiseTiledParams ntp )
 	return mix( mix( a0, b0, uv.y ), mix( a1, b1, uv.y ), uv.x );
 }
 
+#if 0
+#define layered5_pass_scale(func,p,a)((func(p,POW0(2.0),a)*POW1(0.5)+func(p,POW1(2.0),a)*POW2(0.5)+func(p,POW2(2.0),a)*POW3(0.5)+func(p,POW3(2.0),a)*POW4(0.5)+func(p,POW4(2.0),a)*POW5(0.5))*(1.0/(1.0-POW5(0.5))))
+#else
+float pow5( float x ) { return x * x * x * x * x; }
+float layered5_pass_scale(vec2 p, NoiseTiledParams a) {
+	float t0 = tile_tex(p,1.0,a);
+	t0 *= POW1(0.5);
+	float t1 = tile_tex(p,2.0,a);
+	t1 *= POW2(0.5);
+	float t2 = tile_tex(p,pow2(2.0),a);
+	t2 *= POW3(0.5);
+	float t3 = tile_tex(p,pow3(2.0),a);
+	t3 *= POW4(0.5);
+	float t4 = tile_tex(p,pow4(2.0),a);
+	t4 *= POW5(0.5);
+	float t5 = t0 + t1 + t2 + t3 + t4;
+	t5 *= 1.0/(1.0-pow5(0.5));
+	return t5;
+}
+#endif
+
+#if 0
 float fbm5_tiled_clouds( vec2 p, NoiseTiledParams ntp ) { return layered5_pass_scale( tile_tex, p, ntp ); }
+#else
+float fbm5_tiled_clouds( vec2 p, NoiseTiledParams ntp ) { return layered5_pass_scale( p, ntp ); }
+#endif
 
 // just return the delta
 vec3 vortex( vec2 q, float max_twist, float aa_scale )
