@@ -24,7 +24,7 @@ uniform sampler2D iChannel1;
 
 #define CAMERA_PERIOD 30.0 // time we stay on each camera, in seconds
 //#define GLOBALTIME (iTime+0.0) // offset sets initial view
-#define GLOBALTIME (CAMERA_ORBITING_CLOSE * CAMERA_PERIOD + 1.0/* •b */) // offset sets initial view
+#define GLOBALTIME (CAMERA_MOON_WIP * CAMERA_PERIOD + 1.0/* •b */) // offset sets initial view
 
 #define CAMERA_NUM 8.0
 
@@ -37,8 +37,6 @@ uniform sampler2D iChannel1;
 #define CAMERA_TAKE_OFF_SUNRISE 5.0
 #define CAMERA_ORBITING_CLOSE   6.0
 #define CAMERA_MOON_WIP         7.0 // moon has no surface shader yet...
-
-#define EARTH_ROTATION
 
 #define PI			3.141592654
 #define FLT_MAX		1000000.0
@@ -343,9 +341,6 @@ float CornetteSingleScatteringPhaseFunction( float cos_theta, float g ) { float 
 // == CornetteSingleScatteringPhaseFunction( cos_theta, 0.0 )
 float RayleighScattering( float cos_theta ) { return 0.75 * ( 1.0 + cos_theta * cos_theta ); }
 
-// https://www.astro.umd.edu/~jph/HG_note.pdf HG, g in [-1,1]
-float HenyeyGreensteinPhaseFunction( float cos_theta, float g ) { float g2 = g * g; return ( 1.0 / ( 4.0 * PI ) ) * ( 1.0 - g2 ) / pow( 1.0 + g2 - 2.0 * g * cos_theta, 1.5 ); }
-
 float calc_Fr_r( float cos_theta ) { return RayleighScattering( cos_theta  ); }
 float calc_Fr_m( float cos_theta, float g ) { return CornetteSingleScatteringPhaseFunction( cos_theta, g ); }
 
@@ -353,12 +348,6 @@ bool in_earth_shadow( vec3 p )
 {
 	return ( dot( p, sun_direction ) < 0.0 )
 		   && ( lensqr( p - project_on_line1( p, earth_center, sun_direction ) ) < earth_radius * earth_radius );
-}
-
-bool in_moon_shadow( vec3 p )
-{
-	return ( dot( p - moon_center, sun_direction ) < 0.0 )
-		   && ( lensqr( p - project_on_line1( p, moon_center, sun_direction ) ) < moon_radius * moon_radius );
 }
 
 // this is a manual fit of the offline precalculated Ie 1d table (with various wrong physical constant) for each r,g,b, plus slight tweaks
