@@ -1126,6 +1126,8 @@ mat4 get_earth_camera( inout float tan_half_fovy
 		cloud_flow_time_offset = -900.0;
 		mouse_ctrl = 2.5;
 		exposure = 0.8;
+// å©êÿÇÍÇ»Ç¢ÇÊÇ§Ç…ì¸ÇÍÇƒÇ›ÇΩÅ_(^_^)Å^
+mm_offset = vec2( +0.075, -0.011 );
 		lame_tweaks.cloud_hack = vec3( 4.0, 0.12, 0.6 );
 	}
 	else if ( IS_NEXT_INDEX( CAMERA_SPECULAR_FAR ) )
