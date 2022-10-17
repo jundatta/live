@@ -24,7 +24,7 @@ uniform sampler2D iChannel1;
 
 #define CAMERA_PERIOD 30.0 // time we stay on each camera, in seconds
 //#define GLOBALTIME (iTime+0.0) // offset sets initial view
-#define GLOBALTIME (CAMERA_CLOUDS * CAMERA_PERIOD + 1.0/* ïb */) // offset sets initial view
+#define GLOBALTIME (CAMERA_ORBITING_CLOSE * CAMERA_PERIOD + 1.0/* ïb */) // offset sets initial view
 
 #define CAMERA_NUM 8.0
 
@@ -1127,7 +1127,7 @@ mat4 get_earth_camera( inout float tan_half_fovy
 		mouse_ctrl = 2.5;
 		exposure = 0.8;
 // å©êÿÇÍÇ»Ç¢ÇÊÇ§Ç…ì¸ÇÍÇƒÇ›ÇΩÅ_(^_^)Å^
-mm_offset = vec2( +0.075, -0.011 );
+//mm_offset = vec2( +0.075, -0.011 );
 		lame_tweaks.cloud_hack = vec3( 4.0, 0.12, 0.6 );
 	}
 	else if ( IS_NEXT_INDEX( CAMERA_SPECULAR_FAR ) )
