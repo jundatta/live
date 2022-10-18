@@ -25,8 +25,8 @@ uniform sampler2D iChannel1;
 #define CAMERA_TIME_RESET // make camera predictable by resetting
 //#define CAMERA_PERIOD 30.0 // time we stay on each camera, in seconds
 #define CAMERA_PERIOD 30.0 // time we stay on each camera, in seconds
-//#define GLOBALTIME (iTime+0.0) // offset sets initial view
-#define GLOBALTIME (CAMERA_SPECULAR_FAR * CAMERA_PERIOD + 3.0/* •b */)
+#define GLOBALTIME (iTime+0.0) // offset sets initial view
+//#define GLOBALTIME (CAMERA_SPECULAR_FAR * CAMERA_PERIOD + 3.0/* •b */)
 
 #define CAMERA_NUM 8.0
 
