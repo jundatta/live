@@ -198,6 +198,7 @@ float tile_tex( in vec2 uv, float s, NoiseTiledParams ntp )
 
 	float r = 1.0 - 0.2; // note: don't divide by s... 0,1 here
 	uv = grid3( uv, vec2( r ) );
+return uv.x;
 	return mix( mix( a0, b0, uv.y ), mix( a1, b1, uv.y ), uv.x );
 }
 
@@ -438,18 +439,18 @@ float cloudSphereMap( vec2 p, mat4 camera, vec3 n, float bias, LameTweaks lame_t
 
 	vec3 q = vec3( p * vec2( 2, 1 ), 0.0 );
 
-	vec3 q0 = q;
+//	vec3 q0 = q;
 
 //	q += vortex_bombing( q.xy,  1.0, 1.0, 1.0, 0.0 ) * POW0( 0.5 ); // 1
 //	q += vortex_bombing( q.xy,  2.0, 1.0, 1.0, 0.0 ) * POW1( 0.5 ); // 2
 //	q += vortex_bombing( q.xy,  4.0, 1.0, 1.0, 0.0 ) * POW2( 0.5 ); // 3
-	q += vortex_bombing( q.xy,  8.0, 3.0, 1.0, 0.9 ) * POW3( 0.5 ); // 4
+	q += vortex_bombing( q.xy,  8.0, 3.0, 1.0, 0.9 ) * pow3( 0.5 ); // 4
 //	q += vortex_bombing( q.xy, 16.0, 3.0, 1.0, 1.0 ) * POW4( 0.5 ); // 5
-	q += vortex_bombing( q.xy, 32.0, 2.7, 5.5, 0.85 ) * POW5( 0.5 ); // 6
+	q += vortex_bombing( q.xy, 32.0, 2.7, 5.5, 0.85 ) * pow5( 0.5 ); // 6
 //	q += vortex_bombing( q.xy, 64.0, 1.0, 1.0, 0.0 ) * POW6( 0.5 ); // 7
 
 	vec2 qoff = vec2( 0.0, 0 );
-	qoff.x = lame_tweaks.cloud_flow_time * earth_angular_velocity; //cloud flow (doesn't fix black line)
+//	qoff.x = lame_tweaks.cloud_flow_time * earth_angular_velocity; //cloud flow (doesn't fix black line)
 
 	NoiseTiledParams ntp;
 	ntp.eye = camera[3].xyz;
@@ -458,17 +459,18 @@ float cloudSphereMap( vec2 p, mat4 camera, vec3 n, float bias, LameTweaks lame_t
 	ntp.bias = bias;
 
 	float a = fbm5_tiled_clouds( q.xy * 4.0 + qoff, ntp );
+return a;
 
 	a *= 1.0 - smoothstep( 0.5 - pole * 3.4, 0.5, abs( p0.y - 0.5 ) ); // would like to do better than that...
 
 	float a0 = a;
-
+#if 0
 	{
 		//increase density on areas that have vortices
 		a += length( q - q0 ) * 0.5;
 		a += q.z * q.z * 5.0;
 	}
-
+#endif
 	// add a little bit more oompf detail, helps overall + on cloud close ups
 	a += a0 * fbm5_tiled_clouds( q.xy * 8.0 + qoff, ntp ) * 0.5;
 
@@ -648,6 +650,7 @@ vec3 calc_Iv( Ray view_ray, inout AtmOut atm_out, mat4 camera, LameTweaks lame_t
 	vec6 tppc = mkvec6( 0.0 ); // the last of those is a earth hit -> sun ray when earth_surface is true
 	vec6 tppa = mkvec6( 0.0 ); // the last of those is a earth hit -> eye ray when earth_surface is true
 	vec6 Iv_sum = mkvec6( 0.0 );
+#if 0
 	for ( int i = 0; i < num_view_ray_segments + 1; ++i )
 	{
 		p = view_ray.o + view_ray.d * tp;
@@ -670,7 +673,7 @@ vec3 calc_Iv( Ray view_ray, inout AtmOut atm_out, mat4 camera, LameTweaks lame_t
 		add_vec6( tppa, mkvec6( rho ), dl );
 		tp += dl;
 	}
-
+#endif
 	float cos_theta = dot( sun_direction, view_ray.d );
 	vec3 Iv = Is *
 		( ( Iv_sum.r / ( 4.0 * PI ) ) * calc_Fr_r( cos_theta ) + 
