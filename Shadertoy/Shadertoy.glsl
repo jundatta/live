@@ -26,7 +26,7 @@ uniform sampler2D iChannel1;
 //#define CAMERA_PERIOD 30.0 // time we stay on each camera, in seconds
 #define CAMERA_PERIOD 30.0 // time we stay on each camera, in seconds
 //#define GLOBALTIME (iTime+0.0) // offset sets initial view
-#define GLOBALTIME (CAMERA_CLOUDS * CAMERA_PERIOD + 3.0/* 秒 */)
+#define GLOBALTIME (CAMERA_SPECULAR_FAR * CAMERA_PERIOD + 3.0/* 秒 */)
 
 #define CAMERA_NUM 8.0
 
@@ -719,13 +719,19 @@ vec3 calc_Iv( Ray view_ray, inout AtmOut atm_out, mat4 camera, LameTweaks lame_t
 		cloud_shadow += cs.cloud * w1 * shadow_falloff( cloud_shadow_ray.o, cs.sphere_point );
 
 		cloud_shadow_ray.d = sun_direction * acs.x + np * acs.y;
-		cs = cloudTraceFlat( cloud_shadow_ray, camera, 0.0, lame_tweaks );
-		cloud_shadow += cs.cloud * w2 * shadow_falloff( cloud_shadow_ray.o, cs.sphere_point );
+		CloudOut cs0;
+		cs0 = cloudTraceFlat( cloud_shadow_ray, camera, 0.0, lame_tweaks );
+		cloud_shadow += cs0.cloud * w2 * shadow_falloff( cloud_shadow_ray.o, cs0.sphere_point );
 
 		cloud_shadow_ray.d = sun_direction * acs.x - np * acs.y;
 		cs = cloudTraceFlat( cloud_shadow_ray, camera, 0.0, lame_tweaks );
+#if 0
 		cloud_shadow += cs.cloud * w2 * shadow_falloff( cloud_shadow_ray.o, cs.sphere_point );
-
+#else
+// CAMERA_CLOUDSでフレームが切れるのを防げる模様（本家Shadertoyさんと計算結果が違う。と思われ）
+// （...cs.sphere_point（acs.x - np * acs.y）がよろしくないらしい。。。＼(^_^)／）
+		cloud_shadow += cs.cloud * w2 * shadow_falloff( cloud_shadow_ray.o, cs0.sphere_point );
+#endif
 		cloud_shadow *= ( 1.0 / ( w1 + w2 * 2.0 ) );
 
 		vec3 l = sun_direction;
@@ -765,8 +771,8 @@ vec3 calc_Iv( Ray view_ray, inout AtmOut atm_out, mat4 camera, LameTweaks lame_t
 			 * // this add specks of gold to the clouds in the penumbra zone
 			 ( 1.0
 			   + smoothstep( -0.02, 0.012, dp )
-// cloud_shadowを取り除くとフレームが切れなくなる＼(^_^)／
-			   * exp( ( cloud /* - cloud_shadow */ ) * lame_tweaks.cloud_hack.x )
+// CAMERA_CLOUDSでcloud_shadowを取り除くとフレームが切れなくなる＼(^_^)／
+			   * exp( ( cloud - cloud_shadow ) * lame_tweaks.cloud_hack.x )
 			   * lame_tweaks.cloud_hack.y
 			 )
 			* lame_tweaks.cloud_hack.z
