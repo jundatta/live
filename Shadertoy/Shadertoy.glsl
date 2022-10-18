@@ -182,12 +182,12 @@ float tile_tex( in vec2 uv, float s, NoiseTiledParams ntp )
 	uv *= s;
 
 	float bias = 0.0;
-
+#if 0
 	float edge = 1.0 - dot( normalize( ntp.eye - ntp.p ), ntp.n );
 	bias = -1.2 * edge; // bias the mipmap blur horror on edges
 
 	bias += ntp.bias;
-
+#endif
 	// make the texture tilable
 	float a0 = texture( iChannel1, vec2( uv.x - 0.0, uv.y - 0.0 ), bias ).x; // main image
 	float b0 = texture( iChannel1, vec2( uv.x - 0.0, uv.y - 0.5 ), bias ).x; // fill seams
@@ -196,9 +196,14 @@ float tile_tex( in vec2 uv, float s, NoiseTiledParams ntp )
 	float a1 = texture( iChannel1, vec2( fract( uv.x - 0.5 ), uv.y - 0.0 ), bias ).x; // fill seams
 	float b1 = texture( iChannel1, vec2( fract( uv.x - 0.5 ), uv.y - 0.5 ), bias ).x; // fill seams
 
+a0 = uv.x;
+b0 = 1.0;
+a1 = a0;
+b1 = b0;
+
 	float r = 1.0 - 0.2; // note: don't divide by s... 0,1 here
 	uv = grid3( uv, vec2( r ) );
-return uv.x;
+//return uv.x;
 	return mix( mix( a0, b0, uv.y ), mix( a1, b1, uv.y ), uv.x );
 }
 
