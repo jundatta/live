@@ -24,8 +24,8 @@ uniform sampler2D iChannel1;
 //#define FORCE_CAMERA 2.0 // force camera, int values in [0,CAMERA_NUM[
 #define CAMERA_TIME_RESET // make camera predictable by resetting
 #define CAMERA_PERIOD 30.0 // time we stay on each camera, in seconds
-#define GLOBALTIME (iTime+0.0) // offset sets initial view
-//#define GLOBALTIME (CAMERA_PERIOD*0.0+25.0)
+//#define GLOBALTIME (iTime+0.0) // offset sets initial view
+#define GLOBALTIME (CAMERA_TAKE_OFF_SUNRISE * CAMERA_PERIOD + 3.0/* •b */)
 
 #define CAMERA_NUM 8.0
 
@@ -754,10 +754,13 @@ vec3 calc_Iv( Ray view_ray, inout AtmOut atm_out, mat4 camera, LameTweaks lame_t
 
 	float earth_diffuse = 0.008;  // controls blue depth
 
-	return ( 0.0
+	return
+#if 1
+    ( 0.0
 			 + earth_diffuse * s
 			 + specular * ( 1.0 - saturate( cloud ) ) * lame_tweaks.specular_hack * s * s
 			 + cloud
+
 			 * // this add specks of gold to the clouds in the penumbra zone
 			 ( 1.0
 			   + smoothstep( -0.02, 0.012, dp )
@@ -765,8 +768,10 @@ vec3 calc_Iv( Ray view_ray, inout AtmOut atm_out, mat4 camera, LameTweaks lame_t
 			   * lame_tweaks.cloud_hack.y ) * lame_tweaks.cloud_hack.z
 
 			) * Ie * exp( -tPaPb.r - tPaPb.m )
-
-		   + Iv * ( 2.4 - ( 1.0 - s ) * 0.7 );
+#endif
+		   + Iv * ( 2.4 - ( 1.0 - s ) * 0.7 )
+//           vec3(0.0);
+;
 }
 
 // linearly remap nl, cut is the value of nl that maps to 0

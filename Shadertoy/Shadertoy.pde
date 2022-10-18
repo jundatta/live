@@ -15,7 +15,7 @@ void setup() {
   sd.set("iResolution", (float)width, (float)height, 0.0f);
   // 最初のミリ秒を取り込んでおく
   startMillis = millis();
-  sd.set("iChannel1", loadImage("iChannel1.png"));
+  sd.set("iChannel1", loadImage("iChannel1.jpg"));
 }
 
 void draw() {
