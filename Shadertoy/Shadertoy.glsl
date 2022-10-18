@@ -4,7 +4,6 @@
 // https://www.shadertoy.com/view/4lVGRy
 
 uniform vec3 iResolution;
-uniform vec4 iMouse;
 uniform float iTime;
 uniform sampler2D iChannel1;
 
@@ -22,9 +21,11 @@ uniform sampler2D iChannel1;
 // The shader tries to make the most of shadertoy's mushroom texture using layering,
 // tiling, bombing of vortex distortions and silly exaggerations to make clouds shine more in the penumbra zone.
 
+//#define FORCE_CAMERA 2.0 // force camera, int values in [0,CAMERA_NUM[
+#define CAMERA_TIME_RESET // make camera predictable by resetting
 #define CAMERA_PERIOD 30.0 // time we stay on each camera, in seconds
-//#define GLOBALTIME (iTime+0.0) // offset sets initial view
-#define GLOBALTIME (CAMERA_MOON_WIP * CAMERA_PERIOD + 1.0/* 秒 */) // offset sets initial view
+#define GLOBALTIME (iTime+0.0) // offset sets initial view
+//#define GLOBALTIME (CAMERA_PERIOD*0.0+25.0)
 
 #define CAMERA_NUM 8.0
 
@@ -37,6 +38,12 @@ uniform sampler2D iChannel1;
 #define CAMERA_TAKE_OFF_SUNRISE 5.0
 #define CAMERA_ORBITING_CLOSE   6.0
 #define CAMERA_MOON_WIP         7.0 // moon has no surface shader yet...
+
+#define CLOUD_FLOW
+#define EARTH_ROTATION
+//#define HD_BLACK_BANDS
+//#define SUPER_SAMPLE_HORIZON
+//#define NO_EXPOSE
 
 #define PI			3.141592654
 #define FLT_MAX		1000000.0
@@ -169,7 +176,7 @@ mat4 z_rotation( float angle )
 // project this on line (O,d), d is assumed to be unit length
 vec3 project_on_line1( vec3 P, vec3 O, vec3 d ) { return O + d * dot( P - O, d ); }
 
-vec2 grid3( vec2 x, vec2 r ) { return smoothstep( r, vec2( 1.0 ), abs( ( fract( x ) - vec2( 0.5 ) ) * 2.0 ) ); }
+#define layered5_pass_scale(func,p,a)((func(p,POW0(2.0),a)*POW1(0.5)+func(p,POW1(2.0),a)*POW2(0.5)+func(p,POW2(2.0),a)*POW3(0.5)+func(p,POW3(2.0),a)*POW4(0.5)+func(p,POW4(2.0),a)*POW5(0.5))*(1.0/(1.0-POW5(0.5))))
 
 struct NoiseTiledParams
 {
@@ -177,17 +184,19 @@ struct NoiseTiledParams
 	float bias;
 };
 
+vec2 grid3( vec2 x, vec2 r ) { return smoothstep( r, vec2( 1.0 ), abs( ( fract( x ) - vec2( 0.5 ) ) * 2.0 ) ); }
+
 float tile_tex( in vec2 uv, float s, NoiseTiledParams ntp )
 {
 	uv *= s;
 
 	float bias = 0.0;
-#if 0
+
 	float edge = 1.0 - dot( normalize( ntp.eye - ntp.p ), ntp.n );
 	bias = -1.2 * edge; // bias the mipmap blur horror on edges
 
 	bias += ntp.bias;
-#endif
+
 	// make the texture tilable
 	float a0 = texture( iChannel1, vec2( uv.x - 0.0, uv.y - 0.0 ), bias ).x; // main image
 	float b0 = texture( iChannel1, vec2( uv.x - 0.0, uv.y - 0.5 ), bias ).x; // fill seams
@@ -196,43 +205,12 @@ float tile_tex( in vec2 uv, float s, NoiseTiledParams ntp )
 	float a1 = texture( iChannel1, vec2( fract( uv.x - 0.5 ), uv.y - 0.0 ), bias ).x; // fill seams
 	float b1 = texture( iChannel1, vec2( fract( uv.x - 0.5 ), uv.y - 0.5 ), bias ).x; // fill seams
 
-a0 = uv.x;
-b0 = 1.0;
-a1 = a0;
-b1 = b0;
-
 	float r = 1.0 - 0.2; // note: don't divide by s... 0,1 here
 	uv = grid3( uv, vec2( r ) );
-//return uv.x;
 	return mix( mix( a0, b0, uv.y ), mix( a1, b1, uv.y ), uv.x );
 }
 
-#if 0
-#define layered5_pass_scale(func,p,a)((func(p,POW0(2.0),a)*POW1(0.5)+func(p,POW1(2.0),a)*POW2(0.5)+func(p,POW2(2.0),a)*POW3(0.5)+func(p,POW3(2.0),a)*POW4(0.5)+func(p,POW4(2.0),a)*POW5(0.5))*(1.0/(1.0-POW5(0.5))))
-#else
-float pow5( float x ) { return x * x * x * x * x; }
-float layered5_pass_scale(vec2 p, NoiseTiledParams a) {
-	float t0 = tile_tex(p,1.0,a);
-	t0 *= POW1(0.5);
-	float t1 = tile_tex(p,2.0,a);
-	t1 *= POW2(0.5);
-	float t2 = tile_tex(p,pow2(2.0),a);
-	t2 *= POW3(0.5);
-	float t3 = tile_tex(p,pow3(2.0),a);
-	t3 *= POW4(0.5);
-	float t4 = tile_tex(p,pow4(2.0),a);
-	t4 *= POW5(0.5);
-	float t5 = t0 + t1 + t2 + t3 + t4;
-	t5 *= 1.0/(1.0-pow5(0.5));
-	return t5;
-}
-#endif
-
-#if 0
 float fbm5_tiled_clouds( vec2 p, NoiseTiledParams ntp ) { return layered5_pass_scale( tile_tex, p, ntp ); }
-#else
-float fbm5_tiled_clouds( vec2 p, NoiseTiledParams ntp ) { return layered5_pass_scale( p, ntp ); }
-#endif
 
 // just return the delta
 vec3 vortex( vec2 q, float max_twist, float aa_scale )
@@ -370,6 +348,9 @@ float CornetteSingleScatteringPhaseFunction( float cos_theta, float g ) { float 
 // == CornetteSingleScatteringPhaseFunction( cos_theta, 0.0 )
 float RayleighScattering( float cos_theta ) { return 0.75 * ( 1.0 + cos_theta * cos_theta ); }
 
+// https://www.astro.umd.edu/~jph/HG_note.pdf HG, g in [-1,1]
+float HenyeyGreensteinPhaseFunction( float cos_theta, float g ) { float g2 = g * g; return ( 1.0 / ( 4.0 * PI ) ) * ( 1.0 - g2 ) / pow( 1.0 + g2 - 2.0 * g * cos_theta, 1.5 ); }
+
 float calc_Fr_r( float cos_theta ) { return RayleighScattering( cos_theta  ); }
 float calc_Fr_m( float cos_theta, float g ) { return CornetteSingleScatteringPhaseFunction( cos_theta, g ); }
 
@@ -377,6 +358,12 @@ bool in_earth_shadow( vec3 p )
 {
 	return ( dot( p, sun_direction ) < 0.0 )
 		   && ( lensqr( p - project_on_line1( p, earth_center, sun_direction ) ) < earth_radius * earth_radius );
+}
+
+bool in_moon_shadow( vec3 p )
+{
+	return ( dot( p - moon_center, sun_direction ) < 0.0 )
+		   && ( lensqr( p - project_on_line1( p, moon_center, sun_direction ) ) < moon_radius * moon_radius );
 }
 
 // this is a manual fit of the offline precalculated Ie 1d table (with various wrong physical constant) for each r,g,b, plus slight tweaks
@@ -444,18 +431,20 @@ float cloudSphereMap( vec2 p, mat4 camera, vec3 n, float bias, LameTweaks lame_t
 
 	vec3 q = vec3( p * vec2( 2, 1 ), 0.0 );
 
-//	vec3 q0 = q;
+	vec3 q0 = q;
 
 //	q += vortex_bombing( q.xy,  1.0, 1.0, 1.0, 0.0 ) * POW0( 0.5 ); // 1
 //	q += vortex_bombing( q.xy,  2.0, 1.0, 1.0, 0.0 ) * POW1( 0.5 ); // 2
 //	q += vortex_bombing( q.xy,  4.0, 1.0, 1.0, 0.0 ) * POW2( 0.5 ); // 3
-	q += vortex_bombing( q.xy,  8.0, 3.0, 1.0, 0.9 ) * pow3( 0.5 ); // 4
+	q += vortex_bombing( q.xy,  8.0, 3.0, 1.0, 0.9 ) * POW3( 0.5 ); // 4
 //	q += vortex_bombing( q.xy, 16.0, 3.0, 1.0, 1.0 ) * POW4( 0.5 ); // 5
-	q += vortex_bombing( q.xy, 32.0, 2.7, 5.5, 0.85 ) * pow5( 0.5 ); // 6
+	q += vortex_bombing( q.xy, 32.0, 2.7, 5.5, 0.85 ) * POW5( 0.5 ); // 6
 //	q += vortex_bombing( q.xy, 64.0, 1.0, 1.0, 0.0 ) * POW6( 0.5 ); // 7
 
 	vec2 qoff = vec2( 0.0, 0 );
-//	qoff.x = lame_tweaks.cloud_flow_time * earth_angular_velocity; //cloud flow (doesn't fix black line)
+#ifdef CLOUD_FLOW
+	qoff.x = lame_tweaks.cloud_flow_time * earth_angular_velocity; //cloud flow (doesn't fix black line)
+#endif
 
 	NoiseTiledParams ntp;
 	ntp.eye = camera[3].xyz;
@@ -464,18 +453,17 @@ float cloudSphereMap( vec2 p, mat4 camera, vec3 n, float bias, LameTweaks lame_t
 	ntp.bias = bias;
 
 	float a = fbm5_tiled_clouds( q.xy * 4.0 + qoff, ntp );
-return a;
 
 	a *= 1.0 - smoothstep( 0.5 - pole * 3.4, 0.5, abs( p0.y - 0.5 ) ); // would like to do better than that...
 
 	float a0 = a;
-#if 0
+
 	{
 		//increase density on areas that have vortices
 		a += length( q - q0 ) * 0.5;
 		a += q.z * q.z * 5.0;
 	}
-#endif
+
 	// add a little bit more oompf detail, helps overall + on cloud close ups
 	a += a0 * fbm5_tiled_clouds( q.xy * 8.0 + qoff, ntp ) * 0.5;
 
@@ -487,8 +475,9 @@ return a;
 float cloudMap( vec3 n, mat4 camera, float bias, LameTweaks lame_tweaks )
 {
 	vec3 n0 = n;
+#ifdef EARTH_ROTATION
 	n.xy = rotate_with_angle( n.xy, lame_tweaks.earth_rot_time * earth_angular_velocity );
-
+#endif
 	float theta = acos( n.z );
 	float phi = calc_angle( n.xy ) + PI; // assume range 0,1
 
@@ -627,8 +616,8 @@ vec3 calc_Iv( Ray view_ray, inout AtmOut atm_out, mat4 camera, LameTweaks lame_t
 	atm_out.vod_attn = vec3( 1.0 );
 	atm_out.Iv = vec3( 0.0 );
 
-	vec3 spacecolor = MAGENTA; // debug
-//	vec3 spacecolor = BLACK;
+//	vec3 spacecolor = MAGENTA; // debug
+	vec3 spacecolor = BLACK;
 
 	if ( ta.x == FLT_MAX ) return spacecolor; // view_ray line doesn't intersect a (and therefore, e since e is inside a)
 	if ( ta.y <= 0.0 ) return spacecolor; // return mix(SPACECOLOR,WHITE,0.7);	// view_ray line intersects a(atm) but behind us
@@ -655,7 +644,6 @@ vec3 calc_Iv( Ray view_ray, inout AtmOut atm_out, mat4 camera, LameTweaks lame_t
 	vec6 tppc = mkvec6( 0.0 ); // the last of those is a earth hit -> sun ray when earth_surface is true
 	vec6 tppa = mkvec6( 0.0 ); // the last of those is a earth hit -> eye ray when earth_surface is true
 	vec6 Iv_sum = mkvec6( 0.0 );
-#if 0
 	for ( int i = 0; i < num_view_ray_segments + 1; ++i )
 	{
 		p = view_ray.o + view_ray.d * tp;
@@ -669,16 +657,22 @@ vec3 calc_Iv( Ray view_ray, inout AtmOut atm_out, mat4 camera, LameTweaks lame_t
 			vec2 ta_sun = sphere_trace( sun_ray, earth_radius + atm_max, earth_center );
 			tppc = opticalDepth( sun_ray, 0.0/*p*/, ta_sun.y/*pc*/ ); // note: ta_sun.y > 0.0
 			vec6 tmp;
+			#if 1
 			// note: this is not the correct way to combine the r,m transmittance at all, but too late to fix
 			tmp.r = rho.x * exp( -tppc.r - tppa.r );
 			tmp.m = rho.y * exp( -tppc.m - tppa.m );
-
+			#else
+			// normally attenuation should affect both
+			vec3 tr = exp( -tppc.r - tppa.r - tppc.m - tppa.m );
+			tmp.r = rho.x * tr;
+			tmp.m = rho.y * tr;
+			#endif
 			add_vec6( Iv_sum, tmp, dl * ( ( i == 0 || i == num_view_ray_segments ) ? 0.5 : 1.0 ) );
 		}
 		add_vec6( tppa, mkvec6( rho ), dl );
 		tp += dl;
 	}
-#endif
+
 	float cos_theta = dot( sun_direction, view_ray.d );
 	vec3 Iv = Is *
 		( ( Iv_sum.r / ( 4.0 * PI ) ) * calc_Fr_r( cos_theta ) + 
@@ -691,7 +685,7 @@ vec3 calc_Iv( Ray view_ray, inout AtmOut atm_out, mat4 camera, LameTweaks lame_t
 
 	float cloud_shadow = 0.0;
 	float specular = 0.0;
-#if 0
+
 	if ( atm_out.earth_surface )
 	{
 		//return RED; // check earth pixel
@@ -744,7 +738,8 @@ vec3 calc_Iv( Ray view_ray, inout AtmOut atm_out, mat4 camera, LameTweaks lame_t
 			* ( ( specular_power + 8.0 ) / ( 8.0 * PI ) )
 			* max( 0.0, dp );
 	}
-#endif
+
+	// cloudTrace()の直呼びは.sphere_pointと.sphere_normalが初期化されないのでcloudTraceFlat()に変える。
 //	CloudOut co = cloudTrace( view_ray, camera, 0.0, lame_tweaks );
 	CloudOut co = cloudTraceFlat( view_ray, camera, 0.0, lame_tweaks );
 	float cloud = co.cloud;
@@ -754,25 +749,22 @@ vec3 calc_Iv( Ray view_ray, inout AtmOut atm_out, mat4 camera, LameTweaks lame_t
 	float dp = dot( co.sphere_normal, sun_direction );
 
 	float s = ( 1.0 - saturate( cloud_shadow * ( 1.0 - cloud ) ) );
-s = 1.0;
+
 //	return vec3( ( 1.0 - s ) * 3.0, cloud, 0.0 );
 
 	float earth_diffuse = 0.008;  // controls blue depth
 
 	return ( 0.0
-//			 + earth_diffuse * s
-//			 + specular * ( 1.0 - saturate( cloud ) ) * lame_tweaks.specular_hack * s * s
+			 + earth_diffuse * s
+			 + specular * ( 1.0 - saturate( cloud ) ) * lame_tweaks.specular_hack * s * s
 			 + cloud
-#if 0
 			 * // this add specks of gold to the clouds in the penumbra zone
 			 ( 1.0
 			   + smoothstep( -0.02, 0.012, dp )
 			   * exp( ( cloud - cloud_shadow ) * lame_tweaks.cloud_hack.x )
 			   * lame_tweaks.cloud_hack.y ) * lame_tweaks.cloud_hack.z
 
-			) * Ie * exp( -tPaPb.r - tPaPb.m
-#endif
-			)
+			) * Ie * exp( -tPaPb.r - tPaPb.m )
 
 		   + Iv * ( 2.4 - ( 1.0 - s ) * 0.7 );
 }
@@ -803,7 +795,7 @@ vec3 earthShader( Ray view_ray, mat4 camera, LameTweaks lame_tweaks, float expos
 	AtmOut atm_out;
 
 	vec3 ret = calc_Iv( view_ray, atm_out, camera, lame_tweaks );
-#if 0
+
 	vec3 sun_color = atm_out.vod_attn * vec3( 1.0, 0.85, 0.71 );
 	float sun_intensity = 0.0;
 
@@ -895,8 +887,11 @@ vec3 earthShader( Ray view_ray, mat4 camera, LameTweaks lame_tweaks, float expos
 
 //	float scene_luminance = 0.0;
 //	scene_luminance = max( 0.0, dot( view_ray.d, sun_direction ) );
-#endif
+
+#ifndef NO_EXPOSE
+//	ret = 1.0 - exp( -mix( 0.85, 0.05, scene_luminance/**sun_visibility*/ ) * ret );
 	ret = 1.0 - exp( -exposure * ret );
+#endif
 	return ret;
 }
 
@@ -957,12 +952,16 @@ KeplerOrbitRetval get_earth_camera_path_kepler( float t, in KeplerOrbit ko )
 	float n = 2.0 * PI / ko.period;
 	vec2 p = kepler_orbit( t, kepler_orbit_calc_p( ko.rmin, ko.e ), ko.e, n );
 	p = perp( p ); // start on y, where the sun is, symmetry more convenient to tweak orbit period
-
+#if 1
 	// define trajectory plane here (theta must be non zero if you want an inclination)
+//	mat4 rep = zup_spherical_lookat2( radians( 90.0 ), radians( 90.0 ) ); // circle around penumbra zone
 	mat4 rep = zup_spherical_lookat2( radians( 0.0 ), radians( 0.0 ) ); // trajectory inclination
 	ret.orbit_plane_normal = rep[2].xyz;
 	ret.orbit_position = ( rep * xy01( p ) ).xyz;
-
+#else
+	ret.orbit_plane_normal = vec3( 0, 0, 1 );
+	ret.orbit_position = xy0( xx );
+#endif
 	return ret;
 }
 
@@ -1044,7 +1043,11 @@ mat4 get_earth_camera( inout float tan_half_fovy
 
 #define IS_NEXT_INDEX(nn) ( abs( camera_index - nn ) < 0.01 )
 
+#ifdef FORCE_CAMERA
+	float camera_index = FORCE_CAMERA;
+#else
 	float camera_index = mod( floor( time / CAMERA_PERIOD ), CAMERA_NUM );
+#endif
 	fade = pow2( saturate( tri( time, CAMERA_PERIOD ) ) );
 
 	float camera_time = mod( time, CAMERA_PERIOD );
@@ -1056,7 +1059,9 @@ mat4 get_earth_camera( inout float tan_half_fovy
 	lame_tweaks.specular_hack = 0.25;
 	lame_tweaks.cloud_hack = vec3( 2.0, 0.12, 0.5 );
 
+#ifdef CAMERA_TIME_RESET
 	time = camera_time;
+#endif
 
 	float mouse_ctrl = 1.0;
 	vec2 mm_offset = vec2( 0.0, 0.0 );
@@ -1071,9 +1076,9 @@ mat4 get_earth_camera( inout float tan_half_fovy
 		ko.period = 60.0 * 180.0;
 		ko.e = 0.0024;
 		float t = time * 20.0;
-
+#ifdef CAMERA_TIME_RESET
 		t = bounce_time( t, ko.period, fade );
-
+#endif
 		// time = 0; // eye should be on y=0,1,0 at time=0
 		KeplerOrbitRetval kr = get_earth_camera_path_kepler( t, ko );
 		eye = kr.orbit_position;
@@ -1098,9 +1103,9 @@ mat4 get_earth_camera( inout float tan_half_fovy
 		ko.period = 60.0 * 25.0;
 		ko.e = 0.0024;
 		float t = time * 10.0;
-
+#ifdef CAMERA_TIME_RESET
 		t = bounce_time( t, ko.period, fade );
-
+#endif
 		KeplerOrbitRetval kr = get_earth_camera_path_kepler( t, ko );
 		eye = kr.orbit_position;
 		up = normalize( cross( kr.orbit_plane_normal, eye ) );
@@ -1150,8 +1155,6 @@ mat4 get_earth_camera( inout float tan_half_fovy
 		cloud_flow_time_offset = -900.0;
 		mouse_ctrl = 2.5;
 		exposure = 0.8;
-// 見切れないように入れてみた＼(^_^)／
-//mm_offset = vec2( +0.075, -0.011 );
 		lame_tweaks.cloud_hack = vec3( 4.0, 0.12, 0.6 );
 	}
 	else if ( IS_NEXT_INDEX( CAMERA_SPECULAR_FAR ) )
@@ -1260,7 +1263,23 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 	vec2 pixel = fragCoord.xy;
 	fragColor = vec4( 0., 0., 0., 1 );
 
+#ifdef HD_BLACK_BANDS
+	float aspect = ( 16.0 / 9.0 ); // the ratio we want
+	if ( iResolution.x < aspect * iResolution.y )
+	{
+		resolution.y = resolution.x * ( 1.0 / aspect );
+		pixel.y -= ( iResolution.y - resolution.y ) * 0.5;
+		if ( abs( pixel.y * 2.0 - resolution.y ) > resolution.y ) return;
+	}
+	else
+	{
+		resolution.x = resolution.y * aspect;
+		pixel.x -= ( iResolution.x - resolution.x ) * 0.5;
+		if ( abs( pixel.x * 2.0 - resolution.x ) > resolution.x  ) return;
+	}
+#else
 	float aspect = ( resolution.x / resolution.y );
+#endif
 	vec2 uv = pixel / resolution.xy;
 
 	float fade = 1.0;
@@ -1276,6 +1295,35 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
 	view_ray.o = camera[3].xyz;
 	view_ray.d = ( camera * vec4( view_ray.d, 0 ) ).xyz;
+
+#ifdef SUPER_SAMPLE_HORIZON
+	// do SS on edge pixels... still expensive
+	float ss = vec3( 1 - exp( -abs( length( project_on_line1( earth_center, view_ray.o, view_ray.d ) - earth_center ) - earth_radius ) * 0.1 ) );
+	fragColor = vec4( ss, ss, ss, 1.0 );
+	if ( ss < 0.7 )
+	{
+		vec2 pmin = ( pixel + vec2( 0.0, 0.0 ) ) / resolution.xy;
+		vec2 pmax = ( pixel + vec2( 1.0, 1.0 ) ) / resolution.xy;
+
+		fragColor.rgb = vec3( 0 );
+		for ( int i = 0; i < 2; i++ )
+		{
+			for ( int j = 0; j < 2; j++ )
+			{
+				vec2 uv2 = pmin + ( pmax - pmin )
+					* vec2(
+					0.5 + float( i ) / 2.0,
+					0.5 + float( j ) / 2.0 );
+				Ray subray = get_view_ray( ( uv2 - vec2( 0.5 ) ) * 2.0, znear, aspect, tan_half_fovy );
+				subray.o = camera[3].xyz; // make sure all rays have same origin! we don't really care about havnig a znear here
+				subray.d = ( camera * vec4( subray.d, 0 ) ).xyz;
+				fragColor.rgb += earthShader( subray, camera, lame_tweaks, exposure );
+			}
+		}
+		fragColor.rgb /= 4.0;
+		return;
+	}
+#endif
 
 // ShadertoyさんはfragColorに入れる色は透明度1.0（不透明）固定なので明示的に指定した。
 //	fragColor.rgb = earthShader( view_ray, camera, lame_tweaks, exposure ) * fade;
