@@ -683,7 +683,7 @@ vec3 calc_Iv( Ray view_ray, inout AtmOut atm_out, mat4 camera, LameTweaks lame_t
 
 	float cloud_shadow = 0.0;
 	float specular = 0.0;
-
+#if 0
 	if ( atm_out.earth_surface )
 	{
 		//return RED; // check earth pixel
@@ -736,8 +736,9 @@ vec3 calc_Iv( Ray view_ray, inout AtmOut atm_out, mat4 camera, LameTweaks lame_t
 			* ( ( specular_power + 8.0 ) / ( 8.0 * PI ) )
 			* max( 0.0, dp );
 	}
-
-	CloudOut co = cloudTrace( view_ray, camera, 0.0, lame_tweaks );
+#endif
+//	CloudOut co = cloudTrace( view_ray, camera, 0.0, lame_tweaks );
+	CloudOut co = cloudTraceFlat( view_ray, camera, 0.0, lame_tweaks );
 	float cloud = co.cloud;
 
 	atm_out.vod_attn = exp( -tppa.r ); // for sun attn
@@ -745,7 +746,7 @@ vec3 calc_Iv( Ray view_ray, inout AtmOut atm_out, mat4 camera, LameTweaks lame_t
 	float dp = dot( co.sphere_normal, sun_direction );
 
 	float s = ( 1.0 - saturate( cloud_shadow * ( 1.0 - cloud ) ) );
-
+s = 1.0;
 //	return vec3( ( 1.0 - s ) * 3.0, cloud, 0.0 );
 
 	float earth_diffuse = 0.008;  // controls blue depth
