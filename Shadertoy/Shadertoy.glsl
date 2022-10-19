@@ -4,11 +4,11 @@
 // https://www.shadertoy.com/view/7t2yDz
 
 uniform vec3 iResolution;
-uniform vec4 iMouse;
 uniform float iTime;
 
 //#define time (iChannelTime[0]+1.2)
 #define time (iTime+1.2)
+//#define time (65+1.2)
 
 #define resolution iResolution
 
@@ -16,7 +16,10 @@ uniform float iTime;
 #define sm(a,b) smoothstep(a,b,time)
 #define hash(p) fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453)
 
-float st, det = .01, t, sc = 0., on = 0., tr = 1., mat = 0., y;
+// 変数y以外にも初期化されていない変数はあるが、y以外も初期化すると返ってうぎゃ。となる。
+// （よくわかりゃん＼(^_^)／）
+//float st, det = .01, t, sc = 0., on = 0., tr = 1., mat = 0., y;
+float st, det = .01, t, sc = 0., on = 0., tr = 1., mat = 0., y = 0;
 vec3 col = vec3(0), carpos, cardir, pal, glcol;
 vec2 pf1, pf2, pf3, e = vec2(0, .001);
 

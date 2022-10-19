@@ -17,7 +17,7 @@ void setup() {
   startMillis = millis();
 }
 
-final int LOOP_MSEC = 120000;  // 120秒でループするようにした。
+final int LOOP_MSEC = 120*1000;  // 120秒でループするようにした。
 void draw() {
   // ※Shadertoyの場合、透明度は指定しても反映されない
   // void mainImage( out vec4 fragColor, in vec2 fragCoord )の
@@ -29,7 +29,7 @@ void draw() {
   // iMouseのz,wはそれぞれマウスドラッグ時のx,y座標になるが
   // シミュレートをあきらめる
   // このためz,wにはそれぞれ0.0fを固定で渡す
-  sd.set("iMouse", (float)mouseX, (float)mouseY, 0.0f, 0.0f);
+  //sd.set("iMouse", (float)mouseX, (float)mouseY, 0.0f, 0.0f);
   shader(sd);
   rect(0, 0, width, height);
   resetShader();
