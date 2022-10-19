@@ -1,3 +1,8 @@
+// こちらがオリジナルです。
+// 【作者】McDavis Ansereさん
+// 【作品名】The City
+// https://openprocessing.org/sketch/920880
+
 float box;
 float circleX;
 float car;
