@@ -74,7 +74,7 @@ void setup() {
 void update() {
   if (ofGetFrameNum() % 3 != 0) {
     for (int i = 0; i < index_list.size(); i++) {
-      word_index_list.set(index_list.get(i), (int)random(words.size()));
+      word_index_list.set(index_list.get(i), (int)random(words.length));
     }
     return;
   }
@@ -94,7 +94,7 @@ void update() {
         }
         param_list.set(next_index, 60);
         index_list.set(i, next_index);
-        word_index_list.set(next_index, (int)random(words.size()));
+        word_index_list.set(next_index, (int)random(words.length));
         break;
       }
     }
@@ -108,32 +108,25 @@ void draw() {
   background(0);
   strokeWeight(0.5);
 
-  this->cam.begin();
+  for (int i = 0; i < location_list.size(); i++) {
+    if (param_list.get(i) > 0) {
+      int z = (int)(location_list.get(i).z + ofGetFrameNum() * 3) % 1200 - 600;
 
-  for (int i = 0; i < this->location_list.size(); i++) {
+      pushMatrix();
+      translate(location_list.get(i).x, location_list.get(i).y, z);
 
-    if (this->param_list[i] > 0) {
+      int alpha = (int)map(param_list.get(i), 0, 60, 0, 255);
+      int rb = param_list.get(i) >= 57 ? 239 : 39;
+      fill(color(rb, 239, rb, alpha));
 
-      int z = (int)(this->location_list[i].z + ofGetFrameNum() * 3) % 1200 - 600;
+      ofRotateZ(rotate_deg_list.get(i));
+      text(words[word_index_list.get(i)], -15, -15);
 
-      ofPushMatrix();
-      ofTranslate(this->location_list[i].x, this->location_list[i].y, z);
-
-      ofFill();
-      int alpha = ofMap(this->param_list[i], 0, 60, 0, 255);
-      int rb = this->param_list[i] >= 57 ? 239 : 39;
-      ofSetColor(ofColor(rb, 239, rb, alpha));
-
-      ofRotateZ(this->rotate_deg_list[i]);
-      this->font.drawString(this->words[this->word_index_list[i]], -15, -15);
-
-      ofPopMatrix();
+      popMatrix();
     }
 
-    if (this->param_list[i] > 0) {
-      this->param_list[i] -= 1;
+    if (param_list.get(i) > 0) {
+      param_list.sub(i, 1);
     }
   }
-
-  this->cam.end();
 }
