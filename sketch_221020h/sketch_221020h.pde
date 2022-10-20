@@ -21,30 +21,30 @@ void setup() {
 }
 
 void draw() {
-  randomSeed(num);
+  randomSeed((long)num);
   background(#f4f1de);
   shape(width / 2, height / 2, width * 0.4);
 }
 
-function shape(x, y, s) {
+void shape(float x, float y, float s) {
   push();
   translate(x, y);
-  let count = 1000;
-  for (let i = 0; i < count; i++) {
-    let colNum = int(random(1, palette_selected.length));
-    col = color(palette_selected[colNum]);
+  float count = 1000;
+  for (var i = 0; i < count; i++) {
+    var colNum = int(random(1, palette_selected.length));
+    color col = color(palette_selected[colNum]);
 
-    let angle = random(360);
-    let magic = -1+ (random(random(random(1))));
-    let d = s ;
-    let ex = d * sin(angle) * magic*sin(i+t);
-    let ey = d * cos(angle) * magic*cos(i+t);
+    var angle = random(360);
+    var magic = -1+ (random(random(random(1))));
+    var d = s ;
+    var ex = d * sin(radians(angle)) * magic*sin(radians(i+t));
+    var ey = d * cos(radians(angle)) * magic*cos(radians(i+t));
     push();
     translate(ex, ey);
-    let l = random(random(random(size/10)));
+    var l = random(random(random(size/10.0f)));
     noStroke();
     fill(col);
-    ellipse(0, 0, l);
+    ellipse(0, 0, l, l);
     pop();
   }
   pop();
