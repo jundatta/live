@@ -5,15 +5,13 @@
 
 color[] color_list;
 ofMesh mesh = new ofMesh();
-PGraphics pg;
 
 //--------------------------------------------------------------
 void setup() {
   size(720, 720, P3D);
 
-  pg = createGraphics(width, height);
   push();
-  colorMode(HSB, 256, 256, 256);
+  colorMode(HSB, 255, 255, 255, 255);
   int color_count = 12;
   color_list = new color[color_count];
   for (int i = 0; i < color_count; i++) {
@@ -66,21 +64,20 @@ void update() {
 void draw() {
   update();
   //translate(width/2, height/2);
-  pg.beginDraw();
-  pg.background(0);
-  pg.blendMode(ADD);
+  background(0);
+  blendMode(ADD);
 
-  pg.translate(width * 0.5, height * 0.5);
+  translate(width * 0.5, height * 0.5);
 
-  mesh.drawWireframe(pg);
+  mesh.drawWireframe();
 
-  pg.noStroke();
+  push();
+  noStroke();
   for (int i = 0; i < mesh.getNumVertices(); i++) {
     color c = mesh.getColor(i);
-    pg.fill(red(c), green(c), blue(c), alpha(c));
+    fill(red(c), green(c), blue(c) /*, alpha(c)*/);
     PVector p = mesh.getVertex(i);
-    pg.circle(p.x, p.y, /*1.85*/ 10*2);
+    circle(p.x, p.y, /*1.85*/ 1.85*3);
   }
-  pg.endDraw();
-  image(pg, 0, 0);
+  pop();
 }

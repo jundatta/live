@@ -43,7 +43,7 @@ class ofMesh {
     return vertices.get(ix);
   }
   // 設定されたOF_PRIMITIVE_LINESの解釈で描画する
-  void drawWireframe(PGraphics pg) {
+  void drawWireframe() {
     PShape sh = createShape();
     sh.setFill(false);
     sh.beginShape(LINES);
@@ -57,11 +57,7 @@ class ofMesh {
       color col = colors.get(idx);
       sh.setStroke(i, col);
     }
-    pg.shape(sh);
-  }
-  void drawWireframe() {
-    PGraphics pg = getGraphics();
-    drawWireframe(pg);
+    shape(sh);
   }
   // stroke()の色を指定して線を描画する
   void drawWireframe(PGraphics pg, color stroke) {
