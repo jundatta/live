@@ -13,7 +13,7 @@
 
 float ranges;
 float seed = random() * 1247;
-float mySize, margin, grad;
+float margin, grad;
 float str_wei = 0;
 
 // colors
@@ -29,25 +29,26 @@ color[] colors6 = {#F2B279, #D9936A, #BF8069, #BF604B, #8C665E};
 color[] colors7 = {#7ABF85, #95BF98, #ADBF26, #D8D9D0, #6F7302};
 
 color[] colors_cyber = {#ee0cf2, #352ef2, #1df252, #f2e41d};
-let color1, color2;
-let colorbg;
-let colorselet = [];
-let colorselet1;
+color color1, color2;
+color colorbg;
 
-let unit_x, unit_y;
-let count;
-let stop_count = 0;
-let t = 0;
-let mods = [];
+float unit_x, unit_y;
+float count;
+float stop_count = 0;
+float t = 0;
 
-function setup() {
+void setup() {
+  P5JS.setup(this);
+
   randomSeed(seed);
-  mySize = min(windowWidth, windowHeight);
-  createCanvas(windowWidth, windowHeight, WEBGL);
-  colorbg = random(colors0);
+  size(834, 834, P3D);
+  colorbg = P5JS.random(colors0);
   background(colorbg);
   t = rez = c = n = 0.01;
-  color1 = random([colors3, colors4, colors5, colors6, colors7]);
+  //  color1 = random([colors3, colors4, colors5, colors6, colors7]);
+  color[][] c1 = {colors3, colors4, colors5, colors6, colors7};
+  int idx = (int)random(c1.length);
+  color1 = c1[idx];
   color2 = random([colors3, colors4, colors5, colors6, colors7]);
   // pixelDensity(5);
   xOff = 0;
