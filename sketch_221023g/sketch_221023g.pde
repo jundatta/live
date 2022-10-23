@@ -3,35 +3,25 @@
 // 【作品名】Cubic pyramid. Draw by openFrameworks
 // https://junkiyoshi.com/2021/12/03/
 
+ofMesh face, frame;
+
 //--------------------------------------------------------------
-void ofApp::setup() {
-
-  ofSetFrameRate(60);
-  ofSetWindowTitle("openframeworks");
-
-  ofBackground(255);
-  ofSetLineWidth(2);
-  ofEnableDepthTest();
-
-  this->frame.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
+void setup() {
+  size(720, 720, P3D);
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
+void update() {
+  face.clear();
+  frame.clear();
 
-  this->face.clear();
-  this->frame.clear();
-
-  auto len = 600;
-  auto depth = len / 25;
+  int len = 600;
+  int depth = len / 25;
   while (true) {
-
-    auto param_start = ofMap(ofNoise(len * 0.002, ofGetFrameNum() * 0.0015), 0, 1, 0, 200);
-    for (auto param = param_start; param < param_start + 50; param += 2) {
-
-      this->setBoxToMesh(this->face, this->frame, glm::vec3(this->make_point(len, param), len / 2 + depth), len / 25);
+    var param_start = ofMap(ofNoise(len * 0.002, ofGetFrameNum() * 0.0015), 0, 1, 0, 200);
+    for (var param = param_start; param < param_start + 50; param += 2) {
+      setBoxToMesh(face, frame, new PVector(make_point(len, param), len / 2 + depth), len / 25);
     }
-
     len -= len / 10;
     if (len < 150) {
       break;
@@ -40,7 +30,11 @@ void ofApp::update() {
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
+  traslate(width/2, height/2);
+  background(255);
+  strokeWeight(2);
 
   this->cam.begin();
   ofRotateY(ofGetFrameNum() * 0.666666666666);
@@ -200,11 +194,4 @@ glm::vec2 ofApp::make_point(int len, float param) {
   }
 
   return base + (next - base) * param_p;
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
