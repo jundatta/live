@@ -10,9 +10,8 @@
 
 // learn from https://p5js.org/examples/arrays-array-objects.html
 
-
 float ranges;
-float seed = random() * 1247;
+long seed = (long)random(1) * 1247;
 float margin, grad;
 float str_wei = 0;
 
@@ -29,13 +28,16 @@ color[] colors6 = {#F2B279, #D9936A, #BF8069, #BF604B, #8C665E};
 color[] colors7 = {#7ABF85, #95BF98, #ADBF26, #D8D9D0, #6F7302};
 
 color[] colors_cyber = {#ee0cf2, #352ef2, #1df252, #f2e41d};
-color color1, color2;
+color[] color1, color2;
 color colorbg;
 
 float unit_x, unit_y;
 float count;
 float stop_count = 0;
 float t = 0;
+float rez = 0;
+
+int xOff, yOff, zOff;
 
 void setup() {
   P5JS.setup(this);
@@ -44,35 +46,37 @@ void setup() {
   size(834, 834, P3D);
   colorbg = P5JS.random(colors0);
   background(colorbg);
-  t = rez = c = n = 0.01;
+  t = rez = 0.01;
   //  color1 = random([colors3, colors4, colors5, colors6, colors7]);
-  color[][] c1 = {colors3, colors4, colors5, colors6, colors7};
-  int idx = (int)random(c1.length);
-  color1 = c1[idx];
-  color2 = random([colors3, colors4, colors5, colors6, colors7]);
+  color[][] cc = {colors3, colors4, colors5, colors6, colors7};
+  int idx = (int)random(cc.length);
+  color1 = cc[idx];
+  //color2 = random([colors3, colors4, colors5, colors6, colors7]);
+  idx = (int)random(cc.length);
+  color2 = cc[idx];
   // pixelDensity(5);
   xOff = 0;
   yOff = 0;
   zOff = 0;
 }
 
-function draw() {
+void draw() {
   randomSeed(seed);
   background(colorbg);
 
-  translate(-width/2, -height/2);
-  let plus = 10;
-  for (let i = xOff; i < width - xOff; i += plus) {
-    for (let j = yOff; j < height - yOff; j += plus) {
+  //translate(-width/2, -height/2);
+  float plus = 10;
+  for (var i = xOff; i < width - xOff; i += plus) {
+    for (var j = yOff; j < height - yOff; j += plus) {
       strokeWeight(random(1));
       // strokeCap(SQUARE);
       var n = noise(i * rez, j * rez, frameCount* 0.01);
       if (n > 0.35) {
-        stroke(random(colors1));
-        fill(random(color1));
+        stroke(P5JS.random(colors1));
+        fill(P5JS.random(color1));
       } else {
         noFill();
-        stroke(random(color2));
+        stroke(P5JS.random(color2));
       }
 
       push();
