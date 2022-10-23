@@ -8,6 +8,9 @@ ofMesh face, frame;
 //--------------------------------------------------------------
 void setup() {
   size(720, 720, P3D);
+
+  face = new ofMesh();
+  frame = new ofMesh();
 }
 
 //--------------------------------------------------------------
@@ -18,9 +21,10 @@ void update() {
   int len = 600;
   int depth = len / 25;
   while (true) {
-    var param_start = ofMap(ofNoise(len * 0.002, ofGetFrameNum() * 0.0015), 0, 1, 0, 200);
+    var param_start = ofMap(openFrameworks.ofNoise(len * 0.002, ofGetFrameNum() * 0.0015), 0, 1, 0, 200);
     for (var param = param_start; param < param_start + 50; param += 2) {
-      setBoxToMesh(face, frame, new PVector(make_point(len, param), len / 2 + depth), len / 25);
+      PVector v = make_point(len, param);
+      setBoxToMesh(face, frame, new PVector(v.x, v.y, len / 2 + depth), len / 25);
     }
     len -= len / 10;
     if (len < 150) {
@@ -32,49 +36,47 @@ void update() {
 //--------------------------------------------------------------
 void draw() {
   update();
-  traslate(width/2, height/2);
+  translate(width/2, height/2);
   background(255);
   strokeWeight(2);
 
-  this->cam.begin();
   ofRotateY(ofGetFrameNum() * 0.666666666666);
   ofRotateZ(ofGetFrameNum() * 0.333333333333);
 
   for (int i = 0; i < 4; i++) {
-
     ofRotateY(90);
-
-    ofSetColor(255);
-    this->face.draw();
-
-    ofSetColor(0);
-    this->frame.drawWireframe();
+    face.draw(#ffffff);
+    frame.drawWireframe(#000000);
   }
-
-  this->cam.end();
 }
 
 //--------------------------------------------------------------
-void ofApp::setBoxToMesh(ofMesh& face_target, ofMesh& frame_target, glm::vec3 location, float size) {
-
-  this->setBoxToMesh(face_target, frame_target, location, size, size, size);
+void setBoxToMesh(ofMesh face_target, ofMesh frame_target, PVector location, float size) {
+  setBoxToMesh(face_target, frame_target, location, size, size, size);
 }
 
 //--------------------------------------------------------------
-void ofApp::setBoxToMesh(ofMesh& face_target, ofMesh& frame_target, glm::vec3 location, float height, float width, float depth) {
-
+void setBoxToMesh(ofMesh face_target, ofMesh frame_target, PVector location, float height, float width, float depth) {
   int face_index = face_target.getNumVertices();
   int frame_index = frame_target.getNumVertices();
 
-  face_target.addVertex(location + glm::vec3(width * -0.5 * 0.99, height * 0.5 * 0.99, depth * -0.5 * 0.99));
-  face_target.addVertex(location + glm::vec3(width * 0.5 * 0.99, height * 0.5 * 0.99, depth * -0.5 * 0.99));
-  face_target.addVertex(location + glm::vec3(width * 0.5 * 0.99, height * 0.5 * 0.99, depth * 0.5 * 0.99));
-  face_target.addVertex(location + glm::vec3(width * -0.5 * 0.99, height * 0.5 * 0.99, depth * 0.5 * 0.99));
+  PVector v = new PVector(width * -0.5 * 0.99, height * 0.5 * 0.99, depth * -0.5 * 0.99);
+  face_target.addVertex(PVector.add(location, v));
+  v = new PVector(width * 0.5 * 0.99, height * 0.5 * 0.99, depth * -0.5 * 0.99);
+  face_target.addVertex(PVector.add(location, v));
+  v = new PVector(width * 0.5 * 0.99, height * 0.5 * 0.99, depth * 0.5 * 0.99);
+  face_target.addVertex(PVector.add(location, v));
+  v = new PVector(width * -0.5 * 0.99, height * 0.5 * 0.99, depth * 0.5 * 0.99);
+  face_target.addVertex(PVector.add(location, v));
 
-  face_target.addVertex(location + glm::vec3(width * -0.5 * 0.99, height * -0.5 * 0.99, depth * -0.5 * 0.99));
-  face_target.addVertex(location + glm::vec3(width * 0.5 * 0.99, height * -0.5 * 0.99, depth * -0.5 * 0.99));
-  face_target.addVertex(location + glm::vec3(width * 0.5 * 0.99, height * -0.5 * 0.99, depth * 0.5 * 0.99));
-  face_target.addVertex(location + glm::vec3(width * -0.5 * 0.99, height * -0.5 * 0.99, depth * 0.5 * 0.99));
+  v = new PVector(width * -0.5 * 0.99, height * -0.5 * 0.99, depth * -0.5 * 0.99);
+  face_target.addVertex(PVector.add(location, v));
+  v = new PVector(width * 0.5 * 0.99, height * -0.5 * 0.99, depth * -0.5 * 0.99);
+  face_target.addVertex(PVector.add(location, v));
+  v = new PVector(width * 0.5 * 0.99, height * -0.5 * 0.99, depth * 0.5 * 0.99);
+  face_target.addVertex(PVector.add(location, v));
+  v = new PVector(width * -0.5 * 0.99, height * -0.5 * 0.99, depth * 0.5 * 0.99);
+  face_target.addVertex(PVector.add(location, v));
 
   face_target.addIndex(face_index + 0);
   face_target.addIndex(face_index + 1);
@@ -118,15 +120,23 @@ void ofApp::setBoxToMesh(ofMesh& face_target, ofMesh& frame_target, glm::vec3 lo
   face_target.addIndex(face_index + 0);
   face_target.addIndex(face_index + 3);
 
-  frame_target.addVertex(location + glm::vec3(width * -0.5, height * 0.5, depth * -0.5));
-  frame_target.addVertex(location + glm::vec3(width * 0.5, height * 0.5, depth * -0.5));
-  frame_target.addVertex(location + glm::vec3(width * 0.5, height * 0.5, depth * 0.5));
-  frame_target.addVertex(location + glm::vec3(width * -0.5, height * 0.5, depth * 0.5));
+  v = new PVector(width * -0.5, height * 0.5, depth * -0.5);
+  frame_target.addVertex(PVector.add(location, v));
+  v = new PVector(width * 0.5, height * 0.5, depth * -0.5);
+  frame_target.addVertex(PVector.add(location, v));
+  v = new PVector(width * 0.5, height * 0.5, depth * 0.5);
+  frame_target.addVertex(PVector.add(location, v));
+  v = new PVector(width * -0.5, height * 0.5, depth * 0.5);
+  frame_target.addVertex(PVector.add(location, v));
 
-  frame_target.addVertex(location + glm::vec3(width * -0.5, height * -0.5, depth * -0.5));
-  frame_target.addVertex(location + glm::vec3(width * 0.5, height * -0.5, depth * -0.5));
-  frame_target.addVertex(location + glm::vec3(width * 0.5, height * -0.5, depth * 0.5));
-  frame_target.addVertex(location + glm::vec3(width * -0.5, height * -0.5, depth * 0.5));
+  v = new PVector(width * -0.5, height * -0.5, depth * -0.5);
+  frame_target.addVertex(PVector.add(location, v));
+  v = new PVector(width * 0.5, height * -0.5, depth * -0.5);
+  frame_target.addVertex(PVector.add(location, v));
+  v = new PVector(width * 0.5, height * -0.5, depth * 0.5);
+  frame_target.addVertex(PVector.add(location, v));
+  v = new PVector(width * -0.5, height * -0.5, depth * 0.5);
+  frame_target.addVertex(PVector.add(location, v));
 
   frame_target.addIndex(frame_index + 0);
   frame_target.addIndex(frame_index + 1);
@@ -157,41 +167,36 @@ void ofApp::setBoxToMesh(ofMesh& face_target, ofMesh& frame_target, glm::vec3 lo
 }
 
 //--------------------------------------------------------------
-glm::vec2 ofApp::make_point(int len, float param) {
+PVector make_point(int len, float param) {
+  PVector base, next;
 
-  glm::vec2 base, next;
-
-  auto param_i =  (int)param % 100;
-  auto param_p = param - (int)param;
+  var param_i =  (int)param % 100;
+  var param_p = param - (int)param;
 
   if (param_i < 25) {
-
-    base = glm::vec2(ofMap(param_i, 0, 25, -len * 0.5, len * 0.5), -len * 0.5);
+    base = new PVector(ofMap(param_i, 0, 25, -len * 0.5, len * 0.5), -len * 0.5);
   } else if (param_i < 50) {
-
-    base = glm::vec2(len * 0.5, ofMap(param_i, 25, 50, -len * 0.5, len * 0.5));
+    base = new PVector(len * 0.5, ofMap(param_i, 25, 50, -len * 0.5, len * 0.5));
   } else if (param_i < 75) {
-
-    base = glm::vec2(ofMap(param_i, 50, 75, len * 0.5, -len * 0.5), len * 0.5);
+    base = new PVector(ofMap(param_i, 50, 75, len * 0.5, -len * 0.5), len * 0.5);
   } else {
-
-    base = glm::vec2(-len * 0.5, ofMap(param_i, 75, 100, len * 0.5, -len * 0.5));
+    base = new PVector(-len * 0.5, ofMap(param_i, 75, 100, len * 0.5, -len * 0.5));
   }
 
   param_i = (param_i + 1) % 100;
   if (param_i < 25) {
-
-    next = glm::vec2(ofMap(param_i, 0, 25, -len * 0.5, len * 0.5), -len * 0.5);
+    next = new PVector(ofMap(param_i, 0, 25, -len * 0.5, len * 0.5), -len * 0.5);
   } else if (param_i < 50) {
-
-    next = glm::vec2(len * 0.5, ofMap(param_i, 25, 50, -len * 0.5, len * 0.5));
+    next = new PVector(len * 0.5, ofMap(param_i, 25, 50, -len * 0.5, len * 0.5));
   } else if (param_i < 75) {
-
-    next = glm::vec2(ofMap(param_i, 50, 75, len * 0.5, -len * 0.5), len * 0.5);
+    next = new PVector(ofMap(param_i, 50, 75, len * 0.5, -len * 0.5), len * 0.5);
   } else {
-
-    next = glm::vec2(-len * 0.5, ofMap(param_i, 75, 100, len * 0.5, -len * 0.5));
+    next = new PVector(-len * 0.5, ofMap(param_i, 75, 100, len * 0.5, -len * 0.5));
   }
 
-  return base + (next - base) * param_p;
+  //  return base + (next - base) * param_p;
+  PVector v = PVector.sub(next, base);
+  v.mult(param_p);
+  v = PVector.add(base, v);
+  return v;
 }
