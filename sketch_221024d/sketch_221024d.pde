@@ -3,49 +3,45 @@
 // 【作品名】20200414_omniscient
 // https://openprocessing.org/sketch/873283
 
-let charSize = 50;
-let buildingNum = 50;
-let buildings = [];
-let minHeight = 50;
-let maxHeight = 250;
-let minWidth = 10;
-let maxWidth = 20;
-let growspeed = 0.4;
-let jumpHeight = 20.0;
-let earthSpeed = 0.3;
-let dayval = 0.0;
-let moonpg;
-let moonsize = 125;
+float charSize = 50;
+float buildingNum = 50;
+Building[] buildings = new Building[buildingNum];
+float minHeight = 50;
+float maxHeight = 250;
+float minWidth = 10;
+float maxWidth = 20;
+float growspeed = 0.4;
+float jumpHeight = 20.0;
+float earthSpeed = 0.3;
+float dayval = 0.0;
+PGraphics moonpg;
+float moonsize = 125;
 
-const ColorPalette = Object.freeze( {
-"dark":
-  "#364f6b",
-  "blue" :
-  "#3fc1c9",
-  "white" :
-  "#f5f5f5",
-  "red":
-  "#fc5185"
+static class ColorPalette {
+  color dark = #364f6b;
+  color blue = #3fc1c9;
+  color white = #3fc1c9;
+  color red = #fc5185;
 }
-);
 
-function setup() {
-  createCanvas(windowWidth, windowHeight);
+void setup() {
+  size(1112, 834);
   background(100);
   noStroke();
 
-  for (let i=0; i<buildingNum; i++) {
-    let building = new Building(i, TWO_PI * random(), random(minHeight, maxHeight), random(minWidth, maxWidth));
-    buildings.push(building);
+  for (var i=0; i<buildingNum; i++) {
+    var building = new Building(i, TWO_PI * random(), random(minHeight, maxHeight), random(minWidth, maxWidth));
+    buildings.add(building);
   }
 
   moonpg = createGraphics(moonsize, moonsize);
   moonpg.noStroke();
   moonpg.fill(ColorPalette.white);
   moonpg.ellipse(moonsize * 0.5, moonsize * 0.5, moonsize, moonsize);
-  moonpg.erase();
-  moonpg.ellipse(moonsize * 0.375, moonsize * 0.375, moonsize * 0.75, moonsize * 0.75);
-  moonpg.noErase();
+  // マスクするのではないだろうか？保留にする。いったんコメントにする。
+  //moonpg.erase();
+  //moonpg.ellipse(moonsize * 0.375, moonsize * 0.375, moonsize * 0.75, moonsize * 0.75);
+  //moonpg.noErase();
 }
 
 function draw() {
