@@ -64,7 +64,7 @@ void draw() {
     building.draw(dayval);
   }
   fill(lerpColor(color(ColorPalette.white), color(ColorPalette.red), dayval));//map(dayval, 0.0, 1.0,255, 0));
-  //ellipse(0, 0, height, height);
+  ellipse(0, 0, height, height);
   pop();
 
   fill(lerpColor(color(ColorPalette.white), color(ColorPalette.red), dayval));// fill(map(dayval, 0.0, 1.0,255, 0));
@@ -119,7 +119,8 @@ class Building {
   }
 
   void draw(float dayval) {
-    var hhalf = hh * 0.5;
+    // heightとthis.heightはheight（グローバル変数）が優先された。
+    var hhalf = /* hh */ height * 0.5;
     var h = hhalf;
     if (this.posang >PI && this.posang < TWO_PI) {
       h += this.hh * min(sin(this.posang - PI), growspeed) / growspeed;

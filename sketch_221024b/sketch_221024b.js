@@ -28,6 +28,7 @@ const ColorPalette = Object.freeze( {
 function setup() {
   createCanvas(windowWidth, windowHeight);
   console.log("windowWidth:" + windowWidth + " windowHeight:" + windowHeight);
+  console.log("width:" + width + " height:" + height);
   background(100);
   noStroke();
 
