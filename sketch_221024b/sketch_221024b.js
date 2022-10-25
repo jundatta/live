@@ -26,9 +26,9 @@ const ColorPalette = Object.freeze( {
 );
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
-  console.log("windowWidth:" + windowWidth + " windowHeight:" + windowHeight);
-  console.log("width:" + width + " height:" + height);
+  createCanvas(843, 371);
+  //console.log("windowWidth:" + windowWidth + " windowHeight:" + windowHeight);
+  //console.log("width:" + width + " height:" + height);
   background(100);
   noStroke();
 
@@ -41,9 +41,9 @@ function setup() {
   moonpg.noStroke();
   moonpg.fill(ColorPalette.white);
   moonpg.ellipse(moonsize * 0.5, moonsize * 0.5, moonsize, moonsize);
-  //moonpg.erase();
-  //moonpg.ellipse(moonsize * 0.375, moonsize * 0.375, moonsize * 0.75, moonsize * 0.75);
-  //moonpg.noErase();
+  moonpg.erase();
+  moonpg.ellipse(moonsize * 0.375, moonsize * 0.375, moonsize * 0.75, moonsize * 0.75);
+  moonpg.noErase();
 }
 
 function draw() {
@@ -54,8 +54,6 @@ function draw() {
   fill(ColorPalette.red);
   ellipse(moonsize + 50, -(moonsize + 50) + dayval * (moonsize + 50) * 2, moonsize, moonsize);
   image(moonpg, width - (moonsize * 1.5 + 50), (moonsize * 0.5 + 50) - dayval * (moonsize + 50) * 2);
-  //fill(ColorPalette.white);
-  //ellipse(width - 150, 150 - dayval * 300, 100, 100);
 
   fill(map(dayval, 0.0, 1.0, 255, 0));
   push();
@@ -66,7 +64,7 @@ function draw() {
     building.draw(dayval);
   }
   fill(lerpColor(color(ColorPalette.white), color(ColorPalette.red), dayval));//map(dayval, 0.0, 1.0,255, 0));
-  //ellipse(0, 0, height, height);
+  ellipse(0, 0, height, height);
   pop();
 
   fill(lerpColor(color(ColorPalette.white), color(ColorPalette.red), dayval));// fill(map(dayval, 0.0, 1.0,255, 0));

@@ -18,6 +18,9 @@ PGraphics moonpg;
 int moonsize = 125;
 
 PGraphics maskpg;
+PGraphics pg;
+final int OrgW = 840;
+final int OrgH = 370;
 
 static class ColorPalette {
   static color dark = #364f6b;
@@ -27,9 +30,13 @@ static class ColorPalette {
 }
 
 void setup() {
-  size(1643, 759);
-  background(100);
-  noStroke();
+//  size(1643, 759);
+  size(500, 800);
+
+  pg = createGraphics(OrgW, OrgH);
+  pg.beginDraw();
+  pg.noStroke();
+  pg.endDraw();
 
   for (var i=0; i<buildingNum; i++) {
     var building = new Building(i, TWO_PI * random(1), random(minHeight, maxHeight), random(minWidth, maxWidth));
@@ -39,10 +46,8 @@ void setup() {
   moonpg = createGraphics(moonsize, moonsize);
   moonpg.beginDraw();
   moonpg.noStroke();
-//  moonpg.fill(ColorPalette.white);
-  moonpg.fill(#ff0000);
+  moonpg.fill(ColorPalette.white);
   moonpg.ellipse(moonsize * 0.5, moonsize * 0.5, moonsize, moonsize);
-  // マスクするのではないだろうか？保留にする。いったんコメントにする。
   //moonpg.erase();
   //moonpg.ellipse(moonsize * 0.375, moonsize * 0.375, moonsize * 0.75, moonsize * 0.75);
   //moonpg.noErase();
@@ -53,33 +58,38 @@ void setup() {
   maskpg.background(0);
   maskpg.noStroke();
   maskpg.fill(255);
+  maskpg.ellipse(moonsize * 0.5, moonsize * 0.5, moonsize, moonsize);
+  maskpg.fill(0);
   maskpg.ellipse(moonsize * 0.375, moonsize * 0.375, moonsize * 0.75, moonsize * 0.75);
   maskpg.endDraw();
   moonpg.mask(maskpg);
 }
 
 void draw() {
+  pg.beginDraw();
   var dayval = map(sin(radians(frameCount * 1.0)), -1.0, 1.0, 0.0, 1.0);
 
-  background(lerpColor(color(ColorPalette.dark), color(ColorPalette.blue), dayval));//map(dayval, 0.0, 1.0, 0.0, 255));
-  fill(ColorPalette.red);
-  ellipse(moonsize + 50, -(moonsize + 50) + dayval * (moonsize + 50) * 2, moonsize, moonsize);
-  image(moonpg, width - (moonsize * 1.5 + 50), (moonsize * 0.5 + 50) - dayval * (moonsize + 50) * 2);
+  pg.background(lerpColor(color(ColorPalette.dark), color(ColorPalette.blue), dayval));//map(dayval, 0.0, 1.0, 0.0, 255));
+  pg.fill(ColorPalette.red);
+  pg.ellipse(moonsize + 50, -(moonsize + 50) + dayval * (moonsize + 50) * 2, moonsize, moonsize);
+  pg.image(moonpg, pg.width - (moonsize * 1.5 + 50), (moonsize * 0.5 + 50) - dayval * (moonsize + 50) * 2);
 
-  fill(map(dayval, 0.0, 1.0, 255, 0));
-  push();
-  translate(width * 0.5, height);
+  pg.fill(map(dayval, 0.0, 1.0, 255, 0));
+  pg.push();
+  pg.translate(pg.width * 0.5, pg.height);
   for (var i=0; i<buildings.length; i++) {
     var building = buildings[i];
     building.update();
-    building.draw(dayval);
+    building.draw(pg, dayval);
   }
-  fill(lerpColor(color(ColorPalette.white), color(ColorPalette.red), dayval));//map(dayval, 0.0, 1.0,255, 0));
-  ellipse(0, 0, height, height);
-  pop();
+  pg.fill(lerpColor(color(ColorPalette.white), color(ColorPalette.red), dayval));//map(dayval, 0.0, 1.0,255, 0));
+  pg.ellipse(0, 0, pg.height, pg.height);
+  pg.pop();
 
-  fill(lerpColor(color(ColorPalette.white), color(ColorPalette.red), dayval));// fill(map(dayval, 0.0, 1.0,255, 0));
-  ellipse(width * 0.5, height * 0.5 - charSize * 0.5 - jumpHeight * abs(sin(radians(frameCount * 5))), charSize, charSize);
+  pg.fill(lerpColor(color(ColorPalette.white), color(ColorPalette.red), dayval));// fill(map(dayval, 0.0, 1.0,255, 0));
+  pg.ellipse(pg.width * 0.5, pg.height * 0.5 - charSize * 0.5 - jumpHeight * abs(sin(radians(frameCount * 5))), charSize, charSize);
+  pg.endDraw();
+  image(pg, 0, 0, width, height);
 }
 
 class Building {
@@ -129,9 +139,9 @@ class Building {
     }
   }
 
-  void draw(float dayval) {
+  void draw(PGraphics pg, float dayval) {
     // heightとthis.heightはheight（グローバル変数）が優先された。
-    var hhalf = /* hh */ height * 0.5;
+    var hhalf = /* hh */ pg.height * 0.5;
     var h = hhalf;
     if (this.posang >PI && this.posang < TWO_PI) {
       h += this.hh * min(sin(this.posang - PI), growspeed) / growspeed;
@@ -147,12 +157,12 @@ class Building {
     var col2 = lerpColor(color(ColorPalette.red), color(ColorPalette.white), 1.0 - this.id / (float)buildingNum);
     var fillcol = lerpColor(col1, col2, dayval);
 
-    fill(fillcol);
-    beginShape();
-    vertex(0, 0);
-    vertex(p1.x, p1.y);
-    vertex(p2.x, p2.y);
-    endShape(CLOSE);
+    pg.fill(fillcol);
+    pg.beginShape();
+    pg.vertex(0, 0);
+    pg.vertex(p1.x, p1.y);
+    pg.vertex(p2.x, p2.y);
+    pg.endShape(CLOSE);
 
     if (this.hasWindow) {
       var cp = PVector.mult(PVector.add(PVector.add(PVector.add(p1, p2), p3), p4), 0.25);
@@ -160,13 +170,13 @@ class Building {
       var wp2 = PVector.add(PVector.mult(PVector.sub(p2, cp), 0.25), cp);
       var wp3 = PVector.add(PVector.mult(PVector.sub(p3, cp), 0.25), cp);
       var wp4 = PVector.add(PVector.mult(PVector.sub(p4, cp), 0.25), cp);
-      fill(ColorPalette.white);
-      beginShape();
-      vertex(wp1.x, wp1.y);
-      vertex(wp2.x, wp2.y);
-      vertex(wp3.x, wp3.y);
-      vertex(wp4.x, wp4.y);
-      endShape(CLOSE);
+      pg.fill(ColorPalette.white);
+      pg.beginShape();
+      pg.vertex(wp1.x, wp1.y);
+      pg.vertex(wp2.x, wp2.y);
+      pg.vertex(wp3.x, wp3.y);
+      pg.vertex(wp4.x, wp4.y);
+      pg.endShape(CLOSE);
     }
   }
 }
