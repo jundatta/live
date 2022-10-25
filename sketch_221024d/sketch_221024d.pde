@@ -4,7 +4,7 @@
 // https://openprocessing.org/sketch/873283
 
 float charSize = 50;
-float buildingNum = 50;
+int buildingNum = 50;
 Building[] buildings = new Building[buildingNum];
 float minHeight = 50;
 float maxHeight = 250;
@@ -15,13 +15,13 @@ float jumpHeight = 20.0;
 float earthSpeed = 0.3;
 float dayval = 0.0;
 PGraphics moonpg;
-float moonsize = 125;
+int moonsize = 125;
 
 static class ColorPalette {
-  color dark = #364f6b;
-  color blue = #3fc1c9;
-  color white = #3fc1c9;
-  color red = #fc5185;
+  static color dark = #364f6b;
+  static color blue = #3fc1c9;
+  static color white = #3fc1c9;
+  static color red = #fc5185;
 }
 
 void setup() {
@@ -30,11 +30,12 @@ void setup() {
   noStroke();
 
   for (var i=0; i<buildingNum; i++) {
-    var building = new Building(i, TWO_PI * random(), random(minHeight, maxHeight), random(minWidth, maxWidth));
-    buildings.add(building);
+    var building = new Building(i, TWO_PI * random(1), random(minHeight, maxHeight), random(minWidth, maxWidth));
+    buildings[i] = building;
   }
 
   moonpg = createGraphics(moonsize, moonsize);
+  moonpg.beginDraw();
   moonpg.noStroke();
   moonpg.fill(ColorPalette.white);
   moonpg.ellipse(moonsize * 0.5, moonsize * 0.5, moonsize, moonsize);
@@ -42,24 +43,23 @@ void setup() {
   //moonpg.erase();
   //moonpg.ellipse(moonsize * 0.375, moonsize * 0.375, moonsize * 0.75, moonsize * 0.75);
   //moonpg.noErase();
+  moonpg.endDraw();
 }
 
-function draw() {
-  let dayval = map(sin(radians(frameCount * 1.0)), -1.0, 1.0, 0.0, 1.0);
+void draw() {
+  var dayval = map(sin(radians(frameCount * 1.0)), -1.0, 1.0, 0.0, 1.0);
 
   background(lerpColor(color(ColorPalette.dark), color(ColorPalette.blue), dayval));//map(dayval, 0.0, 1.0, 0.0, 255));
 
   fill(ColorPalette.red);
   ellipse(moonsize + 50, -(moonsize + 50) + dayval * (moonsize + 50) * 2, moonsize, moonsize);
   image(moonpg, width - (moonsize * 1.5 + 50), (moonsize * 0.5 + 50) - dayval * (moonsize + 50) * 2);
-  //fill(ColorPalette.white);
-  //ellipse(width - 150, 150 - dayval * 300, 100, 100);
 
   fill(map(dayval, 0.0, 1.0, 255, 0));
   push();
   translate(width * 0.5, height);
-  for (let i=0; i<buildings.length; i++) {
-    let building = buildings[i];
+  for (var i=0; i<buildings.length; i++) {
+    var building = buildings[i];
     building.update();
     building.draw(dayval);
   }
@@ -72,14 +72,20 @@ function draw() {
 }
 
 class Building {
-  constructor(id, posang, height, width) {
+  float id;
+  float posang;
+  float hh, ww;
+  boolean isNew, hasWindow;
+  float widthang;
+
+  Building(float id, float posang, float hh, float ww) {
     this.id = id;
     this.posang = posang;
-    this.height = height;
-    this.width = width;
-    this.new = false;
+    this.hh = hh;
+    this.ww = ww;
+    this.isNew = false;
 
-    let rnd = random();
+    var rnd = random(1);
     if (rnd < 0.5) {
       this.hasWindow = true;
     } else {
@@ -88,23 +94,22 @@ class Building {
     this.widthang = 2 * asin(width / (2 * height));
   }
 
-  update() {
-    if (sin(this.posang) > 0.5 && this.new == true) {
-      let index = buildings.indexOf(this);
-      let rndang = radians(random(45.0, 135.0));
+  void update() {
+    if (sin(this.posang) > 0.5 && this.isNew == true) {
+      var rndang = radians(random(45.0, 135.0));
       this.posang = rndang;
-      this.height = random(minHeight, maxHeight);
-      this.width = random(minWidth, maxWidth);
-      this.new = false;
+      this.hh = random(minHeight, maxHeight);
+      this.ww = random(minWidth, maxWidth);
+      this.isNew = false;
 
-      let rnd = random();
+      var rnd = random(1);
       if (rnd < 0.5) {
         this.hasWindow = true;
       } else {
         this.hasWindow = false;
       }
-    } else if (sin(this.posang) < -0.5 && this.new == false) {
-      this.new = true;
+    } else if (sin(this.posang) < -0.5 && this.isNew == false) {
+      this.isNew = true;
     }
 
     this.posang -= radians(earthSpeed);
@@ -113,22 +118,22 @@ class Building {
     }
   }
 
-  draw(dayval) {
-    let hhalf = height * 0.5;
-    let h = hhalf;
+  void draw(float dayval) {
+    var hhalf = height * 0.5;
+    var h = hhalf;
     if (this.posang >PI && this.posang < TWO_PI) {
-      h += this.height * min(sin(this.posang - PI), growspeed) / growspeed;
+      h += this.hh * min(sin(this.posang - PI), growspeed) / growspeed;
     }
-    let a1 = this.posang - this.widthang * 0.5;
-    let a2 = this.posang + this.widthang * 0.5;
-    let p1 = createVector(cos(a1) *h, sin(a1) * h);
-    let p2 = createVector(cos(a2) * h, sin(a2) * h);
-    let p3 = createVector(cos(a2) * hhalf, sin(a2) * hhalf);
-    let p4 = createVector(cos(a1) * hhalf, sin(a1) * hhalf);
+    var a1 = this.posang - this.widthang * 0.5;
+    var a2 = this.posang + this.widthang * 0.5;
+    var p1 = new PVector(cos(a1) *h, sin(a1) * h);
+    var p2 = new PVector(cos(a2) * h, sin(a2) * h);
+    var p3 = new PVector(cos(a2) * hhalf, sin(a2) * hhalf);
+    var p4 = new PVector(cos(a1) * hhalf, sin(a1) * hhalf);
 
-    let col1 = lerpColor(color(ColorPalette.dark), color(ColorPalette.white), this.id / buildingNum);
-    let col2 = lerpColor(color(ColorPalette.red), color(ColorPalette.white), 1.0 - this.id / buildingNum);
-    let fillcol = lerpColor(col1, col2, dayval);
+    var col1 = lerpColor(color(ColorPalette.dark), color(ColorPalette.white), this.id / buildingNum);
+    var col2 = lerpColor(color(ColorPalette.red), color(ColorPalette.white), 1.0 - this.id / buildingNum);
+    var fillcol = lerpColor(col1, col2, dayval);
 
     fill(fillcol);
     beginShape();
@@ -138,11 +143,11 @@ class Building {
     endShape(CLOSE);
 
     if (this.hasWindow) {
-      let cp = p5.Vector.mult(p5.Vector.add(p5.Vector.add(p5.Vector.add(p1, p2), p3), p4), 0.25);
-      let wp1 = p5.Vector.add(p5.Vector.mult(p5.Vector.sub(p1, cp), 0.25), cp);
-      let wp2 = p5.Vector.add(p5.Vector.mult(p5.Vector.sub(p2, cp), 0.25), cp);
-      let wp3 = p5.Vector.add(p5.Vector.mult(p5.Vector.sub(p3, cp), 0.25), cp);
-      let wp4 = p5.Vector.add(p5.Vector.mult(p5.Vector.sub(p4, cp), 0.25), cp);
+      var cp = PVector.mult(PVector.add(PVector.add(PVector.add(p1, p2), p3), p4), 0.25);
+      var wp1 = PVector.add(PVector.mult(PVector.sub(p1, cp), 0.25), cp);
+      var wp2 = PVector.add(PVector.mult(PVector.sub(p2, cp), 0.25), cp);
+      var wp3 = PVector.add(PVector.mult(PVector.sub(p3, cp), 0.25), cp);
+      var wp4 = PVector.add(PVector.mult(PVector.sub(p4, cp), 0.25), cp);
       fill(ColorPalette.white);
       beginShape();
       vertex(wp1.x, wp1.y);
