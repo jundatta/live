@@ -4,7 +4,6 @@
 // https://openprocessing.org/sketch/873283
 
 float charSize = 50;
-//int buildingNum = 50;
 int buildingNum = 50;
 Building[] buildings = new Building[buildingNum];
 float minHeight = 50;
@@ -125,7 +124,6 @@ class Building {
     if (this.posang >PI && this.posang < TWO_PI) {
       h += this.hh * min(sin(this.posang - PI), growspeed) / growspeed;
     }
-    println("h:" + h + " hhalf:" + hhalf);
     var a1 = this.posang - this.widthang * 0.5;
     var a2 = this.posang + this.widthang * 0.5;
     var p1 = new PVector(cos(a1) *h, sin(a1) * h);
@@ -138,10 +136,6 @@ class Building {
     var fillcol = lerpColor(col1, col2, dayval);
 
     fill(fillcol);
-
-    //println("p1:" + p1);
-    //println("p2:" + p2);
-
     beginShape();
     vertex(0, 0);
     vertex(p1.x, p1.y);
