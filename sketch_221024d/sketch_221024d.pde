@@ -4,7 +4,8 @@
 // https://openprocessing.org/sketch/873283
 
 float charSize = 50;
-int buildingNum = 50;
+//int buildingNum = 50;
+int buildingNum = 5;
 Building[] buildings = new Building[buildingNum];
 float minHeight = 50;
 float maxHeight = 250;
@@ -64,7 +65,7 @@ void draw() {
     building.draw(dayval);
   }
   fill(lerpColor(color(ColorPalette.white), color(ColorPalette.red), dayval));//map(dayval, 0.0, 1.0,255, 0));
-  ellipse(0, 0, height, height);
+  //ellipse(0, 0, height, height);
   pop();
 
   fill(lerpColor(color(ColorPalette.white), color(ColorPalette.red), dayval));// fill(map(dayval, 0.0, 1.0,255, 0));
@@ -91,7 +92,7 @@ class Building {
     } else {
       this.hasWindow = false;
     }
-    this.widthang = 2 * asin(width / (2 * height));
+    this.widthang = 2 * asin(ww / (2 * hh));
   }
 
   void update() {
@@ -119,7 +120,7 @@ class Building {
   }
 
   void draw(float dayval) {
-    var hhalf = height * 0.5;
+    var hhalf = hh * 0.5;
     var h = hhalf;
     if (this.posang >PI && this.posang < TWO_PI) {
       h += this.hh * min(sin(this.posang - PI), growspeed) / growspeed;
@@ -136,6 +137,10 @@ class Building {
     var fillcol = lerpColor(col1, col2, dayval);
 
     fill(fillcol);
+
+    println("p1:" + p1);
+    println("p2:" + p2);
+
     beginShape();
     vertex(0, 0);
     vertex(p1.x, p1.y);

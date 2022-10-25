@@ -1,5 +1,6 @@
 let charSize = 50;
-let buildingNum = 50;
+//let buildingNum = 50;
+let buildingNum = 1;
 let buildings = [];
 let minHeight = 50;
 let maxHeight = 250;
@@ -63,7 +64,7 @@ function draw() {
     building.draw(dayval);
   }
   fill(lerpColor(color(ColorPalette.white), color(ColorPalette.red), dayval));//map(dayval, 0.0, 1.0,255, 0));
-  ellipse(0, 0, height, height);
+  //ellipse(0, 0, height, height);
   pop();
 
   fill(lerpColor(color(ColorPalette.white), color(ColorPalette.red), dayval));// fill(map(dayval, 0.0, 1.0,255, 0));
@@ -118,6 +119,7 @@ class Building {
     if (this.posang >PI && this.posang < TWO_PI) {
       h += this.height * min(sin(this.posang - PI), growspeed) / growspeed;
     }
+    console.log("h:" + h);
     let a1 = this.posang - this.widthang * 0.5;
     let a2 = this.posang + this.widthang * 0.5;
     let p1 = createVector(cos(a1) *h, sin(a1) * h);
@@ -130,6 +132,10 @@ class Building {
     let fillcol = lerpColor(col1, col2, dayval);
 
     fill(fillcol);
+
+    //console.log("p1:" + p1);
+    //console.log("p2:" + p2);
+
     beginShape();
     vertex(0, 0);
     vertex(p1.x, p1.y);
