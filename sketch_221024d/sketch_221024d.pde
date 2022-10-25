@@ -131,8 +131,8 @@ class Building {
     var p3 = new PVector(cos(a2) * hhalf, sin(a2) * hhalf);
     var p4 = new PVector(cos(a1) * hhalf, sin(a1) * hhalf);
 
-    var col1 = lerpColor(color(ColorPalette.dark), color(ColorPalette.white), this.id / buildingNum);
-    var col2 = lerpColor(color(ColorPalette.red), color(ColorPalette.white), 1.0 - this.id / buildingNum);
+    var col1 = lerpColor(color(ColorPalette.dark), color(ColorPalette.white), this.id / (float)buildingNum);
+    var col2 = lerpColor(color(ColorPalette.red), color(ColorPalette.white), 1.0 - this.id / (float)buildingNum);
     var fillcol = lerpColor(col1, col2, dayval);
 
     fill(fillcol);

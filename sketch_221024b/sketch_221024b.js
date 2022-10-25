@@ -38,9 +38,9 @@ function setup() {
   moonpg.noStroke();
   moonpg.fill(ColorPalette.white);
   moonpg.ellipse(moonsize * 0.5, moonsize * 0.5, moonsize, moonsize);
-  moonpg.erase();
-  moonpg.ellipse(moonsize * 0.375, moonsize * 0.375, moonsize * 0.75, moonsize * 0.75);
-  moonpg.noErase();
+  //moonpg.erase();
+  //moonpg.ellipse(moonsize * 0.375, moonsize * 0.375, moonsize * 0.75, moonsize * 0.75);
+  //moonpg.noErase();
 }
 
 function draw() {
