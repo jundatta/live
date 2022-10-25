@@ -38,16 +38,14 @@ void setup() {
 
   moonpg = createGraphics(moonsize, moonsize);
   moonpg.beginDraw();
-  moonpg.clear();
   moonpg.noStroke();
-  moonpg.fill(ColorPalette.white);
+//  moonpg.fill(ColorPalette.white);
+  moonpg.fill(#ff0000);
   moonpg.ellipse(moonsize * 0.5, moonsize * 0.5, moonsize, moonsize);
   // マスクするのではないだろうか？保留にする。いったんコメントにする。
   //moonpg.erase();
   //moonpg.ellipse(moonsize * 0.375, moonsize * 0.375, moonsize * 0.75, moonsize * 0.75);
   //moonpg.noErase();
-  moonpg.fill(0x000000ff);
-  moonpg.ellipse(moonsize * 0.375, moonsize * 0.375, moonsize * 0.75, moonsize * 0.75);
   moonpg.endDraw();
 
   maskpg = createGraphics(moonsize, moonsize);
@@ -57,6 +55,7 @@ void setup() {
   maskpg.fill(255);
   maskpg.ellipse(moonsize * 0.375, moonsize * 0.375, moonsize * 0.75, moonsize * 0.75);
   maskpg.endDraw();
+  moonpg.mask(maskpg);
 }
 
 void draw() {
