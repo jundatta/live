@@ -1,6 +1,6 @@
 let charSize = 50;
 //let buildingNum = 50;
-let buildingNum = 1;
+let buildingNum = 50;
 let buildings = [];
 let minHeight = 50;
 let maxHeight = 250;
@@ -27,6 +27,7 @@ const ColorPalette = Object.freeze( {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  console.log("windowWidth:" + windowWidth + " windowHeight:" + windowHeight);
   background(100);
   noStroke();
 
@@ -119,7 +120,7 @@ class Building {
     if (this.posang >PI && this.posang < TWO_PI) {
       h += this.height * min(sin(this.posang - PI), growspeed) / growspeed;
     }
-    console.log("h:" + h);
+    //console.log("h:" + h + " hhalf:" + hhalf);
     let a1 = this.posang - this.widthang * 0.5;
     let a2 = this.posang + this.widthang * 0.5;
     let p1 = createVector(cos(a1) *h, sin(a1) * h);

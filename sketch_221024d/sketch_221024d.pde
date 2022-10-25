@@ -5,7 +5,7 @@
 
 float charSize = 50;
 //int buildingNum = 50;
-int buildingNum = 5;
+int buildingNum = 50;
 Building[] buildings = new Building[buildingNum];
 float minHeight = 50;
 float maxHeight = 250;
@@ -21,12 +21,12 @@ int moonsize = 125;
 static class ColorPalette {
   static color dark = #364f6b;
   static color blue = #3fc1c9;
-  static color white = #3fc1c9;
+  static color white = #f5f5f5;
   static color red = #fc5185;
 }
 
 void setup() {
-  size(1112, 834);
+  size(1643, 759);
   background(100);
   noStroke();
 
@@ -51,7 +51,6 @@ void draw() {
   var dayval = map(sin(radians(frameCount * 1.0)), -1.0, 1.0, 0.0, 1.0);
 
   background(lerpColor(color(ColorPalette.dark), color(ColorPalette.blue), dayval));//map(dayval, 0.0, 1.0, 0.0, 255));
-
   fill(ColorPalette.red);
   ellipse(moonsize + 50, -(moonsize + 50) + dayval * (moonsize + 50) * 2, moonsize, moonsize);
   image(moonpg, width - (moonsize * 1.5 + 50), (moonsize * 0.5 + 50) - dayval * (moonsize + 50) * 2);
@@ -125,6 +124,7 @@ class Building {
     if (this.posang >PI && this.posang < TWO_PI) {
       h += this.hh * min(sin(this.posang - PI), growspeed) / growspeed;
     }
+    println("h:" + h + " hhalf:" + hhalf);
     var a1 = this.posang - this.widthang * 0.5;
     var a2 = this.posang + this.widthang * 0.5;
     var p1 = new PVector(cos(a1) *h, sin(a1) * h);
@@ -138,8 +138,8 @@ class Building {
 
     fill(fillcol);
 
-    println("p1:" + p1);
-    println("p2:" + p2);
+    //println("p1:" + p1);
+    //println("p2:" + p2);
 
     beginShape();
     vertex(0, 0);
