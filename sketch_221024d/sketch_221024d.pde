@@ -17,6 +17,8 @@ float dayval = 0.0;
 PGraphics moonpg;
 int moonsize = 125;
 
+PGraphics maskpg;
+
 static class ColorPalette {
   static color dark = #364f6b;
   static color blue = #3fc1c9;
@@ -36,6 +38,7 @@ void setup() {
 
   moonpg = createGraphics(moonsize, moonsize);
   moonpg.beginDraw();
+  moonpg.clear();
   moonpg.noStroke();
   moonpg.fill(ColorPalette.white);
   moonpg.ellipse(moonsize * 0.5, moonsize * 0.5, moonsize, moonsize);
@@ -43,7 +46,17 @@ void setup() {
   //moonpg.erase();
   //moonpg.ellipse(moonsize * 0.375, moonsize * 0.375, moonsize * 0.75, moonsize * 0.75);
   //moonpg.noErase();
+  moonpg.fill(0x000000ff);
+  moonpg.ellipse(moonsize * 0.375, moonsize * 0.375, moonsize * 0.75, moonsize * 0.75);
   moonpg.endDraw();
+
+  maskpg = createGraphics(moonsize, moonsize);
+  maskpg.beginDraw();
+  maskpg.background(0);
+  maskpg.noStroke();
+  maskpg.fill(255);
+  maskpg.ellipse(moonsize * 0.375, moonsize * 0.375, moonsize * 0.75, moonsize * 0.75);
+  maskpg.endDraw();
 }
 
 void draw() {
