@@ -7,6 +7,10 @@ ofMesh face, frame;
 
 //--------------------------------------------------------------
 void setup() {
+  size(500, 800, P3D);
+
+  face = new ofMesh();
+  frame = new ofMesh();
 }
 //--------------------------------------------------------------
 void update() {
@@ -24,12 +28,12 @@ void update() {
       var noise_value = openFrameworks.ofNoise(abs(x), y, ofGetFrameNum() * 0.003);
       rotation.rotateY(ofMap(noise_value, 0, 1, -360, 360) * (float)DEG_TO_RAD);
       setRingToMesh(face, frame, new PVector(x, y, 0), 0, 50, 10, rotation);
-      
+
       for (var radius = 60; radius <= 190; radius += 30) {
         //glm::highp_mat4 rotation;
         //auto noise_value = ofNoise(abs(x), y, (ofGetFrameNum() + radius) * 0.003);
-        PMatrix3D rotation = new PMatrix3D();
-        var noise_value = openFrameworks.ofNoise(abs(x), y, (ofGetFrameNum() + radius) * 0.003);
+        PMatrix3D rotationIn = new PMatrix3D();
+        var noise_valueIn = openFrameworks.ofNoise(abs(x), y, (ofGetFrameNum() + radius) * 0.003);
 
         if (noise_value < 0.2) {
           noise_value = 0;
@@ -44,8 +48,8 @@ void update() {
         }
 
         //rotation = glm::rotate(glm::mat4(), ofMap(noise_value, 0, 1, -180, 180) * (float)DEG_TO_RAD, glm::vec3(0, 1, 0));
-        rotation.rotateY(ofMap(noise_value, 0, 1, -180, 180) * (float)DEG_TO_RAD);
-        setRingToMesh(face, frame, new PVector(x, y, 0), radius, 28, 10, rotation);
+        rotationIn.rotateY(ofMap(noise_valueIn, 0, 1, -180, 180) * (float)DEG_TO_RAD);
+        setRingToMesh(face, frame, new PVector(x, y, 0), radius, 28, 10, rotationIn);
       }
     }
   }
@@ -55,18 +59,15 @@ void update() {
 void draw() {
   update();
   translate(width/2, height/2);
+  translate(0, -100, -300);
+  ofRotateX(45);
+  ofRotateZ(45);
+  //ofRotateY(45);
   background(0);
 
-  this->cam.begin();
-  ofRotateX(90);
+  face.draw(#000000);
 
-  ofSetColor(0);
-  this->face.draw();
-
-  ofSetColor(255);
-  this->frame.drawWireframe();
-
-  this->cam.end();
+  frame.drawWireframe(#ffffff);
 }
 
 //--------------------------------------------------------------
@@ -141,11 +142,4 @@ void setRingToMesh(ofMesh face_target, ofMesh frame_target, PVector location, fl
     frame_target.addIndex(frame_index + 0);
     frame_target.addIndex(frame_index + 3);
   }
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
