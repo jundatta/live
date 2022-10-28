@@ -132,7 +132,7 @@ void ofSetLineWidth(float lineWidth) {
   strokeWeight(lineWidth);
 }
 void ofSeedRandom(int val) {
-  seedRandom(val);
+  randomSeed(val);
 }
 float ofRandom(float max) {
   return random(max);
