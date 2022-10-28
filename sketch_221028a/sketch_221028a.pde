@@ -6,7 +6,7 @@
 ofMesh face, line;
 //--------------------------------------------------------------
 void setup() {
-  size(720, 720, P3D);
+  size(500, 800, P3D);
   
   face = new ofMesh();
   line = new ofMesh();
@@ -149,6 +149,9 @@ void update() {
 void draw() {
   update();
   translate(width/2, height/2);
+  scale(1, -1, 1);
+  // 好みで見栄え調整させて頂きました＼(^_^)／
+  translate(0, 75, 250);
   ofBackground(0);
   ofSetLineWidth(2);
 
