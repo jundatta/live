@@ -4,37 +4,31 @@
 // https://junkiyoshi.com/2021/11/25/
 
 //--------------------------------------------------------------
-void ofApp::setup() {
-
-  ofSetFrameRate(30);
-  ofSetWindowTitle("openframeworks");
-
-  ofBackground(0);
-  ofSetLineWidth(2);
-  ofEnableDepthTest();
-
-  this->line.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
+void setup() {
+  size(720, 720, P3D);
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
-
+void update() {
   ofSeedRandom(39);
 
-  this->face.clear();
-  this->line.clear();
+  face.clear();
+  line.clear();
 
-  auto x_span = 1;
-  auto z_span = 20;
-  for (auto z = -100; z <= 100; z += z_span) {
-
+  var x_span = 1;
+  var z_span = 20;
+  for (var z = -100; z <= 100; z += z_span) {
     auto hue = ofRandom(255);
-    ofColor color;
-    color.setHsb(hue, 180, 255);
+    color col;
+    //color.setHsb(hue, 180, 255);
+    push();
+    colorMode(HSB, 255, 255, 255);
+    col = color(hue, 180, 255);
+    pop();
 
-    auto noise_seed = ofRandom(1000);
-    auto param_noise_seed = ofRandom(1000);
-    auto start_index = this->face.getNumVertices();
+    var noise_seed = ofRandom(1000);
+    var param_noise_seed = ofRandom(1000);
+    var start_index = face.getNumVertices();
 
     auto param_noise_value = ofNoise(z * 0.035, ofGetFrameNum() * 0.0001);
 
@@ -164,7 +158,11 @@ void ofApp::update() {
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
+  translate(width/2, height/2);
+  ofBackground(0);
+  ofSetLineWidth(2);
 
   this->cam.begin();
   ofRotateY(180 + ofGetFrameNum() * 0.75);
@@ -173,11 +171,4 @@ void ofApp::draw() {
   this->line.drawWireframe();
 
   this->cam.end();
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
