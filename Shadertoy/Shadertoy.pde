@@ -17,9 +17,12 @@ void setup() {
   // 最初のミリ秒を取り込んでおく
   startMillis = millis();
   startCount = frameCount;
+  // ⇒画像が荒いと霧が発生しない。細かい画像で霧が発生した（うまくいくようになった）
+  // ⇒画像の細かさを比べるためにShadertoyのホームページでも表示させてみるとよくわかる！！
+  //  fragColor = texture(iChannel0, q);
   sd.set("iChannel0", loadImage("iChannel0.png"));
-  sd.set("iChannel1", loadImage("iChannel1.jpg"));
-  sd.set("iChannel2", loadImage("iChannel2.jpg"));
+  sd.set("iChannel1", loadImage("iChannel1.png"));
+  sd.set("iChannel2", loadImage("iChannel2.png"));
 }
 
 void draw() {

@@ -26,7 +26,7 @@ uniform sampler2D iChannel2;
 
 // Noise functions by inigo quilez 
 
-#if 0
+#if 1
 float noise( const in vec2 x ) {
     vec2 p = floor(x);
     vec2 f = fract(x);
@@ -55,7 +55,8 @@ float noise( in vec2 p )
 #endif
 
 // 引数vec3のnoise()でiChannel0を見ないようにしたら霧が発生した（うまくいくようになった）。
-#if 0
+// ⇒画像が荒いと霧が発生しない。細かい画像で霧が発生した（うまくいくようになった）
+#if 1
 float noise( const in vec3 x ) {
     vec3 p = floor(x);
     vec3 f = fract(x);
@@ -348,6 +349,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
  	col *= 0.25 + 0.75*pow( 16.0*q.x*q.y*(1.0-q.x)*(1.0-q.y), 0.1 );
 	
     fragColor = vec4( col, 1.0 );
+// ⇒画像の細かさを比べるためにShadertoyのホームページでも表示させてみるとよくわかる！！
+//	fragColor = texture(iChannel0, q);
 }
 
 void main() {
