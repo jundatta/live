@@ -65,17 +65,26 @@ void setup() {
 }
 
 //--------------------------------------------------------------
+PVector updateVertex(PVector v, float mulValue, PVector avg) {
+  PVector update = new PVector(v.x, v.y, v.z);
+  update.normalize();
+  update.mult(mulValue);
+  update.sub(avg);
+  return update;
+}
 void update() {
   mesh.clear();
   frame.clear();
 
   for (int i = 0; i < index_list.size(); i++) {
-    int next_index = route_info_list[index_list[i]][(int)ofRandom(route_info_list[index_list[i]].size())];
-    for (int k = 0; k < route_info_list[index_list[i]].size(); k++) {
-      if (param_list[next_index] <= 0) {
-        param_list[next_index] = 30;
-        param_color_list[next_index] = index_color_list[i];
-        index_list[i] = next_index;
+    int idx = index_list.get(i);
+    IntList ri = route_info_list.get(idx);
+    int next_index = ri.get((int)ofRandom(ri.size()));
+    for (int k = 0; k < ri.size(); k++) {
+      if (param_list.get(next_index) <= 0) {
+        param_list.set(next_index, 30);
+        param_color_list.set(next_index, index_color_list.get(i));
+        index_list.set(i, next_index);
         break;
       }
     }
@@ -83,22 +92,27 @@ void update() {
 
   int radius = 250;
   for (int i = 0; i < location_list.size(); i++) {
-    if (param_list[i] > 0) {
-      PVector avg = (triangle_list[i].getVertex(0) + triangle_list[i].getVertex(1) + triangle_list[i].getVertex(2)) / 3;
+    int prm = param_list.get(i);
+    if (prm > 0) {
+      ofMeshFace tri = triangle_list.get(i);
+      //PVector avg = (tri.getVertex(0) + tri.getVertex(1) + tri.getVertex(2)) / 3;
+      PVector avg = PVector.add(tri.getVertex(0), tri.getVertex(1));
+      avg.add(tri.getVertex(2));
+      avg.div(3);
 
       ArrayList<PVector> vertices = new ArrayList();
 
-      vertices.add(PVector.normalize(triangle_list[i].getVertex(0)) * (radius + 5) - avg);
-      vertices.add(PVector.normalize(triangle_list[i].getVertex(1)) * (radius + 5) - avg);
-      vertices.add(PVector.normalize(triangle_list[i].getVertex(2)) * (radius + 5) - avg);
+      vertices.add(updateVertex(tri.getVertex(0), radius + 5, avg));
+      vertices.add(updateVertex(tri.getVertex(1), radius + 5, avg));
+      vertices.add(updateVertex(tri.getVertex(2), radius + 5, avg));
 
-      vertices.add(PVector.normalize(triangle_list[i].getVertex(0)) * (radius - 5) - avg);
-      vertices.add(PVector.normalize(triangle_list[i].getVertex(1)) * (radius - 5) - avg);
-      vertices.add(PVector.normalize(triangle_list[i].getVertex(2)) * (radius - 5) - avg);
+      vertices.add(updateVertex(tri.getVertex(0), radius - 5, avg));
+      vertices.add(updateVertex(tri.getVertex(1), radius - 5, avg));
+      vertices.add(updateVertex(tri.getVertex(2), radius - 5, avg));
 
       float scale = 1;
-      if (param_list[i] < 25) {
-        scale = ofMap(param_list[i], 0, 25, 0.15, 1);
+      if (prm < 25) {
+        scale = ofMap(prm, 0, 25, 0.15, 1);
       }
 
       for (PVector vertex : vertices) {
@@ -111,9 +125,10 @@ void update() {
       mesh.addVertices(vertices);
       frame.addVertices(vertices);
 
-      mesh.addColor(color(param_color_list[i]));
-      mesh.addColor(color(param_color_list[i]));
-      mesh.addColor(color(param_color_list[i]));
+      int pc = param_color_list.get(i);
+      mesh.addColor(color(pc));
+      mesh.addColor(color(pc));
+      mesh.addColor(color(pc));
 
       mesh.addColor(color(0));
       mesh.addColor(color(0));
@@ -123,9 +138,9 @@ void update() {
       frame.addColor(color(0));
       frame.addColor(color(0));
 
-      frame.addColor(color(param_color_list[i]));
-      frame.addColor(color(param_color_list[i]));
-      frame.addColor(color(param_color_list[i]));
+      frame.addColor(color(pc));
+      frame.addColor(color(pc));
+      frame.addColor(color(pc));
 
       mesh.addTriangle(mesh.getNumVertices() - 1, mesh.getNumVertices() - 2, mesh.getNumVertices() - 3);
       mesh.addTriangle(mesh.getNumVertices() - 4, mesh.getNumVertices() - 5, mesh.getNumVertices() - 6);
@@ -161,8 +176,8 @@ void update() {
       frame.addIndex(frame.getNumVertices() - 6);
     }
 
-    if (param_list[i] > 0) {
-      param_list[i] -= 1;
+    if (prm > 0) {
+      param_list.set(i, prm-1);
     }
   }
 }
