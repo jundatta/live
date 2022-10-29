@@ -5,6 +5,11 @@
 
 color[] base_color_list = { #247BA0, #70C1B3, #B2DBBF, #F3FFBD, #FF1654 };
 ArrayList<ofMeshFace> triangle_list = new ArrayList();
+ArrayList<PVector> location_list = new ArrayList();
+IntList param_list = new IntList();
+IntList param_color_list = new IntList();
+ArrayList<IntList> route_info_list = new IntList();
+IntList index_list = new IntList();
 //--------------------------------------------------------------
 void setup() {
   size(720, 720, P3D);
@@ -21,43 +26,38 @@ void setup() {
     triangle_list.add(mf);
   }
 
-  for (auto& triangle : this->triangle_list) {
-
-    glm::vec3 avg = (triangle.getVertex(0) + triangle.getVertex(1) + triangle.getVertex(2)) / 3;
-    this->location_list.push_back(avg);
-    this->param_list.push_back(0);
-    this->param_color_list.push_back(ofColor(239));
+  for (var triangle : triangle_list) {
+    //glm::vec3 avg = (triangle.getVertex(0) + triangle.getVertex(1) + triangle.getVertex(2)) / 3;
+    PVector avg = PVector.add(triangle.getVertex(0), triangle.getVertex(1));
+    avg.add(triangle.getVertex(2));
+    avg.div(3);
+    location_list.add(avg);
+    param_list.add(0);
+    param_color_list.add(color(239));
   }
 
   int span = 25;
-  for (auto& location : this->location_list) {
-
-    vector<int> route_info = vector<int>();
+  for (PVector location : location_list) {
+    IntList route_info = IntList();
     int index = -1;
-    for (auto& other : this->location_list) {
-
+    for (PVector other : location_list) {
       index++;
       if (location == other) {
         continue;
       }
-
-      float distance = glm::distance(location, other);
+      float distance = PVector.dist(location, other);
       if (distance <= span) {
-
-        if (abs(glm::length(location) - glm::length(other)) <= 10) {
-
-          route_info.push_back(index);
+        if (abs(PVector.mag(location) - PVector.mag(other)) <= 10) {
+          route_info.add(index);
         }
       }
     }
-
-    this->route_info_list.push_back(route_info);
+    route_info_list.add(route_info);
   }
 
   for (int i = 0; i < 30; i++) {
-
-    this->index_list.push_back((int)ofRandom(this->location_list.size()));
-    this->index_color_list.push_back(this->base_color_list[i % this->base_color_list.size()]);
+    index_list.push_back((int)ofRandom(location_list.size()));
+    index_color_list.add(base_color_list[i % base_color_list.size()]);
   }
 }
 
