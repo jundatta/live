@@ -3,26 +3,23 @@
 // 【作品名】Spherical piece random walker. Draw by openFrameworks
 // https://junkiyoshi.com/2021/11/17/
 
+color[] base_color_list = { #247BA0, #70C1B3, #B2DBBF, #F3FFBD, #FF1654 };
+ArrayList<ofMeshFace> triangle_list = new ArrayList();
 //--------------------------------------------------------------
-void ofApp::setup() {
+void setup() {
+  size(720, 720, P3D);
 
-  ofSetFrameRate(60);
-  ofSetWindowTitle("openFrameworks");
-
-  ofBackground(255);
-  ofSetLineWidth(2);
-  ofEnableDepthTest();
-
-  ofColor color;
-  vector<int> hex_list = { 0x247BA0, 0x70C1B3, 0xB2DBBF, 0xF3FFBD, 0xFF1654 };
-  for (auto hex : hex_list) {
-
-    color.setHex(hex);
-    this->base_color_list.push_back(color);
+  //auto ico_sphere = ofIcoSpherePrimitive(250, 3);
+  //this->triangle_list.insert(this->triangle_list.end(), ico_sphere.getMesh().getUniqueFaces().begin(), ico_sphere.getMesh().getUniqueFaces().end());
+  Sphere sp = new Sphere(250, 3);
+  ArrayList<PVector> vertices = sp.getVertices();
+  for (int i = 0; i < vertices.size(); i+=3) {
+    PVector t0 = vertices.get(i+0);
+    PVector t1 = vertices.get(i+1);
+    PVector t2 = vertices.get(i+2);
+    ofMeshFace mf = new ofMeshFace(t0, t1, t2);
+    triangle_list.add(mf);
   }
-
-  auto ico_sphere = ofIcoSpherePrimitive(250, 3);
-  this->triangle_list.insert(this->triangle_list.end(), ico_sphere.getMesh().getUniqueFaces().begin(), ico_sphere.getMesh().getUniqueFaces().end());
 
   for (auto& triangle : this->triangle_list) {
 
@@ -174,7 +171,12 @@ void ofApp::update() {
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
+  translate(width/2, height/2);
+
+  ofBackground(255);
+  ofSetLineWidth(2);
 
   this->cam.begin();
   ofRotateX(ofGetFrameNum() * 0.37);
@@ -185,11 +187,4 @@ void ofApp::draw() {
   this->frame.drawWireframe();
 
   this->cam.end();
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
