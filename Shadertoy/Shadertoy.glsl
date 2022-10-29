@@ -26,6 +26,7 @@ uniform sampler2D iChannel2;
 
 // Noise functions by inigo quilez 
 
+#if 0
 float noise( const in vec2 x ) {
     vec2 p = floor(x);
     vec2 f = fract(x);
@@ -34,7 +35,27 @@ float noise( const in vec2 x ) {
 	vec2 uv = (p.xy) + f.xy;
 	return textureLod( iChannel0, (uv+ 0.5)/256.0, 0.0 ).x;
 }
+#else
+float hash(vec2 p)
+{
+    p  = 50.0*fract( p*0.3183099);
+    return fract( p.x*p.y*(p.x+p.y) );
+}
 
+float noise( in vec2 p )
+{
+    vec2 i = floor( p );
+    vec2 f = fract( p );
+	vec2 u = f*f*(3.0-2.0*f);
+    return -1.0+2.0*mix( mix( hash( i + vec2(0.0,0.0) ), 
+                              hash( i + vec2(1.0,0.0) ), u.x),
+                         mix( hash( i + vec2(0.0,1.0) ), 
+                              hash( i + vec2(1.0,1.0) ), u.x), u.y);
+}
+#endif
+
+// à¯êîvec3ÇÃnoise()Ç≈iChannel0Çå©Ç»Ç¢ÇÊÇ§Ç…ÇµÇΩÇÁñ∂Ç™î≠ê∂ÇµÇΩÅiÇ§Ç‹Ç≠Ç¢Ç≠ÇÊÇ§Ç…Ç»Ç¡ÇΩÅjÅB
+#if 0
 float noise( const in vec3 x ) {
     vec3 p = floor(x);
     vec3 f = fract(x);
@@ -44,6 +65,37 @@ float noise( const in vec3 x ) {
 	vec2 rg = textureLod( iChannel0, (uv+ 0.5)/256.0, 0.0 ).yx;
 	return mix( rg.x, rg.y, f.z );
 }
+#else
+float mixP(float f0, float f1, float a)
+{
+    return mix(f0, f1, a*a*(3.0-2.0*a));
+}
+const vec2 zeroOne = vec2(0.0, 1.0);
+float Hash3d(vec3 uv)
+{
+    float f = uv.x + uv.y * 37.0 + uv.z * 521.0;
+    return fract(sin(f)*110003.9);
+}
+float noise(vec3 uv)
+{
+    vec3 fr = fract(uv.xyz);
+    vec3 fl = floor(uv.xyz);
+    float h000 = Hash3d(fl);
+    float h100 = Hash3d(fl + zeroOne.yxx);
+    float h010 = Hash3d(fl + zeroOne.xyx);
+    float h110 = Hash3d(fl + zeroOne.yyx);
+    float h001 = Hash3d(fl + zeroOne.xxy);
+    float h101 = Hash3d(fl + zeroOne.yxy);
+    float h011 = Hash3d(fl + zeroOne.xyy);
+    float h111 = Hash3d(fl + zeroOne.yyy);
+    return mixP(
+        mixP(mixP(h000, h100, fr.x),
+             mixP(h010, h110, fr.x), fr.y),
+        mixP(mixP(h001, h101, fr.x),
+             mixP(h011, h111, fr.x), fr.y)
+        , fr.z);
+}
+#endif
 
 mat2 rot(const in float a) {
 	return mat2(cos(a),sin(a),-sin(a),cos(a));	
@@ -134,7 +186,6 @@ vec3 raymarchClouds( const in vec3 ro, const in vec3 rd, const in vec3 bgc, cons
 		vec4 col = vec4( (1.+dif)*fgc, a );
 		// fog		
 	//	col.xyz = mix( col.xyz, fgc, 1.0-exp(-0.0000005*t*t) );
-		
 		col.rgb *= col.a;
 		sum = sum + col*(1.0 - sum.a);	
 

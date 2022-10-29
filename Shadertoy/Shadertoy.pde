@@ -30,7 +30,7 @@ void draw() {
   //  background(0);
   // 最初からのミリ秒として渡したいのでstartMillisをmillis()から引く
   sd.set("iTime", (millis() - startMillis) / 1000.0f);
-  sd.set("iFrame", frameCount - startCount);
+  //sd.set("iFrame", frameCount - startCount);
   // iMouseのz,wはそれぞれマウスドラッグ時のx,y座標になるが
   // シミュレートをあきらめる
   // このためz,wにはそれぞれ0.0fを固定で渡す
