@@ -36,6 +36,11 @@ class ofMesh {
   void addIndex(int ix) {
     indices.append(ix);
   }
+  void addTriangle(int ix0, int ix1, int ix2) {
+    indices.append(ix0);
+    indices.append(ix1);
+    indices.append(ix2);
+  }
   ArrayList<PVector> getVertices() {
     return vertices;
   }
@@ -107,6 +112,9 @@ class ofMesh {
       sh.setFill(i, fill);
     }
     shape(sh);
+  }
+  void drawFaces() {
+    draw();
   }
 }
 class ofMeshFace {
