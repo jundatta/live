@@ -4,72 +4,59 @@
 // https://junkiyoshi.com/2021/11/09/
 
 //--------------------------------------------------------------
-void ofApp::setup() {
+void setup() {
+  size(720, 720, P3D);
+}
 
-  ofSetFrameRate(60);
-  ofSetWindowTitle("openFrameworks");
+//--------------------------------------------------------------
+void update() {
+//  ofSeedRandom(39);
+// （なんとなくこっちの方がいい感じｗ）
+  ofSeedRandom(5963);
+}
+
+//--------------------------------------------------------------
+void draw() {
+  update();
+  translate(width/2, height/2);
 
   ofBackground(0);
   ofSetLineWidth(1.2);
-  ofEnableDepthTest();
-}
 
-//--------------------------------------------------------------
-void ofApp::update() {
-
-  ofSeedRandom(39);
-}
-
-//--------------------------------------------------------------
-void ofApp::draw() {
-
-  this->cam.begin();
-
-  ofNoFill();
+  noFill();
   for (int k = 0; k < 150; k++) {
-
-    ofPushMatrix();
+    pushMatrix();
     ofRotateZ(ofRandom(360));
     ofRotateY(ofRandom(360));
     ofRotateX(ofRandom(360));
 
-    auto location = glm::vec3(0, 0, 250);
-    auto radius = (int)(ofRandom(1000) + ofGetFrameNum() * 2) % 180 - 100;
+    var location = new PVector(0, 0, 250);
+    var radius = (int)(ofRandom(1000) + ofGetFrameNum() * 2) % 180 - 100;
 
     if (radius < 0) {
-
-      auto z = ofMap(radius, -100, 0, 1500, 0);
-
-      ofSetColor(255);
-      ofDrawLine(location + glm::vec3(0, 0, z), location + glm::vec3(0, 0, z + 40));
+      var z = ofMap(radius, -100, 0, 1500, 0);
+      stroke(255);
+      //ofDrawLine(location + glm::vec3(0, 0, z), location + glm::vec3(0, 0, z + 40));
+      PVector p1 = PVector.add(location, new PVector(0, 0, z));
+      PVector p2 = PVector.add(location, new PVector(0, 0, z + 40));
+      line(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z);
     } else {
+      stroke(255, radius > 25 ? ofMap(radius, 25, 80, 255, 0) : 255);
 
-      ofSetColor(255, radius > 25 ? ofMap(radius, 25, 80, 255, 0) : 255);
-
-      ofBeginShape();
+      beginShape();
       for (int deg = 0; deg < 360; deg++) {
-
-        auto vertex = location + glm::vec2(radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD));
-        vertex = glm::normalize(vertex) * 250;
-
-        ofVertex(vertex);
+        //auto vertex = location + glm::vec2(radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD));
+        PVector vertex = PVector.add(location, new PVector(radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD)));
+        //vertex = glm::normalize(vertex) * 250;
+        vertex = PVector.mult(vertex.normalize(), 250);
+        vertex(vertex.x, vertex.y, vertex.z);
       }
-      ofEndShape(true);
+      endShape(CLOSE);
     }
-
-    ofPopMatrix();
+    popMatrix();
   }
 
-  ofFill();
-  ofSetColor(0);
-  ofDrawSphere(230);
-
-  this->cam.end();
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
+  noStroke();
+  fill(0);
+  sphere(230);
 }
