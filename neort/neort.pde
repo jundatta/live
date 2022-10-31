@@ -17,9 +17,9 @@ void setup() {
 }
 
 void draw() {
-  s.set("backbuffer", getGraphics());
+  //s.set("backbuffer", getGraphics());
   s.set("time", (millis() - startMillis) / 1000.0f);
-  s.set("mouse", (float)mouseX / (float)width, (float)mouseY / (float)height);
+  //s.set("mouse", (float)mouseX / (float)width, (float)mouseY / (float)height);
   shader(s);
   rect(0, 0, width, height);
   resetShader();

@@ -7,11 +7,6 @@ precision highp float;
 
 uniform vec2 resolution;
 uniform float time;
-uniform vec2 mouse;
-uniform sampler2D midi;
-uniform sampler2D osc_a;
-uniform sampler2D osc_b;
-uniform sampler2D backbuffer;
 const float pi = acos(-1.);
 const float pi2 = pi*2.;
 
@@ -96,7 +91,11 @@ void main(void) {
     ro.xz *= rot(time*0.2);
     vec3 fo = normalize(ta-ro),le = normalize(cross(vec3(0.,1.,0.),fo)),up = normalize(cross(fo,le));
     vec3 rd = normalize(fo*(1.0-(dot(uv,uv)*0.2))+up*uv.y+le*uv.x);
-    vec3 col,pos;
+	// neortさんやglslfan.comさんはauto変数？の初期値は0クリアされる仕様なのかも知れない。。。
+	// というかGLSL自体の仕様は0クリアされる？のかも？！
+//    vec3 col,pos;
+    vec3 pos;
+    vec3 col = vec3(0.0);	// 初期値の0クリアを追加した。
     float t = 0.01,d;
     int ma;
 
