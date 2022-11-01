@@ -85,191 +85,165 @@ class Actor {
 }
 
 //--------------------------------------------------------------
-void ofApp::setup() {
+ArrayList<PVector> parent_location_group = new ArrayList();
+ArrayList<IntList> parent_next_index_group = new ArrayList();
+IntList parent_destination_group = new IntList();
+ArrayList<Actor> parent_actor_group = new ArrayList();
 
-  ofSetFrameRate(60);
-  ofSetWindowTitle("openFrameworks");
+ArrayList<ArrayList<PVector>> location_group_list = new ArrayList();
+ArrayList<ArrayList<IntList>> next_index_group_list = new ArrayList();
+ArrayList<IntList> destination_group_list = new ArrayList();
+ArrayList<ArrayList<Actor>> actor_group_list = new ArrayList();
 
-  ofBackground(239);
-  ofSetLineWidth(1);
-  ofEnableDepthTest();
-
-  ofColor color;
-  vector<ofColor> base_color_list;
-  vector<int> hex_list = { 0xee6352, 0x59cd90, 0x3fa7d6, 0xfac05e, 0xf79d84 };
-  for (auto hex : hex_list) {
-
-    color.setHex(hex);
-    base_color_list.push_back(color);
+void setup() {
+  size(720, 720, P3D);
+  
+  IntList base_color_list = new IntList();
+  color[] hex_list = { #ee6352, #59cd90, #3fa7d6, #fac05e, #f79d84 };
+  for (var hex : hex_list) {
+    base_color_list.append(hex);
   }
 
   int span = 180;
   for (int x = -180; x <= 180; x += span) {
-
     for (int y = -180; y <= 180; y += span) {
-
       for (int z = -180; z <= 180; z += span) {
-
-        this->parent_location_group.push_back(glm::vec3(x, y, z));
+        parent_location_group.add(PVector(x, y, z));
       }
     }
   }
 
-  for (auto& location : this->parent_location_group) {
-
-    vector<int> next_index = vector<int>();
+  for (var location : parent_location_group) {
+    IntList next_index = new IntList();
     int index = -1;
-    for (auto& other : this->parent_location_group) {
-
+    for (var other : parent_location_group) {
       index++;
       if (location == other) {
         continue;
       }
-
-      float distance = glm::distance(location, other);
+      float distance = PVector.dist(location, other);
       if (distance <= span) {
-
-        next_index.push_back(index);
+        next_index.append(index);
       }
     }
-    this->parent_next_index_group.push_back(next_index);
+    parent_next_index_group.add(next_index);
   }
 
   for (int i = 0; i < 23; i++) {
-
-    this->parent_actor_group.push_back(make_unique<Actor>(this->parent_location_group, this->parent_next_index_group, this->parent_destination_group));
-    this->parent_actor_group.back()->setColor(base_color_list[(int)ofRandom(base_color_list.size())]);
+    Actor a = new Actor(parent_location_group, parent_next_index_group, parent_destination_group);
+    a.setColor(base_color_list.get((int)ofRandom(base_color_list.size())));
+    parent_actor_group.add(a);
   }
 
   span = 50;
-  for (int g = 0; g < this->parent_actor_group.size(); g++) {
-
-    vector<glm::vec3> location_group;
+  for (int g = 0; g < parent_actor_group.size(); g++) {
+    ArrayList<PVector> location_group = new ArrayList();
     for (int x = -50; x <= 50; x += span) {
-
       for (int y = -50; y <= 50; y += span) {
-
         for (int z = -50; z <= 50; z += span) {
-
-          location_group.push_back(glm::vec3(x, y, z));
+          location_group.add(new PVector(x, y, z));
         }
       }
     }
-    location_group_list.push_back(location_group);
+    location_group_list.add(location_group);
 
-    vector<vector<int>> next_index_group;
-    for (auto& location : location_group) {
-
-      vector<int> next_index = vector<int>();
+    ArrayList<IntList> next_index_group = new ArrayList();
+    for (var location : location_group) {
+      IntList next_index = IntList();
       int index = -1;
-      for (auto& other : location_group) {
-
+      for (var other : location_group) {
         index++;
         if (location == other) {
           continue;
         }
 
-        float distance = glm::distance(location, other);
+        float distance = PVector.dist(location, other);
         if (distance <= span) {
-
-          next_index.push_back(index);
+          next_index.append(index);
         }
       }
-
-      next_index_group.push_back(next_index);
+      next_index_group.add(next_index);
     }
-    this->next_index_group_list.push_back(next_index_group);
+    next_index_group_list.add(next_index_group);
 
 
-    vector<unique_ptr<Actor>> actor_group;
-    vector<int> destination_group;
+    ArrayList<Actor> actor_group = new ArrayList();
+    IntList destination_group = new IntList();
     for (int i = 0; i < 23; i++) {
-
-      auto a = make_unique<Actor>(location_group, next_index_group, destination_group);
-      actor_group.push_back(move(a));
-      actor_group.back()->setColor(base_color_list[(int)ofRandom(base_color_list.size())]);
+      var a = new Actor(location_group, next_index_group, destination_group);
+      a.setColor(base_color_list.get((int)ofRandom(base_color_list.size())));
+      actor_group.add(a);
     }
 
-    this->actor_group_list.push_back(move(actor_group));
-    this->destination_group_list.push_back(destination_group);
+    actor_group_list.add(actor_group);
+    destination_group_list.add(destination_group);
   }
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
-
+void update() {
   int frame_span = 20;
   int prev_index_size = 0;
 
   if (ofGetFrameNum() % frame_span == 0) {
-
-    prev_index_size = this->parent_destination_group.size();
+    prev_index_size = parent_destination_group.size();
   }
 
-  for (auto& actor : this->parent_actor_group) {
-
-    actor->update(frame_span, this->parent_location_group, this->parent_next_index_group, this->parent_destination_group);
+  for (var actor : parent_actor_group) {
+    actor.update(frame_span, parent_location_group, parent_next_index_group, parent_destination_group);
   }
 
   if (prev_index_size != 0) {
-
-    this->parent_destination_group.erase(this->parent_destination_group.begin(), this->parent_destination_group.begin() + prev_index_size);
+    // 消すのに(prev_index_size-1)しなくていいと思うが。。。
+    //this->parent_destination_group.erase(this->parent_destination_group.begin(), this->parent_destination_group.begin() + prev_index_size);
+    parent_destination_group.removeRange(0, prev_index_size);
   }
 
   frame_span = 5;
-  for (int g = 0; g < this->parent_actor_group.size(); g++) {
-
+  for (int g = 0; g < parent_actor_group.size(); g++) {
     if (ofGetFrameNum() % frame_span == 0) {
-
-      prev_index_size = this->destination_group_list[g].size();
+      prev_index_size = destination_group_list.get(g).size();
     }
 
-    for (auto& actor : this->actor_group_list[g]) {
-
-      actor->update(frame_span, this->location_group_list[g], this->next_index_group_list[g], this->destination_group_list[g]);
+    for (var actor : actor_group_list.get(g)) {
+      actor.update(frame_span, location_group_list.get(g), next_index_group_list.get(g), destination_group_list.get(g));
     }
 
     if (prev_index_size != 0) {
-
-      this->destination_group_list[g].erase(this->destination_group_list[g].begin(), this->destination_group_list[g].begin() + prev_index_size);
+      //this->destination_group_list[g].erase(this->destination_group_list[g].begin(), this->destination_group_list[g].begin() + prev_index_size);
+      destination_group_list.get(g).removeRange(0, prev_index_size);
     }
   }
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
-
-  this->cam.begin();
+void draw() {
+  update();
+  translate(width/2, height/2);
+  ofBackground(239);
+  ofSetLineWidth(1);
 
   ofRotateY(ofGetFrameNum() * 0.5);
   ofRotateX(ofGetFrameNum() * 0.38);
 
   for (int g = 0; g < parent_actor_group.size(); g++) {
+    pushMatrix();
+    PVector p = parent_actor_group.get(g).getLocation();
+    translate(p.x, p.y, p.z);
 
-    ofPushMatrix();
-    ofTranslate(this->parent_actor_group[g]->getLocation());
+    for (var actor : actor_group_list.get(g)) {
+      push();
+      PVector loc = actor.getLocation();
+      translate(loc.x, loc.y, loc.z);
+      
+      fill(actor.getColor());
+      box(45);
 
-    for (auto& actor : this->actor_group_list[g]) {
-
-      ofFill();
-      ofSetColor(actor->getColor());
-      ofDrawBox(actor->getLocation(), 45);
-
-      ofNoFill();
-      ofSetColor(239);
-      ofDrawBox(actor->getLocation(), 46);
+      noFill();
+      stroke(239);
+      box(46);
+      pop();
     }
-
-    ofPopMatrix();
+    popMatrix();
   }
-
-  this->cam.end();
-}
-
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
