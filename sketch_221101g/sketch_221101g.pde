@@ -114,12 +114,7 @@ void draw() {
   color maskBg = color(ColorPalette.colorH);
   mask.beginDraw();
   mask.clear();
-  //mask.background(red(maskBg), green(maskBg), blue(maskBg), 200);
-  mask.push();
-  mask.noStroke();
-  mask.fill(red(maskBg), green(maskBg), blue(maskBg), 200);
-  mask.rect(0, 0, mask.width, mask.height);
-  mask.pop();
+  mask.background(red(maskBg), green(maskBg), blue(maskBg), 200);
   mask.push();
   mask.translate(centerPos.x, centerPos.y);
 
@@ -168,7 +163,23 @@ void draw() {
   maskPg.ellipse(mx/1.1, my/1.1, 250, 250);
   maskPg.ellipse(hx/1.3, hy/1.3, 300, 300);
   maskPg.endDraw();
-  mask.mask(maskPg);
+  //mask.mask(maskPg);
+
+  // よくわかりゃんがせっかくの半透明が不透明になる？ようなので自前で抜く。
+  // よくわかりゃんがbeginDraw()、endDraw()がないとset()が効かにゃい。
+  mask.beginDraw();
+  for (int y = 0; y < maskPg.height; y++) {
+    for (int x = 0; x < maskPg.width; x++) {
+      color c = maskPg.get(x, y);
+      // 抜かないところは飛ばす
+      if (c != #000000) {
+        continue;
+      }
+      // 透明に書き換える
+      mask.set(x, y, 0x00000000);
+    }
+  }
+  mask.endDraw();
 
   image(mask, 0, 0);
 }
