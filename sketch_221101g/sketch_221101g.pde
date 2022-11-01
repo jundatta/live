@@ -67,7 +67,6 @@ void draw() {
     var theta = TWO_PI / 12.0f * i;
     var x = (clockR + 60) * cos(theta - HALF_PI + HALF_PI / 3.0f);
     var y = (clockR + 60) * sin(theta - HALF_PI + HALF_PI / 3.0f);
-    var dir = PVector.sub(centerPos, new PVector(x, y));
     push();
     translate(x, y);
     rectMode(CENTER);
@@ -115,7 +114,12 @@ void draw() {
   color maskBg = color(ColorPalette.colorH);
   mask.beginDraw();
   mask.clear();
-  mask.background(red(maskBg), green(maskBg), blue(maskBg), 200);
+  //mask.background(red(maskBg), green(maskBg), blue(maskBg), 200);
+  mask.push();
+  mask.noStroke();
+  mask.fill(red(maskBg), green(maskBg), blue(maskBg), 200);
+  mask.rect(0, 0, mask.width, mask.height);
+  mask.pop();
   mask.push();
   mask.translate(centerPos.x, centerPos.y);
 
@@ -164,7 +168,7 @@ void draw() {
   maskPg.ellipse(mx/1.1, my/1.1, 250, 250);
   maskPg.ellipse(hx/1.3, hy/1.3, 300, 300);
   maskPg.endDraw();
-  //mask.mask(maskPg);
+  mask.mask(maskPg);
 
   image(mask, 0, 0);
 }
