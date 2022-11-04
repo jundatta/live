@@ -3,81 +3,93 @@
 // 【作品名】CircleHistograms
 // https://neort.io/art/c98oaqc3p9f0i94dl3rg
 
-let hs = [];
+Histogram[] hs = new Histogram[2];
 
-function setup() {
-  createCanvas(windowWidth, windowHeight);
+void setup() {
+  size(1112, 834);
   background(0);
   colorMode(HSB, 360, 100, 100, 100);
 
-  // eLine = new ExpansionLine(200, 200, random(1000), color(ColorPalette.colorH), 200);
-  hs.push(new Histogram(200));
-  hs.push(new Histogram(400));
+  hs[0] = new Histogram(200);
+  hs[1] = new Histogram(400);
 }
 
-function draw() {
+void draw() {
   background(0, 20);
 
-  for (let i = 0; i < hs.length; i++) {
+  for (var i = 0; i < hs.length; i++) {
     hs[i].update();
     hs[i].display();
   }
 }
 
-function Histogram(r)
-{
-  this.eLines = [];
-  this.angle = random(TWO_PI);
-  this.aVel = random(-0.01, 0.01);
+class Histogram {
+  ExpansionLine[] eLines;
+  float angle;
+  float aVel;
 
-  let nSeed = random(10000);
+  Histogram(float r)
+  {
+    this.eLines = new ExpansionLine[180];
+    this.angle = random(TWO_PI);
+    this.aVel = random(-0.01, 0.01);
 
-  for (let i = 0; i < 180; i++) {
-    let theta = TWO_PI / 180 * i;
-    let x = r * cos(theta);
-    let y = r * sin(theta);
-    let c = color(i * 2, 100, 100, 100);
-    this.eLines.push(new ExpansionLine(x, y, nSeed + i, c, r * 0.6));
+    var nSeed = random(10000);
+
+    for (var i = 0; i < eLines.length; i++) {
+      var theta = TWO_PI / 180.0f * i;
+      var x = r * cos(theta);
+      var y = r * sin(theta);
+      var c = color(i * 2, 100, 100, 100);
+      this.eLines[i] = new ExpansionLine(x, y, nSeed + i, c, r * 0.6);
+    }
   }
 
-  this.update = function()
+  void update()
   {
     this.angle += this.aVel;
-    for (let i = 0; i < this.eLines.length; i++) {
+    for (var i = 0; i < this.eLines.length; i++) {
       this.eLines[i].update();
     }
   }
 
-  this.display = function()
+  void display()
   {
     push();
     translate(width/2, height/2);
     rotate(this.angle);
-    for (let i = 0; i < this.eLines.length; i++) {
+    for (var i = 0; i < this.eLines.length; i++) {
       this.eLines[i].display();
     }
     pop();
   }
 }
 
-function ExpansionLine(x, y, seed, col, len)
-{
-  this.pos1 = createVector(x, y);
-  this.dir = p5.Vector.sub(createVector(0, 0), this.pos1).normalize();
-  this.pos2 = p5.Vector.add(this.pos1, this.dir);
-  this.seed = seed;
-  this.col = col;
-  this.maxLength = len;
-  this.len = len;
-
-  this.update = function() {
-    this.seed += 0.01;
-    this.len = map(noise(this.seed), 0, 1, 0, this.maxLength);
-    this.pos2 = p5.Vector.add(this.pos1, this.dir.copy().mult(this.len));
+class ExpansionLine {
+  PVector pos1, dir, pos2;
+  float seed;
+  color col;
+  float maxLength, len;
+  
+  ExpansionLine(float x, float y, float seed, color col, float len)
+  {
+    this.pos1 = new PVector(x, y);
+    this.dir = PVector.sub(new PVector(0, 0), this.pos1).normalize();
+    this.pos2 = PVector.add(this.pos1, this.dir);
+    this.seed = seed;
+    this.col = col;
+    this.maxLength = len;
+    this.len = len;
   }
 
-  this.display = function() {
-    push()
+  void update() {
+    this.seed += 0.01;
+    this.len = map(noise(this.seed), 0, 1, 0, this.maxLength);
+    this.pos2 = PVector.add(this.pos1, this.dir.copy().mult(this.len));
+  }
+
+  void display() {
+    push();
       noFill();
     stroke(this.col);
     strokeWeight(5);
