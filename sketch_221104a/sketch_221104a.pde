@@ -3,44 +3,39 @@
 // 【作品名】Walker from circle to square. Draw by openFrameworks
 // https://junkiyoshi.com/2021/10/12/
 
+ArrayList<PVector> base_location_list = new ArrayList();
+ArrayList<ArrayList<PVector>> log_list = new ArrayList();
 //--------------------------------------------------------------
-void ofApp::setup() {
-
-  ofSetFrameRate(60);
-  ofSetWindowTitle("openFrameworks");
-
-  ofBackground(0);
-  ofEnableBlendMode(ofBlendMode::OF_BLENDMODE_ADD);
-
+void setup() {
   int radius = 100;
   for (float deg = 0; deg < 360; deg += 10) {
-
-    auto location = glm::vec2(radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD));
-    this->base_location_list.push_back(location);
+    var location = new PVector(radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD));
+    base_location_list.add(location);
   }
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
-
-  this->log_list.clear();
+void update() {
+  log_list.clear();
 
   int limit = 300;
-  for (int i = 0; i < this->base_location_list.size(); i++) {
-
-    vector<glm::vec2> log;
-    log.push_back(glm::vec2(this->base_location_list[i]));
-    this->log_list.push_back(log);
+  for (int i = 0; i < base_location_list.size(); i++) {
+    ArrayList<PVector> log = new ArrayList();
+    log.add(new PVector(base_location_list.get(i)));
+    log_list.add(log);
   }
 
   int step = 1;
-  for (int i = 0; i < this->log_list.size(); i++) {
-
+  for (int i = 0; i < log_list.size(); i++) {
     int k = 0;
     while (true) {
-
-      auto deg = ofMap(ofNoise(glm::vec3(this->log_list[i].back() * 0.0035, ofGetFrameNum() * 0.003 + k * 0.0005)), 0, 1, -360, 360);
-      auto next = this->log_list[i].back() + glm::vec2(step * cos(deg * DEG_TO_RAD), step * sin(deg * DEG_TO_RAD));
+      ArrayList<PVector> logArray = log_list.get(i);
+      int last = logArray.size() - 1;
+      PVector lastP = logArray.get(last);
+      PVector log = PVector.mult(lastP, 0.0035);
+      PVector p = new PVector(log.x, log.y, ofGetFrameNum() * 0.003 + k * 0.0005);
+      var deg = ofMap(openFrameworks.ofNoise(p.x, p.y, p.z), 0, 1, -360, 360);
+      var next = this->log_list[i].back() + glm::vec2(step * cos(deg * DEG_TO_RAD), step * sin(deg * DEG_TO_RAD));
 
       if (next.x < -limit || next.x > limit || next.y < -limit || next.y > limit) {
 
@@ -56,7 +51,12 @@ void ofApp::update() {
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
+  //translate(width/2, height/2);
+  ofBackground(0);
+  //ofEnableBlendMode(ofBlendMode::OF_BLENDMODE_ADD);
+  blendMode(ADD);
 
   ofTranslate(ofGetWidth() * 0.5, ofGetHeight() * 0.5);
 
