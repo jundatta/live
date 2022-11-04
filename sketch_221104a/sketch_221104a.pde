@@ -5,14 +5,21 @@
 
 ArrayList<PVector> base_location_list = new ArrayList();
 ArrayList<ArrayList<PVector>> log_list = new ArrayList();
+
+PGraphics pg;
+int OrgW = 720;
+int OrgH = 720;
 //--------------------------------------------------------------
 void setup() {
-  size(720, 720);
+  //size(720, 720);
+  size(500, 800, P3D);
   int radius = 100;
   for (float deg = 0; deg < 360; deg += 10) {
     var location = new PVector(radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD));
     base_location_list.add(location);
   }
+
+  pg = createGraphics(OrgW, OrgH);
 }
 
 //--------------------------------------------------------------
@@ -52,38 +59,42 @@ void update() {
 void draw() {
   update();
   //translate(width/2, height/2);
-  ofBackground(0);
+
+  pg.beginDraw();
+  pg.background(0);
   //ofEnableBlendMode(ofBlendMode::OF_BLENDMODE_ADD);
-  blendMode(ADD);
+  pg.blendMode(ADD);
 
-  translate(width * 0.5, height * 0.5);
+  pg.translate(pg.width * 0.5, pg.height * 0.5);
 
-  ofSetLineWidth(1.2);
+  pg.strokeWeight(1.2);
   for (int i = 0; i < log_list.size(); i++) {
     ArrayList<PVector> logArray = log_list.get(i);
     if (logArray.size() > 1) {
-      noFill();
-      stroke(39, 39, 239);
-      beginShape();
+      pg.noFill();
+      pg.stroke(39, 39, 239);
+      pg.beginShape();
       //ofVertices(logArray);
       for (var log : logArray) {
-        vertex(log.x, log.y);
+        pg.vertex(log.x, log.y);
       }
-      endShape();
+      pg.endShape();
 
-      noStroke();
-      fill(255);
+      pg.noStroke();
+      pg.fill(255);
       int last = logArray.size() - 1;
       PVector lastP = logArray.get(last);
-      circle(lastP.x, lastP.y, 3 * 2);
-      fill(39, 39, 239);
+      pg.circle(lastP.x, lastP.y, 3 * 2);
+      pg.fill(39, 39, 239);
       PVector frontP = logArray.get(0);
-      circle(frontP.x, frontP.y, 3 * 2);
+      pg.circle(frontP.x, frontP.y, 3 * 2);
     }
   }
 
-  noFill();
-  ofSetLineWidth(0.2 * 4);
-  stroke(255);
-  rect(-300, -300, 600, 600);
+  pg.noFill();
+  pg.strokeWeight(0.2 * 4);
+  pg.stroke(255);
+  pg.rect(-300, -300, 600, 600);
+  pg.endDraw();
+  image(pg, 0, 0, width, height);
 }
