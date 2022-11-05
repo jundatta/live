@@ -1,17 +1,20 @@
 class ofMesh {
   ArrayList<PVector> vertices;
   IntList colors;
+  ArrayList<PVector> texCoords;
   IntList indices;
 
   ofMesh() {
     vertices = new ArrayList();
     colors = new IntList();
     indices = new IntList();
+    texCoords = new ArrayList();
   }
   void clear() {
     vertices.clear();
     colors.clear();
     indices.clear();
+    texCoords.clear();
   }
   void addVertices(ArrayList<PVector> vertices) {
     for (PVector v : vertices) {
@@ -46,6 +49,9 @@ class ofMesh {
   }
   PVector getVertex(int ix) {
     return vertices.get(ix);
+  }
+  void addTexCoord(PVector t) {
+    texCoords.add(t);
   }
   // 設定されたOF_PRIMITIVE_LINESの解釈で描画する
   void drawWireframe() {

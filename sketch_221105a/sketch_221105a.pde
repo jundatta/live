@@ -84,13 +84,21 @@ void update() {
           newVertices.add(newVertex);
         }
         vertices = newVertices;
-
         mesh.addVertices(vertices);
 
-        mesh.addTexCoord(glm::vec3(x, y, 0));
-        mesh.addTexCoord(glm::vec3(x + x_span, y, 0));
-        mesh.addTexCoord(glm::vec3(x + x_span, y + y_span, 0));
-        mesh.addTexCoord(glm::vec3(x, y + y_span, 0));
+        PVector WH = new PVector(W, H);
+        p = new PVector(x, y);
+        p.div(WH);
+        mesh.addTexCoord(p);
+        p = new PVector(x + x_span, y);
+        p.div(WH);
+        mesh.addTexCoord(p);
+        p = new PVector(x + x_span, y + y_span);
+        p.div(WH);
+        mesh.addTexCoord(p);
+        p = new PVector(x, y + y_span);
+        p.div(WH);
+        mesh.addTexCoord(p);
 
         mesh.addIndex(index + 0);
         mesh.addIndex(index + 1);
@@ -99,11 +107,9 @@ void update() {
         mesh.addIndex(index + 2);
         mesh.addIndex(index + 3);
       }
-
-      mesh_list.push_back(mesh);
+      mesh_list.add(mesh);
     }
-
-    this->face_list.push_back(mesh_list);
+    face_list.add(mesh_list);
   }
 }
 
