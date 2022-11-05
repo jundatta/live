@@ -3,67 +3,58 @@
 // 【作品名】1 to 2, 2 to 1. Draw by openFrameworks
 // https://junkiyoshi.com/2021/10/14/
 
-PGraphics[] pixcels_list = new PGraphics[2];
+final int texW = 320;
+final int texH = 320;
+PGraphics[] pixcels_list;
+ArrayList<ArrayList<ofMesh>> face_list;
 //--------------------------------------------------------------
 void setup() {
   size(720, 720, P3D);
 
   PFont font = createFont("HuiFont29.ttf", 195, true);
 
-  PGraphics pg = createGraphics(320, 320);
-  pg.beginDraw();
-  pg.translate(pg.width * 0.5f, pg.height * 0.5f);
-  pg.rectMode(CENTER);
-  pg.background(0);
-  pg.textFont(font);
-  pg.fill(255);
-  pg.text("壱", -130, 90);
-  pg.noFill();
-  pg.stroke(255);
-  pg.rect(0, 0, 300, 300);
-  pg.endDraw();
-  pixcels_list[0] = pg;
-
-  pg = createGraphics(320, 320);
-  pg.beginDraw();
-  pg.translate(pg.width * 0.5f, pg.height * 0.5f);
-  pg.rectMode(CENTER);
-  pg.background(0);
-  pg.textFont(font);
-  pg.fill(255);
-  pg.text("零", -130, 90);
-  pg.noFill();
-  pg.stroke(255);
-  pg.rect(0, 0, 300, 300);
-  pg.endDraw();
-  pixcels_list[1] = pg;
+  String[] str = { "壱", "零" };
+  pixcels_list = new PGraphics[str.length];
+  for (int i = 0; i < str.length; i++) {
+    PGraphics pg = createGraphics(texW, texH);
+    pg.beginDraw();
+    pg.translate(pg.width * 0.5f, pg.height * 0.5f);
+    pg.rectMode(CENTER);
+    pg.background(0);
+    pg.textFont(font);
+    pg.fill(255);
+    pg.text(str[i], -130, 90);
+    pg.noFill();
+    pg.stroke(255);
+    pg.rect(0, 0, 300, 300);
+    pg.endDraw();
+    pixcels_list[i] = pg;
+  }
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
-
-  this->face_list.clear();
+void update() {
+  face_list.clear();
 
   int x_span = 20;
   int y_span = 5;
 
-  for (int i = 0; i < 2; i++) {
-
-    vector<ofMesh> mesh_list;
-    for (int x = 0; x < 320; x += x_span) {
-
-      ofMesh mesh;
-      for (int y = 0; y < 320; y += y_span) {
-
+  for (int i = 0; i < pixcels_list.length; i++) {
+    ArrayList<ofMesh> mesh_list = new ArrayList();
+    int W = pixcels_list[i].width;
+    int H = pixcels_list[i].height;
+    for (int x = 0; x < W; x += x_span) {
+      ofMesh mesh = new ofMesh();
+      for (int y = 0; y < H; y += y_span) {
         int index = mesh.getNumVertices();
 
         float z = -160;
 
-        vector<glm::vec3> vertices;
-        vertices.push_back(glm::vec3(x, y, z) - glm::vec3(160, 160, 0));
-        vertices.push_back(glm::vec3(x + x_span, y, z) - glm::vec3(160, 160, 0));
-        vertices.push_back(glm::vec3(x + x_span, y + y_span, z) - glm::vec3(160, 160, 0));
-        vertices.push_back(glm::vec3(x, y + y_span, z) - glm::vec3(160, 160, 0));
+        ArrayList<PVector> vertices = new ArrayList();
+        vertices.add(glm::vec3(x, y, z) - glm::vec3(160, 160, 0));
+        vertices.add(glm::vec3(x + x_span, y, z) - glm::vec3(160, 160, 0));
+        vertices.add(glm::vec3(x + x_span, y + y_span, z) - glm::vec3(160, 160, 0));
+        vertices.add(glm::vec3(x, y + y_span, z) - glm::vec3(160, 160, 0));
 
         auto deg = (x / 3 + ofGetFrameNum()) % 360;
         if (deg < 90) {
