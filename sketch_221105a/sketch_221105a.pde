@@ -49,10 +49,10 @@ void update() {
       for (int y = 0; y < H; y += y_span) {
         int index = mesh.getNumVertices();
 
-        float z = -160;
+        float z = -(W/2);
 
         ArrayList<PVector> vertices = new ArrayList();
-        PVector org = new PVector(W, H, 0);
+        PVector org = new PVector(W/2, H/2, 0);
         PVector p = new PVector(x, y, z);
         vertices.add(PVector.sub(p, org));
         p = new PVector(x + x_span, y, z);
@@ -121,7 +121,7 @@ void draw() {
 
   ofBackground(239);
   ofSetLineWidth(2);
-  rectMode(CENTER);
+  //rectMode(CENTER);
 
   ofRotateX(180);
 
