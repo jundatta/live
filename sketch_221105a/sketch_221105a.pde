@@ -51,12 +51,17 @@ void update() {
         float z = -160;
 
         ArrayList<PVector> vertices = new ArrayList();
-        vertices.add(glm::vec3(x, y, z) - glm::vec3(160, 160, 0));
-        vertices.add(glm::vec3(x + x_span, y, z) - glm::vec3(160, 160, 0));
-        vertices.add(glm::vec3(x + x_span, y + y_span, z) - glm::vec3(160, 160, 0));
-        vertices.add(glm::vec3(x, y + y_span, z) - glm::vec3(160, 160, 0));
+        PVector org = new PVector(W, H, 0);
+        PVector p = new PVector(x, y, z);
+        vertices.add(PVector.sub(p, org));
+        p = new PVector(x + x_span, y, z);
+        vertices.add(PVector.sub(p, org));
+        p = new PVector(x + x_span, y + y_span, z);
+        vertices.add(PVector.sub(p, org));
+        p = new PVector(x, y + y_span, z);
+        vertices.add(PVector.sub(p, org));
 
-        auto deg = (x / 3 + ofGetFrameNum()) % 360;
+        var deg = (x / 3.0f + ofGetFrameNum()) % 360;
         if (deg < 90) {
           deg = 0;
         } else if (deg < 180) {
@@ -69,11 +74,16 @@ void update() {
 
         deg += i * 180;
 
-        auto rotation_x = glm::rotate(glm::mat4(), deg * (float)DEG_TO_RAD, glm::vec3(1, 0, 0));
-        for (auto& vertex : vertices) {
-
-          vertex = glm::vec4(vertex, 0) * rotation_x;
+        //auto rotation_x = glm::rotate(glm::mat4(), deg * (float)DEG_TO_RAD, glm::vec3(1, 0, 0));
+        var rotation_x = new PMatrix3D();
+        rotation_x.rotateX(deg * DEG_TO_RAD);
+        ArrayList<PVector> newVertices = new ArrayList();
+        for (var vertex : vertices) {
+          //vertex = glm::vec4(vertex, 0) * rotation_x;
+          PVector newVertex = rotation_x.mult(vertex, null);
+          newVertices.add(newVertex);
         }
+        vertices = newVertices;
 
         mesh.addVertices(vertices);
 
