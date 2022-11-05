@@ -3,60 +3,40 @@
 // 【作品名】1 to 2, 2 to 1. Draw by openFrameworks
 // https://junkiyoshi.com/2021/10/14/
 
+PGraphics[] pixcels_list = new PGraphics[2];
 //--------------------------------------------------------------
-void ofApp::setup() {
+void setup() {
+  size(720, 720, P3D);
 
-  ofSetFrameRate(60);
-  ofSetWindowTitle("openframeworks");
+  PFont font = createFont("HuiFont29.ttf", 195, true);
 
-  ofBackground(239);
-  ofSetLineWidth(2);
-  ofEnableDepthTest();
-  ofSetRectMode(ofRectMode::OF_RECTMODE_CENTER);
+  PGraphics pg = createGraphics(320, 320);
+  pg.beginDraw();
+  pg.translate(pg.width * 0.5f, pg.height * 0.5f);
+  pg.rectMode(CENTER);
+  pg.background(0);
+  pg.textFont(font);
+  pg.fill(255);
+  pg.text("壱", -130, 90);
+  pg.noFill();
+  pg.stroke(255);
+  pg.rect(0, 0, 300, 300);
+  pg.endDraw();
+  pixcels_list[0] = pg;
 
-  this->font_size = 195;
-  ofTrueTypeFontSettings font_settings("fonts/msgothic.ttc", this->font_size);
-  font_settings.antialiased = true;
-  font_settings.addRanges(ofAlphabet::Japanese);
-  this->font.load(font_settings);
-
-  ofFbo fbo;
-  ofPixels pixcels;
-  fbo.allocate(320, 320);
-
-  fbo.begin();
-
-  ofClear(0);
-  ofBackground(0);
-  ofTranslate(fbo.getWidth() * 0.5, fbo.getHeight() * 0.5);
-
-  ofSetColor(255);
-  this->font.drawString(u8"壱", -130, 90);
-
-  ofNoFill();
-  ofDrawRectangle(glm::vec2(0, 0), 300, 300);
-
-  fbo.end();
-
-  fbo.readToPixels(pixcels);
-  this->pixcels_list.push_back(pixcels);
-
-  fbo.begin();
-
-  ofClear(0);
-  ofBackground(0);
-  ofTranslate(fbo.getWidth() * 0.5, fbo.getHeight() * 0.5);
-
-  ofSetColor(255);
-  this->font.drawString(u8"零", -130, 90);
-
-  ofNoFill();
-  ofDrawRectangle(glm::vec2(0, 0), 300, 300);
-
-  fbo.end();
-
-  fbo.readToPixels(pixcels);
-  this->pixcels_list.push_back(pixcels);
+  pg = createGraphics(320, 320);
+  pg.beginDraw();
+  pg.translate(pg.width * 0.5f, pg.height * 0.5f);
+  pg.rectMode(CENTER);
+  pg.background(0);
+  pg.textFont(font);
+  pg.fill(255);
+  pg.text("零", -130, 90);
+  pg.noFill();
+  pg.stroke(255);
+  pg.rect(0, 0, 300, 300);
+  pg.endDraw();
+  pixcels_list[1] = pg;
 }
 
 //--------------------------------------------------------------
@@ -127,7 +107,13 @@ void ofApp::update() {
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
+  translate(width/2, height/2);
+
+  ofBackground(239);
+  ofSetLineWidth(2);
+  rectMode(CENTER);
 
   this->cam.begin();
   ofRotateX(180);
@@ -147,11 +133,4 @@ void ofApp::draw() {
   }
 
   this->cam.end();
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
