@@ -6,7 +6,7 @@
 final int texW = 320;
 final int texH = 320;
 PGraphics[] pixcels_list;
-ArrayList<ArrayList<ofMesh>> face_list;
+ArrayList<ArrayList<ofMesh>> face_list = new ArrayList();
 //--------------------------------------------------------------
 void setup() {
   size(720, 720, P3D);
@@ -41,8 +41,9 @@ void update() {
 
   for (int i = 0; i < pixcels_list.length; i++) {
     ArrayList<ofMesh> mesh_list = new ArrayList();
-    int W = pixcels_list[i].width;
-    int H = pixcels_list[i].height;
+    PImage tex = pixcels_list[i];
+    int W = tex.width;
+    int H = tex.height;
     for (int x = 0; x < W; x += x_span) {
       ofMesh mesh = new ofMesh();
       for (int y = 0; y < H; y += y_span) {
@@ -86,18 +87,17 @@ void update() {
         vertices = newVertices;
         mesh.addVertices(vertices);
 
-        PVector WH = new PVector(W, H);
         p = new PVector(x, y);
-        p.div(WH);
+        p = new PVector(p.x / (float)W, p.y / (float)H);
         mesh.addTexCoord(p);
         p = new PVector(x + x_span, y);
-        p.div(WH);
+        p = new PVector(p.x / (float)W, p.y / (float)H);
         mesh.addTexCoord(p);
         p = new PVector(x + x_span, y + y_span);
-        p.div(WH);
+        p = new PVector(p.x / (float)W, p.y / (float)H);
         mesh.addTexCoord(p);
         p = new PVector(x, y + y_span);
-        p.div(WH);
+        p = new PVector(p.x / (float)W, p.y / (float)H);
         mesh.addTexCoord(p);
 
         mesh.addIndex(index + 0);
@@ -107,6 +107,7 @@ void update() {
         mesh.addIndex(index + 2);
         mesh.addIndex(index + 3);
       }
+      mesh.setTexture(tex);
       mesh_list.add(mesh);
     }
     face_list.add(mesh_list);
@@ -122,22 +123,11 @@ void draw() {
   ofSetLineWidth(2);
   rectMode(CENTER);
 
-  this->cam.begin();
   ofRotateX(180);
 
-  int i = 0;
-  for (auto& mesh_list : this->face_list) {
-
-    ofImage image;
-    image.setFromPixels(this->pixcels_list[i++]);
-
-    for (auto& mesh : mesh_list) {
-
-      image.bind();
+  for (var mesh_list : face_list) {
+    for (var mesh : mesh_list) {
       mesh.draw();
-      image.unbind();
     }
   }
-
-  this->cam.end();
 }
