@@ -11,7 +11,7 @@ ArrayList<ArrayList<ofMesh>> face_list = new ArrayList();
 void setup() {
   size(720, 720, P3D);
 
-  PFont font = createFont("HuiFont29.ttf", 195, true);
+  PFont font = createFont("HuiFont29.ttf", 256, true);
 
   String[] str = { "壱", "零" };
   pixcels_list = new PGraphics[str.length];
@@ -26,7 +26,7 @@ void setup() {
     pg.text(str[i], -130, 90);
     pg.noFill();
     pg.stroke(255);
-    pg.rect(0, 0, 300, 300);
+    pg.rect(0, 0, pg.width - 20, pg.height - 20);
     pg.endDraw();
     pixcels_list[i] = pg;
   }
@@ -88,16 +88,16 @@ void update() {
         mesh.addVertices(vertices);
 
         p = new PVector(x, y);
-        p = new PVector(p.x / (float)W, p.y / (float)H);
+        p = new PVector(p.x / (float)W, 1.0f - (p.y / (float)H));
         mesh.addTexCoord(p);
         p = new PVector(x + x_span, y);
-        p = new PVector(p.x / (float)W, p.y / (float)H);
+        p = new PVector(p.x / (float)W, 1.0f - (p.y / (float)H));
         mesh.addTexCoord(p);
         p = new PVector(x + x_span, y + y_span);
-        p = new PVector(p.x / (float)W, p.y / (float)H);
+        p = new PVector(p.x / (float)W, 1.0f - (p.y / (float)H));
         mesh.addTexCoord(p);
         p = new PVector(x, y + y_span);
-        p = new PVector(p.x / (float)W, p.y / (float)H);
+        p = new PVector(p.x / (float)W, 1.0f - (p.y / (float)H));
         mesh.addTexCoord(p);
 
         mesh.addIndex(index + 0);
@@ -127,7 +127,10 @@ void draw() {
 
   for (var mesh_list : face_list) {
     for (var mesh : mesh_list) {
+      // bind()、unbind()はいい感じにテクスチャのuv座標をつけてくれる感じなのかなw
+      //image.bind();
       mesh.draw();
+      //image.unbind();
     }
   }
 }
