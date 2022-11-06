@@ -24,7 +24,7 @@ void setup() {
   MTEX.beginDraw();
   drawMountain(MTEX);
   MTEX.endDraw();
-  //image(MTEX, 0, 0);
+  image(MTEX, 0, 0);
   println("MTEX終わり");
 
   println("PTEX始まり");
@@ -211,13 +211,13 @@ void drawMountain(PGraphics target) {
     for (float i=10; i>0; i--) {
       target.fill(j*30+60+random(60), 60-i*5, j*3+i, i/10.0f);
       target.beginShape();
-      target.vertex(0, target.height);
-      target.vertex(0, target.height);
+      target.curveVertex(0, target.height);
+      target.curveVertex(0, target.height);
       for (float x=0; x<target.width+100; x+=20) {
         target.curveVertex(x, target.height-pow(noise(x/(float)(400+j*100), j), (j+4))*(1000-j*50)*pow((i/10.0f), 2)+50);
       }
-      target.vertex(target.width, target.height);
-      target.vertex(target.width, target.height);
+      target.curveVertex(target.width+100, target.height);
+      target.curveVertex(target.width+100, target.height);
       target.endShape();
     }
   }

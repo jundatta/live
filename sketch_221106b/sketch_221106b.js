@@ -9,8 +9,8 @@ function setup() {
     image(CTEX, 0, 0)
 
     var MTEX = createTex(width, height / 2)
-    //drawMountain(MTEX)
-    //image(MTEX, 0, 0)
+    drawMountain(MTEX)
+    image(MTEX, 0, 0)
 
     var PTEX = createTex(width, height/2)
     //drawPond(PTEX)
