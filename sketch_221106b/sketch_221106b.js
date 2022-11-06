@@ -13,12 +13,12 @@ function setup() {
     image(MTEX, 0, 0)
 
     var PTEX = createTex(width, height/2)
-    //drawPond(PTEX)
-    //image(PTEX, 0, height/2)
+    drawPond(PTEX)
+    image(PTEX, 0, height/2)
 
     var TTEX = createTex(width, height)
-    //drawTree(TTEX)
-    //image(TTEX, 0, 0)
+    drawTree(TTEX)
+    image(TTEX, 0, 0)
 
     print(millis())
 }
