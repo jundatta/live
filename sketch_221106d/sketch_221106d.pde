@@ -50,22 +50,22 @@ void drawPond(PGraphics target) {
   target.push();
   target.background(240, 50, 0);
   target.blendMode(ADD);
-  for (var z=4; z>1.0; z-=.1) {
+  for (float z=4; z>1.0; z-=.1) {
     var M=1/pow(3, z-1);
     target.fill(180+random(60), 50-l/2.0f, 30-l/2.0f, .08);
     target.beginShape();
     target.curveVertex(0, 0);
     target.curveVertex(0, 0);
-    for (var x=0; x<width+100; x+=200) {
-      target.curveVertex(x, noise(x/1000.0f, M)*M*50*height/10*1.5);
+    for (float x=0; x<target.width+100; x+=200) {
+      target.curveVertex(x, noise(x/1000.0f, M)*M*50*target.height/10*1.5);
     }
-    target.vertex(width, 0);
-    target.vertex(width, 0);
+    target.vertex(target.width, 0);
+    target.vertex(target.width, 0);
     target.endShape();
 
-    for (var i=1; i<5; i+=.1) {
+    for (float i=1; i<5; i+=.1) {
       target.fill(180+random(60), 50-l/2.0f, 30-l/2.0f, .1);
-      target.ellipse(random(width), height*M+random(100)*M, 1000*M*i/5.0f, 50*M*i/5.0f);
+      target.ellipse(random(target.width), target.height*M+random(100)*M, 1000*M*i/5.0f, 50*M*i/5.0f);
     }
   }
   target.pop();
@@ -73,30 +73,30 @@ void drawPond(PGraphics target) {
 
 void drawTree(PGraphics target) {
   target.push();
-  for (var x=0; x<width; x+=1) {
+  for (float x=0; x<target.width; x+=1) {
     target.fill(60+random(120), 50, random(5));
     var Y=noise(x/10.0f)*20;
-    target.rect(x, height/2.0f-Y-20+2, 1, 20+Y);
+    target.rect(x, target.height/2.0f-Y-20+2, 1, 20+Y);
   }
 
   target.fill(240, 50, 0);
-  target.rect(0, height/2, width, 30);
+  target.rect(0, target.height/2, target.width, 30);
 
   for (l=0; l<6; l++) {
-    for (var z=4; z>1.0; z-=.1) {
+    for (float z=4; z>1.0; z-=.1) {
       var Z=6-z;
       var M=1/pow(3, z-1);
 
-      for (var x=0; x<width; x+=max(1*Z/3.0f, 2)) {
+      for (float x=0; x<target.width; x+=max(1*Z/3.0f, 2)) {
         var N=noise(x/100.0f, M*5);
-        var Y=height/2 + M * height / 2 + noise(x)*100*M + 10;
+        var Y=target.height/2 + M * target.height / 2 + noise(x)*100*M + 10;
         switch((int)l) {
         case 0:  //  island
           if (N>(.2+Z*.1)) {
             target.blendMode(BLEND);
             target.fill(240, 50, 0);
             target.beginShape();
-            for (var r=0; r<TAU+1; r+=1) {
+            for (float r=0; r<TAU+1; r+=1) {
               var d=noise(x, z, r)*2;
               var iX=x+cos(r)*M*200*d;
               var iY=Y+sin(r)*M*150*d;
@@ -106,7 +106,7 @@ void drawTree(PGraphics target) {
 
             target.fill(240, 50, 0, .2);
             target.beginShape();
-            for (var r=0; r<TAU+1; r+=1) {
+            for (float r=0; r<TAU+1; r+=1) {
               var d=noise(x, z, r)*2*1.1;
               var iX=x+cos(r)*M*200*d;
               var iY=Y+sin(r)*M*150*d;
@@ -120,7 +120,7 @@ void drawTree(PGraphics target) {
             target.blendMode(BLEND);
             target.fill(60, 50, 10, .2-z/20.0f);
             target. beginShape();
-            for (var r=0; r<TAU+1; r+=1) {
+            for (float r=0; r<TAU+1; r+=1) {
               var d=noise(x, z, r)*1.5;
               var iX=x+cos(r)*M*200*d;
               var iY=Y+sin(r)*M*150*d;
@@ -132,7 +132,7 @@ void drawTree(PGraphics target) {
         case 2:  //  plant
           if (N>(.2+Z*.1)  && ((z<2.5) || (N%.02>.01))) {
             target.blendMode(BLEND);
-            for (var i=0; i<5+Z; i++) {
+            for (float i=0; i<5+Z; i++) {
               target.fill(60+random(120), 50, 70, .15);
               target.push();
               target.translate(x, Y);
@@ -170,7 +170,7 @@ void drawTree(PGraphics target) {
               target.pop();
             } else {
               target.blendMode(BLEND);
-              for (var i=0; i<3; i++) {
+              for (float i=0; i<3; i++) {
                 target.fill(30, 80, random(10)+15, .5);
                 target.push();
                 target.translate(x, Y);
@@ -191,7 +191,7 @@ void drawTree(PGraphics target) {
             target.blendMode(BLEND);
             target.fill(60+random(120), 50, random(9)+10);
             target.beginShape();
-            for (var r=0; r<TAU; r+=(.5-M*1)) {
+            for (float r=0; r<TAU; r+=(.5-M*1)) {
               var d=noise(x, r*100)*(M*100);
               target.vertex(x+cos(r)*d*2, Y+sin(r)*d*5-M*3000*noise(x, z));
             }
@@ -207,17 +207,17 @@ void drawTree(PGraphics target) {
 
 void drawMountain(PGraphics target) {
   target.push();
-  for (var j=0; j<3; j++) {
-    for (var i=10; i>0; i--) {
+  for (float j=0; j<3; j++) {
+    for (float i=10; i>0; i--) {
       target.fill(j*30+60+random(60), 60-i*5, j*3+i, i/10.0f);
       target.beginShape();
-      target.vertex(0, height);
-      target.vertex(0, height);
-      for (var x=0; x<width+100; x+=20) {
-        target.curveVertex(x, height-pow(noise(x/(float)(400+j*100), j), (j+4))*(1000-j*50)*pow((i/10.0f), 2)+50);
+      target.vertex(0, target.height);
+      target.vertex(0, target.height);
+      for (float x=0; x<target.width+100; x+=20) {
+        target.curveVertex(x, target.height-pow(noise(x/(float)(400+j*100), j), (j+4))*(1000-j*50)*pow((i/10.0f), 2)+50);
       }
-      target.vertex(width, height);
-      target.vertex(width, height);
+      target.vertex(target.width, target.height);
+      target.vertex(target.width, target.height);
       target.endShape();
     }
   }
@@ -229,19 +229,19 @@ void drawCelestial(PGraphics target) {
   drawSky(target);
   println("drawSky(target)終わり");
   println("drawStar(target)始まり");
-  //drawStar(target);
+  drawStar(target);
   println("drawStar(target)終わり");
   println("drawMoon(target)始まり");
-  //  drawMoon(target);
+  drawMoon(target);
   println("drawMoon(target)終わり");
 }
 
 void drawStar(PGraphics target) {
   target.push();
   target.blendMode(ADD);
-  for (var i=0; i<100; i++) {
-    var X = random(width);
-    var Y = random(height - 100);
+  for (float i=0; i<100; i++) {
+    var X = random(target.width);
+    var Y = random(target.height - 100);
 
     //  shine
     var S = random(10)+10;
@@ -255,9 +255,9 @@ void drawStar(PGraphics target) {
   }
 
   //  shooting star
-  var X = random(width);
-  var Y = random(height - 200);
-  for (var i=0; i<10; i++) {
+  var X = random(target.width);
+  var Y = random(target.height - 200);
+  for (float i=0; i<10; i++) {
     target.push();
     var R=-PI/8-random(PI/16.0f);
     target.translate(X, Y);
@@ -271,16 +271,16 @@ void drawStar(PGraphics target) {
 
 void drawMoon(PGraphics target) {
   target.push();
-  var X=random(width/2)+width/4;
-  var Y=height/2;
+  var X=random(target.width/2)+target.width/4;
+  var Y=target.height/2;
 
   //  backlight
   target.push();
   target.blendMode(ADD);
-  for (var i=0; i<5; i++) {
+  for (float i=0; i<5; i++) {
     target.fill(180+random(60), 30, 10, .5-i/20.0f);
     target.beginShape();
-    for (var r=0; r<TAU+1; r+=.5) {
+    for (float r=0; r<TAU+1; r+=.5) {
       var d = i*20 + 200+random(10);
       target.curveVertex(X+cos(r)*d, Y+sin(r)*d);
     }
@@ -294,13 +294,13 @@ void drawMoon(PGraphics target) {
   //drawingContext.clip();
 
   //  crater
-  for (var i=0; i<100; i++) {
+  for (float i=0; i<100; i++) {
     target.fill(6, 10, 30, .03);
     target.beginShape();
     var mX=X-200+random(400);
     var mY=Y-200+random(400);
     var offsetR=random(TAU);
-    for (var r=0; r<TAU; r+=.1) {
+    for (float r=0; r<TAU; r+=.1) {
       var D=pow(noise(r, i), 2)*10*i*sin(r+offsetR);
       target.vertex(mX+cos(r)*D, mY+sin(r)*D);
     }
@@ -318,11 +318,11 @@ void drawSky(PGraphics target) {
     target.beginShape();
     target.curveVertex(0, target.height);
     target.curveVertex(0, target.height);
-    for (var x=0; x<target.width+100; x+=200) {
+    for (float x=0; x<target.width+100; x+=200) {
       target.curveVertex(x, target.height-noise(x/1000.0f, l)*l*target.height/10.0f);
     }
-    target.vertex(target.width, target.height);
-    target.vertex(target.width, target.height);
+    target.curveVertex(target.width+100, target.height);
+    target.curveVertex(target.width+100, target.height);
     target.endShape();
   }
   target.pop();

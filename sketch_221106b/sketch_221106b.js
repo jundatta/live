@@ -210,8 +210,8 @@ function drawMountain(target) {
 function drawCelestial(target) {
 
   drawSky(target)
-    //drawStar(target)
-    //drawMoon(target)
+    drawStar(target)
+    drawMoon(target)
 
     function drawStar(target) {
     with(target) {
