@@ -9,41 +9,31 @@ void setup() {
   fill(40, 40, 80);
   rect(0, 0, width, height);
 
-  println("CTEX始まり");
   var CTEX = createTex(width, height /2);
   CTEX.beginDraw();
-  println("drawCelestial(CTEX)始まり");
   drawCelestial(CTEX);
-  println("drawCelestial(CTEX)終わり");
   CTEX.endDraw();
   image(CTEX, 0, 0);
-  println("CTEX終わり");
 
-  println("MTEX始まり");
   var MTEX = createTex(width, height / 2);
   MTEX.beginDraw();
   drawMountain(MTEX);
   MTEX.endDraw();
   image(MTEX, 0, 0);
-  println("MTEX終わり");
 
-  println("PTEX始まり");
   var PTEX = createTex(width, height/2);
   PTEX.beginDraw();
   drawPond(PTEX);
   PTEX.endDraw();
   image(PTEX, 0, height/2);
-  println("PTEX終わり");
 
-  println("TTEX始まり");
   var TTEX = createTex(width, height);
   TTEX.beginDraw();
   drawTree(TTEX);
   TTEX.endDraw();
   image(TTEX, 0, 0);
-  println("TTEX終わり");
 
-  print(millis());
+  //print(millis());
 }
 
 void drawPond(PGraphics target) {
@@ -225,15 +215,9 @@ void drawMountain(PGraphics target) {
 }
 
 void drawCelestial(PGraphics target) {
-  println("drawSky(target)始まり");
   drawSky(target);
-  println("drawSky(target)終わり");
-  println("drawStar(target)始まり");
   drawStar(target);
-  println("drawStar(target)終わり");
-  println("drawMoon(target)始まり");
   drawMoon(target);
-  println("drawMoon(target)終わり");
 }
 
 void drawStar(PGraphics target) {
@@ -289,8 +273,8 @@ void drawMoon(PGraphics target) {
   target.pop();
 
   //  fullmoon
-  //target.fill(60, 20, 100);
-  //target.circle(X, Y, 400);
+  target.fill(60, 20, 100);
+  target.circle(X, Y, 400);
   //drawingContext.clip();
 
   //  crater
