@@ -3,7 +3,7 @@
 // 【作品名】GenerativeScene(Experimental v2)
 // https://openprocessing.org/sketch/1726300
 
-int l = 0;
+float l = 0;
 void setup() {
   size(1920, 1080);
   fill(40, 40, 80);
@@ -24,7 +24,7 @@ void setup() {
   MTEX.beginDraw();
   drawMountain(MTEX);
   MTEX.endDraw();
-  image(MTEX, 0, 0);
+  //image(MTEX, 0, 0);
   println("MTEX終わり");
 
   println("PTEX始まり");
@@ -32,7 +32,7 @@ void setup() {
   PTEX.beginDraw();
   //drawPond(PTEX);
   PTEX.endDraw();
-  image(PTEX, 0, height/2);
+  //image(PTEX, 0, height/2);
   println("PTEX終わり");
 
   println("TTEX始まり");
@@ -40,7 +40,7 @@ void setup() {
   TTEX.beginDraw();
   //drawTree(TTEX);
   TTEX.endDraw();
-  image(TTEX, 0, 0);
+  //image(TTEX, 0, 0);
   println("TTEX終わり");
 
   print(millis());
@@ -90,7 +90,7 @@ void drawTree(PGraphics target) {
       for (var x=0; x<width; x+=max(1*Z/3.0f, 2)) {
         var N=noise(x/100.0f, M*5);
         var Y=height/2 + M * height / 2 + noise(x)*100*M + 10;
-        switch(l) {
+        switch((int)l) {
         case 0:  //  island
           if (N>(.2+Z*.1)) {
             target.blendMode(BLEND);
@@ -229,10 +229,10 @@ void drawCelestial(PGraphics target) {
   drawSky(target);
   println("drawSky(target)終わり");
   println("drawStar(target)始まり");
-  drawStar(target);
+  //drawStar(target);
   println("drawStar(target)終わり");
   println("drawMoon(target)始まり");
-//  drawMoon(target);
+  //  drawMoon(target);
   println("drawMoon(target)終わり");
 }
 
@@ -316,13 +316,13 @@ void drawSky(PGraphics target) {
   for (l=0; l<20; l++) {
     target.fill(180+random(60), 50-l, 30-l, .15);
     target.beginShape();
-    target.curveVertex(0, height);
-    target.curveVertex(0, height);
-    for (var x=0; x<width+100; x+=200) {
-      target.curveVertex(x, height-noise(x/1000.0f, l)*l*height/10.0f);
+    target.curveVertex(0, target.height);
+    target.curveVertex(0, target.height);
+    for (var x=0; x<target.width+100; x+=200) {
+      target.curveVertex(x, target.height-noise(x/1000.0f, l)*l*target.height/10.0f);
     }
-    target.vertex(width, height);
-    target.vertex(width, height);
+    target.vertex(target.width, target.height);
+    target.vertex(target.width, target.height);
     target.endShape();
   }
   target.pop();
@@ -330,7 +330,9 @@ void drawSky(PGraphics target) {
 
 PGraphics createTex(int w, int h) {
   var TEX = createGraphics(w, h);
-  TEX.colorMode(HSB);
+  TEX.beginDraw();
+  TEX.colorMode(HSB, 360, 100, 100, 1.0f);
   TEX.noStroke();
+  TEX.endDraw();
   return TEX;
 }

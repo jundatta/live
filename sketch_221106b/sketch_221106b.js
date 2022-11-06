@@ -9,16 +9,16 @@ function setup() {
     image(CTEX, 0, 0)
 
     var MTEX = createTex(width, height / 2)
-    drawMountain(MTEX)
-    image(MTEX, 0, 0)
+    //drawMountain(MTEX)
+    //image(MTEX, 0, 0)
 
     var PTEX = createTex(width, height/2)
-    drawPond(PTEX)
-    image(PTEX, 0, height/2)
+    //drawPond(PTEX)
+    //image(PTEX, 0, height/2)
 
     var TTEX = createTex(width, height)
-    drawTree(TTEX)
-    image(TTEX, 0, 0)
+    //drawTree(TTEX)
+    //image(TTEX, 0, 0)
 
     print(millis())
 }
@@ -210,8 +210,8 @@ function drawMountain(target) {
 function drawCelestial(target) {
 
   drawSky(target)
-    drawStar(target)
-    drawMoon(target)
+    //drawStar(target)
+    //drawMoon(target)
 
     function drawStar(target) {
     with(target) {
@@ -269,12 +269,12 @@ function drawCelestial(target) {
       pop();
 
       //  fullmoon
-      fill(60, 20, 100)
-        circle(X, Y, 400)
-        drawingContext.clip()
+      //fill(60, 20, 100)
+      //  circle(X, Y, 400)
+      //  drawingContext.clip()
 
-        //  crater
-        for (i=0; i<100; i++) {
+      //  crater
+      for (i=0; i<100; i++) {
         fill(6, 10, 30, .03)
           beginShape()
           mX=X-200+random(400)
