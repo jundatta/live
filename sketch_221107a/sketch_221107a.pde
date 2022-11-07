@@ -6,12 +6,11 @@
 ArrayList<ArrayList<Particle>> flock_list = new ArrayList();
 //--------------------------------------------------------------
 void setup() {
-  size(720, 720);
+  size(720, 720, P3D);
 
   color col;
   for (int i = 0; i < 6; i++) {
     ArrayList<Particle> flock = new ArrayList();
-    //col.setHsb(ofMap(i, 0, 6, 0, 255), 192, 255);
     push();
     colorMode(HSB, 255, 255, 255);
     col = color(ofMap(i, 0, 6, 0, 255), 192, 255);
@@ -36,7 +35,7 @@ void update() {
 //--------------------------------------------------------------
 void draw() {
   update();
-  //translate(width/2, height/2);
+  translate(width/2, height/2);
 
   ofBackground(0);
   ofSetLineWidth(2);
@@ -49,7 +48,6 @@ void draw() {
     translate(0, 0, -200);
 
     color col;
-    //col.setHsb(ofMap(i++, 0, 6, 0, 255), 192, 255);
     push();
     colorMode(HSB, 255, 255, 255);
     col = color(ofMap(i++, 0, 6, 0, 255), 192, 255);
