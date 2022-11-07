@@ -1,5 +1,8 @@
 //--------------------------------------------------------------
 class Particle {
+  PVector location;
+  ArrayList<PVector> log = new ArrayList();
+
   PVector velocity;
   PVector acceleration;
 

@@ -3,74 +3,63 @@
 // 【作品名】Separated flocks. Draw by openFrameworks
 // https://junkiyoshi.com/2021/09/29/
 
+ArrayList<ArrayList<Particle>> flock_list = new ArrayList();
 //--------------------------------------------------------------
-void ofApp::setup() {
+void setup() {
+  size(720, 720);
 
-  ofSetFrameRate(60);
-  ofSetWindowTitle("openframeworks");
+  color col;
+  for (int i = 0; i < 6; i++) {
+    ArrayList<Particle> flock = new ArrayList();
+    //col.setHsb(ofMap(i, 0, 6, 0, 255), 192, 255);
+    push();
+    colorMode(HSB, 255, 255, 255);
+    col = color(ofMap(i, 0, 6, 0, 255), 192, 255);
+    pop();
+    for (int k = 0; k < 50 + i * 50; k++) {
+      var particle = new Particle(col);
+      flock.add(particle);
+    }
+    flock_list.add(flock);
+  }
+}
+
+//--------------------------------------------------------------
+void update() {
+  for (var flock : flock_list) {
+    for (var particle : flock) {
+      particle.update(flock);
+    }
+  }
+}
+
+//--------------------------------------------------------------
+void draw() {
+  update();
+  //translate(width/2, height/2);
 
   ofBackground(0);
-  ofEnableDepthTest();
   ofSetLineWidth(2);
-  ofSetCircleResolution(60);
 
-  ofColor color;
-  for (int i = 0; i < 6; i++) {
-
-    vector<unique_ptr<Particle>> flock;
-    color.setHsb(ofMap(i, 0, 6, 0, 255), 192, 255);
-    for (int k = 0; k < 50 + i * 50; k++) {
-
-      auto particle = make_unique<Particle>(color);
-      flock.push_back(move(particle));
-    }
-
-    this->flock_list.push_back(move(flock));
-  }
-}
-
-//--------------------------------------------------------------
-void ofApp::update() {
-
-  for (auto& flock : this->flock_list) {
-
-    for (auto& particle : flock) {
-
-      particle->update(flock);
-    }
-  }
-}
-
-//--------------------------------------------------------------
-void ofApp::draw() {
-
-  this->cam.begin();
   ofRotateY(ofGetFrameNum() * -0.5);
-  ofTranslate(ofGetWidth() * -0.5, ofGetHeight() * -0.5, 700);
+  translate(width * -0.5, height * -0.5, 700);
 
   int i = 0;
-  for (auto& flock : this->flock_list) {
+  for (var flock : flock_list) {
+    translate(0, 0, -200);
 
-    ofTranslate(0, 0, -200);
+    color col;
+    //col.setHsb(ofMap(i++, 0, 6, 0, 255), 192, 255);
+    push();
+    colorMode(HSB, 255, 255, 255);
+    col = color(ofMap(i++, 0, 6, 0, 255), 192, 255);
+    pop();
+    noFill();
+    stroke(col);
+    circle(width * 0.5, height * 0.5, 300);
 
-    ofColor color;
-    color.setHsb(ofMap(i++, 0, 6, 0, 255), 192, 255);
-    ofNoFill();
-    ofSetColor(color);
-    ofDrawCircle(glm::vec2(ofGetWidth() * 0.5, ofGetHeight() * 0.5), 300);
-
-    for (auto& particle : flock) {
-
-      particle->draw();
+    for (var particle : flock) {
+      particle.draw();
     }
   }
-
-  this->cam.end();
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
