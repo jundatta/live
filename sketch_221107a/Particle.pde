@@ -13,32 +13,34 @@ class Particle {
   color col;
 
   Particle() {
-    location = PVector(ofRandom(width), ofRandom(height));
-    velocity = PVector(ofRandom(-1, 1), ofRandom(-1, 1));
+    location = new PVector(ofRandom(width), ofRandom(height));
+    velocity = new PVector(ofRandom(-1, 1), ofRandom(-1, 1));
 
     range = 25;
     max_force = 1;
     max_speed = 8;
 
-    col.setHsb(ofRandom(255), 130, 255);
+    //col.setHsb(ofRandom(255), 130, 255);
+    push();
+    colorMode(HSB, 255, 255, 255);
+    col = color(ofRandom(255), 130, 255);
+    pop();
   }
 
   //--------------------------------------------------------------
   Particle(color col) {
-
-    location = PVector(ofRandom(width), ofRandom(height));
-    velocity = PVector(ofRandom(-1, 1), ofRandom(-1, 1));
+    location = new PVector(ofRandom(width), ofRandom(height));
+    velocity = new PVector(ofRandom(-1, 1), ofRandom(-1, 1));
 
     range = 25;
     max_force = 1;
     max_speed = 8;
 
-    col = col;
+    this.col = col;
   }
 
   //--------------------------------------------------------------
   void update(ArrayList<Particle> particles) {
-
     // 分離
     PVector separate = separate(particles);
     applyForce(separate);
@@ -53,12 +55,14 @@ class Particle {
 
     // 自我
     if (velocity.mag() > 0) {
-
-      PVector future = PVector.normalize(velocity) * range;
-      future += location;
+      PVector future = velocity.copy();
+      future.normalize();
+      future.mult(range);
+      future.add(location);
 
       float angle = ofRandom(360);
-      PVector target = future + PVector(range * 0.5 * cos(angle * DEG_TO_RAD), range * 0.5 * sin(angle * DEG_TO_RAD));
+      PVector target = future.copy();
+      target.add(new PVector(range * 0.5 * cos(angle * DEG_TO_RAD), range * 0.5 * sin(angle * DEG_TO_RAD)));
 
       PVector ego = seek(target);
       applyForce(ego);
@@ -68,26 +72,25 @@ class Particle {
     PVector org = new PVector(width * 0.5, height * 0.5);
     PVector p = PVector.sub(location, org);
     if (p.mag() > 300) {
-
-      PVector area = seek(PVector(width * 0.5, height * 0.5));
-      applyForce(area * 10);
+      PVector area = seek(new PVector(width * 0.5, height * 0.5));
+      area.mult(10);
+      applyForce(area);
     }
 
     // 前進
-    velocity += acceleration;
+    velocity.add(acceleration);
     if (velocity.mag() > max_speed) {
-
-      velocity = PVector.normalize(velocity) * max_speed;
+      velocity.normalize();
+      velocity.mult(max_speed);
     }
-    location += velocity;
-    acceleration *= 0;
-    velocity *= 0.98;
+    location.add(velocity);
+    acceleration.mult(0);
+    velocity.mult(0.98);
 
     // 記録
-    log.push_back(location);
+    log.add(location);
     while (log.size() > 15) {
-
-      log.erase(log.begin());
+      log.remove(0);
     }
   }
 
