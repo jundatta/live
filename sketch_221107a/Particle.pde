@@ -1,267 +1,275 @@
 //--------------------------------------------------------------
-Particle::Particle() {
+class Particle {
+  PVector velocity;
+  PVector acceleration;
 
-  this->location = glm::vec2(ofRandom(ofGetWidth()), ofRandom(ofGetHeight()));
-  this->velocity = glm::vec2(ofRandom(-1, 1), ofRandom(-1, 1));
+  float range;
+  float max_force;
+  float max_speed;
 
-  this->range = 25;
-  this->max_force = 1;
-  this->max_speed = 8;
+  color col;
 
-  this->color.setHsb(ofRandom(255), 130, 255);
-}
+  Particle() {
+    location = PVector(ofRandom(width), ofRandom(height));
+    velocity = PVector(ofRandom(-1, 1), ofRandom(-1, 1));
 
-//--------------------------------------------------------------
-Particle::Particle(ofColor color) {
+    range = 25;
+    max_force = 1;
+    max_speed = 8;
 
-  this->location = glm::vec2(ofRandom(ofGetWidth()), ofRandom(ofGetHeight()));
-  this->velocity = glm::vec2(ofRandom(-1, 1), ofRandom(-1, 1));
-
-  this->range = 25;
-  this->max_force = 1;
-  this->max_speed = 8;
-
-  this->color = color;
-}
-
-//--------------------------------------------------------------
-Particle::~Particle() {
-}
-
-//--------------------------------------------------------------
-void Particle::update(vector<unique_ptr<Particle>>& particles) {
-
-  // 分離
-  glm::vec2 separate = this->separate(particles);
-  this->applyForce(separate);
-
-  // 整列
-  glm::vec2 align = this->align(particles);
-  this->applyForce(align);
-
-  // 結合
-  glm::vec2 cohesion = this->cohesion(particles);
-  this->applyForce(cohesion);
-
-  // 自我
-  if (glm::length(this->velocity) > 0) {
-
-    glm::vec2 future = glm::normalize(this->velocity) * this->range;
-    future += this->location;
-
-    float angle = ofRandom(360);
-    glm::vec2 target = future + glm::vec2(this->range * 0.5 * cos(angle * DEG_TO_RAD), this->range * 0.5 * sin(angle * DEG_TO_RAD));
-
-    glm::vec2 ego = this->seek(target);
-    this->applyForce(ego);
+    col.setHsb(ofRandom(255), 130, 255);
   }
 
-  // 境界
-  if (glm::length(this->location - glm::vec2(ofGetWidth() * 0.5, ofGetHeight() * 0.5)) > 300) {
+  //--------------------------------------------------------------
+  Particle(color col) {
 
-    glm::vec2 area = this->seek(glm::vec2(ofGetWidth() * 0.5, ofGetHeight() * 0.5));
-    this->applyForce(area * 10);
+    location = PVector(ofRandom(width), ofRandom(height));
+    velocity = PVector(ofRandom(-1, 1), ofRandom(-1, 1));
+
+    range = 25;
+    max_force = 1;
+    max_speed = 8;
+
+    col = col;
   }
 
-  // 前進
-  this->velocity += this->acceleration;
-  if (glm::length(this->velocity) > this->max_speed) {
+  //--------------------------------------------------------------
+  void update(ArrayList<Particle> particles) {
 
-    this->velocity = glm::normalize(this->velocity) * this->max_speed;
-  }
-  this->location += this->velocity;
-  this->acceleration *= 0;
-  this->velocity *= 0.98;
+    // 分離
+    PVector separate = separate(particles);
+    applyForce(separate);
 
-  // 記録
-  this->log.push_back(this->location);
-  while (this->log.size() > 15) {
+    // 整列
+    PVector align = align(particles);
+    applyForce(align);
 
-    this->log.erase(this->log.begin());
-  }
-}
+    // 結合
+    PVector cohesion = cohesion(particles);
+    applyForce(cohesion);
 
-//--------------------------------------------------------------
-void Particle::draw() {
+    // 自我
+    if (velocity.mag() > 0) {
 
-  if (this->log.size() < 3) {
-    return;
-  }
+      PVector future = PVector.normalize(velocity) * range;
+      future += location;
 
-  auto head_size = 5;
-  ofMesh mesh;
-  vector<glm::vec3> right, left;
-  glm::vec3 last_location;
-  float last_theta;
+      float angle = ofRandom(360);
+      PVector target = future + PVector(range * 0.5 * cos(angle * DEG_TO_RAD), range * 0.5 * sin(angle * DEG_TO_RAD));
 
-  for (int k = 0; k < this->log.size() - 1; k++) {
+      PVector ego = seek(target);
+      applyForce(ego);
+    }
 
-    auto loc = glm::vec3(this->log[k], 0);
-    auto next = glm::vec3(this->log[k + 1], 0);
+    // 境界
+    PVector org = new PVector(width * 0.5, height * 0.5);
+    PVector p = PVector.sub(location, org);
+    if (p.mag() > 300) {
 
-    auto direction = next - loc;
-    auto theta = atan2(direction.y, direction.x);
+      PVector area = seek(PVector(width * 0.5, height * 0.5));
+      applyForce(area * 10);
+    }
 
-    right.push_back(loc + glm::vec3(ofMap(k, 0, this->log.size(), 0, head_size) * cos(theta + PI * 0.5), ofMap(k, 0, this->log.size(), 0, head_size) * sin(theta + PI * 0.5), 0));
-    left.push_back(loc + glm::vec3(ofMap(k, 0, this->log.size(), 0, head_size) * cos(theta - PI * 0.5), ofMap(k, 0, this->log.size(), 0, head_size) * sin(theta - PI * 0.5), 0));
+    // 前進
+    velocity += acceleration;
+    if (velocity.mag() > max_speed) {
 
-    last_location = loc;
-    last_theta = theta;
-  }
+      velocity = PVector.normalize(velocity) * max_speed;
+    }
+    location += velocity;
+    acceleration *= 0;
+    velocity *= 0.98;
 
-  for (int k = 0; k < right.size(); k++) {
+    // 記録
+    log.push_back(location);
+    while (log.size() > 15) {
 
-    mesh.addVertex(left[k]);
-    mesh.addVertex(right[k]);
-
-    mesh.addColor(ofColor(this->color, ofMap(k, 0, this->log.size(), 0, 255)));
-    mesh.addColor(ofColor(this->color, ofMap(k, 0, this->log.size(), 0, 255)));
-  }
-
-  for (int k = 0; k < mesh.getNumVertices() - 2; k += 2) {
-
-    mesh.addIndex(k + 0);
-    mesh.addIndex(k + 1);
-    mesh.addIndex(k + 3);
-    mesh.addIndex(k + 0);
-    mesh.addIndex(k + 2);
-    mesh.addIndex(k + 3);
-  }
-
-  auto tmp_header_size = ofMap(this->log.size() - 2, 0, this->log.size(), 0, head_size);
-  auto tmp_alpha = ofMap(this->log.size() - 2, 0, this->log.size(), 0, 255);
-
-  mesh.addVertex(last_location);
-  mesh.addColor(ofColor(this->color, tmp_alpha));
-
-  int index = mesh.getNumVertices();
-  for (auto theta = last_theta - PI * 0.5; theta <= last_theta + PI * 0.5; theta += PI / 20) {
-
-    mesh.addVertex(last_location + glm::vec3(tmp_header_size * cos(theta), tmp_header_size * sin(theta), 0));
-    mesh.addColor(ofColor(color, tmp_alpha));
-  }
-
-  for (int k = index; k < mesh.getNumVertices() - 1; k++) {
-
-    mesh.addIndex(index);
-    mesh.addIndex(k + 0);
-    mesh.addIndex(k + 1);
-  }
-
-  mesh.draw();
-}
-
-//--------------------------------------------------------------
-glm::vec2 Particle::separate(vector<unique_ptr<Particle>>& particles) {
-
-  glm::vec2 result;
-  glm::vec2 sum;
-  int count = 0;
-  for (auto& other : particles) {
-
-    glm::vec2 difference = this->location - other->location;
-    if (glm::length(difference) > 0 && glm::length(difference) < this->range * 0.5) {
-
-      sum += glm::normalize(difference);
-      count++;
+      log.erase(log.begin());
     }
   }
 
-  if (count > 0) {
+  //--------------------------------------------------------------
+  void draw() {
 
-    glm::vec2 avg = sum / count;
-    avg = avg * this->max_speed;
-    if (glm::length(avg) > this->max_speed) {
-
-      avg = glm::normalize(avg) * this->max_speed;
+    if (log.size() < 3) {
+      return;
     }
-    glm::vec2 steer = avg - this->velocity;
-    if (glm::length(steer) > this->max_force) {
 
-      steer = glm::normalize(steer) * this->max_force;
+    var head_size = 5;
+    ofMesh mesh;
+    ArrayList<PVector> right, left;
+    PVector last_location;
+    float last_theta;
+
+    for (int k = 0; k < log.size() - 1; k++) {
+
+      var loc = PVector(log[k], 0);
+      var next = PVector(log[k + 1], 0);
+
+      var direction = next - loc;
+      var theta = atan2(direction.y, direction.x);
+
+      right.push_back(loc + PVector(ofMap(k, 0, log.size(), 0, head_size) * cos(theta + PI * 0.5), ofMap(k, 0, log.size(), 0, head_size) * sin(theta + PI * 0.5), 0));
+      left.push_back(loc + PVector(ofMap(k, 0, log.size(), 0, head_size) * cos(theta - PI * 0.5), ofMap(k, 0, log.size(), 0, head_size) * sin(theta - PI * 0.5), 0));
+
+      last_location = loc;
+      last_theta = theta;
     }
-    result = steer;
+
+    for (int k = 0; k < right.size(); k++) {
+
+      mesh.addVertex(left[k]);
+      mesh.addVertex(right[k]);
+
+      mesh.addColor(ofColor(col, ofMap(k, 0, log.size(), 0, 255)));
+      mesh.addColor(ofColor(col, ofMap(k, 0, log.size(), 0, 255)));
+    }
+
+    for (int k = 0; k < mesh.getNumVertices() - 2; k += 2) {
+
+      mesh.addIndex(k + 0);
+      mesh.addIndex(k + 1);
+      mesh.addIndex(k + 3);
+      mesh.addIndex(k + 0);
+      mesh.addIndex(k + 2);
+      mesh.addIndex(k + 3);
+    }
+
+    var tmp_header_size = ofMap(log.size() - 2, 0, log.size(), 0, head_size);
+    var tmp_alpha = ofMap(log.size() - 2, 0, log.size(), 0, 255);
+
+    mesh.addVertex(last_location);
+    mesh.addColor(ofColor(col, tmp_alpha));
+
+    int index = mesh.getNumVertices();
+    for (var theta = last_theta - PI * 0.5; theta <= last_theta + PI * 0.5; theta += PI / 20) {
+
+      mesh.addVertex(last_location + PVector(tmp_header_size * cos(theta), tmp_header_size * sin(theta), 0));
+      mesh.addColor(ofColor(col, tmp_alpha));
+    }
+
+    for (int k = index; k < mesh.getNumVertices() - 1; k++) {
+
+      mesh.addIndex(index);
+      mesh.addIndex(k + 0);
+      mesh.addIndex(k + 1);
+    }
+
+    mesh.draw();
   }
 
-  return result;
-}
+  //--------------------------------------------------------------
+  PVector separate(ArrayList<Particle> particles) {
 
-//--------------------------------------------------------------
-glm::vec2 Particle::align(vector<unique_ptr<Particle>>& particles) {
+    PVector result;
+    PVector sum;
+    int count = 0;
+    for (var other : particles) {
 
-  glm::vec2 result;
-  glm::vec2 sum;
-  int count = 0;
-  for (auto& other : particles) {
+      PVector difference = location - other->location;
+      if (difference.mag() > 0 && difference.mag() < range * 0.5) {
 
-    glm::vec2 difference = this->location - other->location;
-    if (glm::length(difference) > 0 && glm::length(difference) < this->range) {
-
-      sum += other->velocity;
-      count++;
+        sum += PVector.normalize(difference);
+        count++;
+      }
     }
-  }
 
-  if (count > 0) {
+    if (count > 0) {
 
-    glm::vec2 avg = sum / count;
-    avg = avg * this->max_speed;
-    if (glm::length(avg) > this->max_speed) {
+      PVector avg = sum / count;
+      avg = avg * max_speed;
+      if (avg.mag() > max_speed) {
 
-      avg = glm::normalize(avg) * this->max_speed;
+        avg = PVector.normalize(avg) * max_speed;
+      }
+      PVector steer = avg - velocity;
+      if (steer.mag() > max_force) {
+
+        steer = PVector.normalize(steer) * max_force;
+      }
+      result = steer;
     }
-    glm::vec2 steer = avg - this->velocity;
-    if (glm::length(steer) > this->max_force) {
 
-      steer = glm::normalize(steer) * this->max_force;
+    return result;
+  }
+
+  //--------------------------------------------------------------
+  PVector align(ArrayList<Particle> particles) {
+
+    PVector result;
+    PVector sum;
+    int count = 0;
+    for (var other : particles) {
+
+      PVector difference = location - other->location;
+      if (difference.mag() > 0 && difference.mag() < range) {
+
+        sum += other->velocity;
+        count++;
+      }
     }
-    result = steer;
-  }
 
-  return result;
-}
+    if (count > 0) {
 
-//--------------------------------------------------------------
-glm::vec2 Particle::cohesion(vector<unique_ptr<Particle>>& particles) {
+      PVector avg = sum / count;
+      avg = avg * max_speed;
+      if (avg.mag() > max_speed) {
 
-  glm::vec2 result;
-  glm::vec2 sum;
-  int count = 0;
-  for (auto& other : particles) {
+        avg = PVector.normalize(avg) * max_speed;
+      }
+      PVector steer = avg - velocity;
+      if (steer.mag() > max_force) {
 
-    glm::vec2 difference = this->location - other->location;
-    if (glm::length(difference) > 0 && glm::length(difference) < this->range * 0.5) {
-
-      sum += other->location;
-      count++;
+        steer = PVector.normalize(steer) * max_force;
+      }
+      result = steer;
     }
+
+    return result;
   }
 
-  if (count > 0) {
+  //--------------------------------------------------------------
+  PVector cohesion(ArrayList<Particle> particles) {
 
-    result = this->seek(sum / count);
+    PVector result;
+    PVector sum;
+    int count = 0;
+    for (var other : particles) {
+
+      PVector difference = location - other->location;
+      if (difference.mag() > 0 && difference.mag() < range * 0.5) {
+
+        sum += other->location;
+        count++;
+      }
+    }
+
+    if (count > 0) {
+
+      result = seek(sum / count);
+    }
+
+    return result;
   }
 
-  return result;
-}
+  //--------------------------------------------------------------
+  PVector seek(PVector target) {
 
-//--------------------------------------------------------------
-glm::vec2 Particle::seek(glm::vec2 target) {
+    PVector desired = target - location;
+    float distance = desired.mag();
+    desired = PVector.normalize(desired);
+    desired *= distance < range ? ofMap(distance, 0, range, 0, max_speed) : max_speed;
+    PVector steer = desired - velocity;
+    if (steer.mag() > max_force) {
 
-  glm::vec2 desired = target - this->location;
-  float distance = glm::length(desired);
-  desired = glm::normalize(desired);
-  desired *= distance < this->range ? ofMap(distance, 0, this->range, 0, this->max_speed) : max_speed;
-  glm::vec2 steer = desired - this->velocity;
-  if (glm::length(steer) > this->max_force) {
-
-    steer = glm::normalize(steer) * this->max_force;
+      steer = PVector.normalize(steer) * max_force;
+    }
+    return steer;
   }
-  return steer;
-}
 
-//--------------------------------------------------------------
-void Particle::applyForce(glm::vec2 force) {
+  //--------------------------------------------------------------
+  void applyForce(PVector force) {
 
-  this->acceleration += force;
+    acceleration += force;
+  }
 }
