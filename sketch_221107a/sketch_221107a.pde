@@ -9,15 +9,15 @@ void setup() {
   size(720, 720, P3D);
 
   color col;
-  //for (int i = 0; i < 6; i++) {
-  for (int i = 0; i < 1; i++) {
+  for (int i = 0; i < 6; i++) {
     ArrayList<Particle> flock = new ArrayList();
     push();
     colorMode(HSB, 255, 255, 255);
     col = color(ofMap(i, 0, 6, 0, 255), 192, 255);
     pop();
+    // この重さには耐えきれない...orz
     //for (int k = 0; k < 50 + i * 50; k++) {
-    for (int k = 0; k < 1; k++) {
+    for (int k = 0; k < 1 + i * 1; k++) {
       var particle = new Particle(col);
       flock.add(particle);
     }
@@ -56,7 +56,7 @@ void draw() {
     pop();
     noFill();
     stroke(col);
-    circle(width * 0.5, height * 0.5, 300);
+    circle(width * 0.5, height * 0.5, 300 * 2);
 
     fill(col);
     for (var particle : flock) {
