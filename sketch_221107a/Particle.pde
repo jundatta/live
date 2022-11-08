@@ -73,10 +73,17 @@ class Particle {
     velocity.mult(0.98);
 
     // 記録
-    log.add(location);
+    println("location:" + location);
+    // 。。。そうか。。。入れ物（location）のポインタが入ってるのか...orz
+    //log.add(location);
+    log.add(location.copy());
     while (log.size() > 15) {
       log.remove(0);
     }
+    for (var a : log) {
+      println(a);
+    }
+    println();
   }
 
   //--------------------------------------------------------------
@@ -101,10 +108,11 @@ class Particle {
       var direction = PVector.sub(next, loc);
       var theta = atan2(direction.y, direction.x);
 
-      p = new PVector(ofMap(k, 0, log.size(), 0, head_size) * cos(theta + PI * 0.5), ofMap(k, 0, log.size(), 0, head_size) * sin(theta + PI * 0.5), 0);
+      float tail = ofMap(k, 0, log.size(), 0, head_size);
+      p = new PVector(tail * cos(theta + PI * 0.5), tail * sin(theta + PI * 0.5), 0);
       p.add(loc);
       right.add(p);
-      p = new PVector(ofMap(k, 0, log.size(), 0, head_size) * cos(theta - PI * 0.5), ofMap(k, 0, log.size(), 0, head_size) * sin(theta - PI * 0.5), 0);
+      p = new PVector(tail * cos(theta - PI * 0.5), tail * sin(theta - PI * 0.5), 0);
       p.add(loc);
       left.add(p);
 

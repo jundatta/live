@@ -9,7 +9,8 @@ void setup() {
   size(720, 720, P3D);
 
   color col;
-  for (int i = 0; i < 6; i++) {
+  //for (int i = 0; i < 6; i++) {
+  for (int i = 0; i < 1; i++) {
     ArrayList<Particle> flock = new ArrayList();
     push();
     colorMode(HSB, 255, 255, 255);
