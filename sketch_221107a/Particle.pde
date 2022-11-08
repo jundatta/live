@@ -12,21 +12,6 @@ class Particle {
 
   color col;
 
-  Particle() {
-    location = new PVector(ofRandom(width), ofRandom(height));
-    velocity = new PVector(ofRandom(-1, 1), ofRandom(-1, 1));
-
-    range = 25;
-    max_force = 1;
-    max_speed = 8;
-
-    //col.setHsb(ofRandom(255), 130, 255);
-    push();
-    colorMode(HSB, 255, 255, 255);
-    col = color(ofRandom(255), 130, 255);
-    pop();
-  }
-
   //--------------------------------------------------------------
   Particle(color col) {
     location = new PVector(ofRandom(width), ofRandom(height));
@@ -221,7 +206,6 @@ class Particle {
       }
       PVector steer = PVector.sub(avg, velocity);
       if (steer.mag() > max_force) {
-        //steer = PVector.normalize(steer) * max_force;
         steer.normalize();
         steer.mult(max_force);
       }
@@ -232,7 +216,6 @@ class Particle {
 
   //--------------------------------------------------------------
   PVector cohesion(ArrayList<Particle> particles) {
-
     PVector result = new PVector(0, 0, 0);
     PVector sum = new PVector(0, 0, 0);
 

@@ -15,7 +15,8 @@ void setup() {
     colorMode(HSB, 255, 255, 255);
     col = color(ofMap(i, 0, 6, 0, 255), 192, 255);
     pop();
-    for (int k = 0; k < 50 + i * 50; k++) {
+    //for (int k = 0; k < 50 + i * 50; k++) {
+    for (int k = 0; k < 1; k++) {
       var particle = new Particle(col);
       flock.add(particle);
     }
@@ -56,6 +57,7 @@ void draw() {
     stroke(col);
     circle(width * 0.5, height * 0.5, 300);
 
+    fill(col);
     for (var particle : flock) {
       particle.draw();
     }
