@@ -74,7 +74,9 @@ class Particle {
 
     // 記録
     println("location:" + location);
-    // 。。。そうか。。。入れ物（location）のポインタが入ってるのか...orz
+    // 。。。そうか。。。入れ物（location）のポインタが入ってるのか？？？...orz
+    // 。。。ホンマにそうなのか？？？（なんかあやしいが。。。）
+    // 。。。よくわかりゃん＼(^_^)／
     //log.add(location);
     log.add(location.copy());
     while (log.size() > 15) {
