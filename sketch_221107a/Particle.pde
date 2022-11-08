@@ -117,8 +117,10 @@ class Particle {
       mesh.addVertex(right.get(k));
 
       int alpha = (int)ofMap(k, 0, log.size(), 0, 255);
-      mesh.addColor(color(red(col), green(col), blue(col), alpha));
-      mesh.addColor(color(red(col), green(col), blue(col), alpha));
+      //mesh.addColor(color(red(col), green(col), blue(col), alpha));
+      //mesh.addColor(color(red(col), green(col), blue(col), alpha));
+      mesh.addColor(#ff0000);
+      mesh.addColor(#ff0000);
     }
 
     for (int k = 0; k < mesh.getNumVertices() - 2; k += 2) {
@@ -130,25 +132,27 @@ class Particle {
       mesh.addIndex(k + 3);
     }
 
-    var tmp_header_size = ofMap(log.size() - 2, 0, log.size(), 0, head_size);
-    var tmp_alpha = ofMap(log.size() - 2, 0, log.size(), 0, 255);
+    //var tmp_header_size = ofMap(log.size() - 2, 0, log.size(), 0, head_size);
+    //var tmp_alpha = ofMap(log.size() - 2, 0, log.size(), 0, 255);
 
-    mesh.addVertex(last_location);
-    mesh.addColor(color(red(col), green(col), blue(col), tmp_alpha));
+    //mesh.addVertex(last_location);
+    ////mesh.addColor(color(red(col), green(col), blue(col), tmp_alpha));
+    //mesh.addColor(#ff0000);
 
-    int index = mesh.getNumVertices();
-    for (var theta = last_theta - PI * 0.5; theta <= last_theta + PI * 0.5; theta += PI / 20) {
-      PVector p = new PVector(tmp_header_size * cos(theta), tmp_header_size * sin(theta), 0);
-      p.add(last_location);
-      mesh.addVertex(p);
-      mesh.addColor(color(red(col), green(col), blue(col), tmp_alpha));
-    }
+    //int index = mesh.getNumVertices();
+    //for (var theta = last_theta - PI * 0.5; theta <= last_theta + PI * 0.5; theta += PI / 20) {
+    //  PVector p = new PVector(tmp_header_size * cos(theta), tmp_header_size * sin(theta), 0);
+    //  p.add(last_location);
+    //  mesh.addVertex(p);
+    //  //mesh.addColor(color(red(col), green(col), blue(col), tmp_alpha));
+    //  mesh.addColor(#ff0000);
+    //}
 
-    for (int k = index; k < mesh.getNumVertices() - 1; k++) {
-      mesh.addIndex(index);
-      mesh.addIndex(k + 0);
-      mesh.addIndex(k + 1);
-    }
+    //for (int k = index; k < mesh.getNumVertices() - 1; k++) {
+    //  mesh.addIndex(index);
+    //  mesh.addIndex(k + 0);
+    //  mesh.addIndex(k + 1);
+    //}
 
     mesh.draw();
   }
