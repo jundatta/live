@@ -22,8 +22,17 @@ void setup() {
   // 球のPShapeを使いまわししようとしたら2つ目のshape()で
   // ArrayIndexOutOfBoundsException: Index -2 out of bounds for length 1918
   // と表示されて落ちたので、個別にPShapeを作ることにした。
-  shapeClouds = createShape(SPHERE, 1);
+  shapeEarth = createShape(SPHERE, 200);
+  shapeEarth.setTexture(earth);
+  shapeEarth.setStroke(false);
+
+  shapeClouds = createShape(SPHERE, 204);
+  shapeClouds.setTexture(clouds);
   shapeClouds.setStroke(false);
+
+  shapeMoon = createShape(SPHERE, 20);
+  shapeMoon.setTexture(moon);
+  shapeMoon.setStroke(false);
 }
 
 void draw() {
@@ -40,23 +49,16 @@ void draw() {
 
   //texture(earth);
   //sphere(200);
-  shapeClouds.setTexture(earth);
-  push();
-  scale(200);
-  shape(shapeClouds);
-  pop();
+  shape(shapeEarth);
 
   rotateY(millis()/10000.0f);
 
   //texture(clouds);
   //sphere(204);
-  //shape.setTexture(clouds);
-  //push();
-  //scale(204);
-  //shape(shape);
-  //pop();
+  shape(shapeClouds);
 
   translate(500, 0, 0);
   //texture(moon);
   //sphere(20);
+  shape(shapeMoon);
 }
