@@ -1,12 +1,12 @@
 // こちらがオリジナルです。
-// 【作者】Soothing Circlesさん
-// 【作品名】Richard Bourne
+// 【作者】Richard Bourneさん
+// 【作品名】Soothing Circles
 // https://openprocessing.org/sketch/1483539
 
 float n, m, f1, f2, f3;
 
 void setup() {
-  size(1112, 834);
+  size(500, 800, P3D);
   colorMode(HSB, 255, 255, 255);
   background(20);
   smooth();
