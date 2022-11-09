@@ -3,51 +3,56 @@
 // 【作品名】Rising intersection. Draw by openFrameworks
 // https://junkiyoshi.com/2021/08/31/
 
+class pair {
+  PVector first;
+  float second;
+}
+ArrayList<pair<PVector, float>> box_info_list = new ArrayList();
+IntList box_color_list = new IntList();
+ArrayList<pair<PVector, float>> wave_list = new ArrayList();
+float size;
+
+ofMesh face = new ofMesh();
+ofMesh frame = new ofMesh();
 //--------------------------------------------------------------
-void ofApp::setup() {
+void setup() {
+  size(720, 720, P3D);
 
-  ofSetFrameRate(60);
-  ofSetWindowTitle("openframeworks");
+  size = 5;
+  color col;
+  for (var x = -450; x <= 450; x += size) {
 
-  ofBackground(239);
-  ofSetLineWidth(0.5);
-  ofEnableDepthTest();
+    for (var y = -450; y <= 450; y += size) {
 
-  this->size = 5;
-  ofColor color;
-  for (auto x = -450; x <= 450; x += this->size) {
-
-    for (auto y = -450; y <= 450; y += this->size) {
-
-      this->box_info_list.push_back(make_pair(glm::vec2(x, y), 0.f));
+      box_info_list.add(make_pair(glm::vec2(x, y), 0.f));
 
       color.setHsb(ofRandom(255), 130, 255);
-      this->box_color_list.push_back(color);
+      box_color_list.add(col);
     }
   }
 
-  this->frame.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
+  frame.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
 
-  this->face.clear();
-  this->frame.clear();
+  face.clear();
+  frame.clear();
 
   if (ofGetFrameNum() % 20 == 0) {
 
-    auto l = glm::vec2(ofRandom(-250, 250), ofRandom(-250, 250));
-    auto f = 5;
-    this->wave_list.push_back(make_pair(l, f));
+    var l = glm::vec2(ofRandom(-250, 250), ofRandom(-250, 250));
+    var f = 5;
+    wave_list.add(make_pair(l, f));
   }
 
-  auto max_height = 150;
-  for (auto& wave : this->wave_list) {
+  var max_height = 150;
+  for (var& wave : wave_list) {
 
-    for (auto& box_info : this->box_info_list) {
+    for (var& box_info : box_info_list) {
 
-      auto distance = glm::distance(wave.first, glm::vec2(box_info.first.x, box_info.first.y));
+      var distance = glm::distance(wave.first, glm::vec2(box_info.first.x, box_info.first.y));
       if (distance > wave.second - 10 && distance < wave.second + 10) {
 
         box_info.second = (box_info.second >= 1) ? 1 : box_info.second + ofMap(abs(distance - wave.second), 0, 20, 0.125, 0);
@@ -60,52 +65,57 @@ void ofApp::update() {
     wave.second += 3;
   }
 
-  ofColor color;
-  for (int i = 0; i < this->box_info_list.size(); i++) {
+  color color;
+  for (int i = 0; i < box_info_list.size(); i++) {
 
-    auto& box_info = this->box_info_list[i];
+    var& box_info = box_info_list[i];
     if (box_info.second > 0) {
 
-      auto len = ofMap(ofNoise(box_info.first.x * 0.02, box_info.first.y * 0.02, ofGetFrameNum() * 0.01), 0, 1, 0, max_height * box_info.second);
-      this->setBoxToMesh(this->face, this->frame, glm::vec3(box_info.first.x, box_info.first.y, len * 0.5), this->size, this->size, len, this->box_color_list[i]);
+      var len = ofMap(ofNoise(box_info.first.x * 0.02, box_info.first.y * 0.02, ofGetFrameNum() * 0.01), 0, 1, 0, max_height * box_info.second);
+      setBoxToMesh(face, frame, glm::vec3(box_info.first.x, box_info.first.y, len * 0.5), size, size, len, box_color_list[i]);
     } else {
 
       color.setHsb(ofRandom(255), 130, 255);
-      this->box_color_list[i] = color;
+      box_color_list[i] = color;
     }
   }
 
-  for (int i = this->wave_list.size() - 1; i >= 0; i--) {
+  for (int i = wave_list.size() - 1; i >= 0; i--) {
 
-    if (this->wave_list[i].second > 450) {
+    if (wave_list[i].second > 450) {
 
-      this->wave_list.erase(this->wave_list.begin() + i);
+      wave_list.erase(wave_list.begin() + i);
     }
   }
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
+  translate(width/2, height/2);
 
-  this->cam.begin();
+  ofBackground(239);
+  ofSetLineWidth(0.5);
+
+  cam.begin();
   ofRotateX(295);
 
-  this->face.drawFaces();
+  face.drawFaces();
 
   ofSetColor(39);
-  this->frame.drawWireframe();
+  frame.drawWireframe();
 
-  this->cam.end();
+  cam.end();
 }
 
 //--------------------------------------------------------------
-void ofApp::setBoxToMesh(ofMesh& face_target, ofMesh& frame_target, glm::vec3 location, float size, ofColor color) {
+void ofApp::setBoxToMesh(ofMesh& face_target, ofMesh& frame_target, glm::vec3 location, float size, color col) {
 
-  this->setBoxToMesh(face_target, frame_target, location, size, size, size, color);
+  setBoxToMesh(face_target, frame_target, location, size, size, size, col);
 }
 
 //--------------------------------------------------------------
-void ofApp::setBoxToMesh(ofMesh& face_target, ofMesh& frame_target, glm::vec3 location, float height, float width, float depth, ofColor color) {
+void ofApp::setBoxToMesh(ofMesh& face_target, ofMesh& frame_target, glm::vec3 location, float height, float width, float depth, color col) {
 
   int index = face_target.getVertices().size();
 
@@ -200,13 +210,6 @@ void ofApp::setBoxToMesh(ofMesh& face_target, ofMesh& frame_target, glm::vec3 lo
 
   for (int i = 0; i < 8; i++) {
 
-    face_target.addColor(ofColor(color));
+    face_target.addColor(color(col));
   }
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
