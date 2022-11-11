@@ -146,9 +146,16 @@ PMatrix3D getShadowMatrix(PVector l, PVector n, PVector p) {
   //  -n.y * l.x, -n.y * l.y + d, -n.y * l.z, -n.y,
   //  -n.z * l.x, -n.z * l.y, -n.z * l.z + d, -n.z,
   //  np*l.x, np*l.y, np*l.z, nl];
+  /*
   return new PMatrix3D(
     -n.x * l.x + d, -n.x * l.y, -n.x * l.z, -n.x,
     -n.y * l.x, -n.y * l.y + d, -n.y * l.z, -n.y,
     -n.z * l.x, -n.z * l.y, -n.z * l.z + d, -n.z,
     np*l.x, np*l.y, np*l.z, nl);
+    */
+  return new PMatrix3D(
+    -n.x * l.x + d, -n.y * l.x, -n.z * l.x, np*l.x,
+    -n.x * l.y, -n.y * l.y + d, -n.z * l.y, np*l.y,
+    -n.x * l.z, -n.y * l.z, -n.z * l.z + d, np*l.z,
+    -n.x, -n.y, -n.z, nl);
 }
