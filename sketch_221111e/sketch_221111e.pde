@@ -87,15 +87,19 @@ void drawWall(float x, float y, float z, float l, float rot) {
 
   //  draw shadow
   fill(0, 128);
-  for (int i=0; i<_lights.length; i++) {
+  for (int i=0; i<_lights.size(); i++) {
     push();
-    shadowMatrix(_lights.get(i), _normalVector, createVector(0, -_wallCount/100, 0));
+    shadowMatrix(_lights.get(i), _normalVector, new PVector(0, -_wallCount/100, 0));
     _wallCount++;
 
-    quad(x+l*cos(rot), y, z+l*sin(rot),
-      x+l*cos(rot), y-l*2, z+l*sin(rot),
-      x-l*cos(rot), y-l*2, z-l*sin(rot),
-      x-l*cos(rot), y, z-l*sin(rot), 2);
+    //quad(x+l*cos(rot), y, z+l*sin(rot),
+    //  x+l*cos(rot), y-l*2, z+l*sin(rot),
+    //  x-l*cos(rot), y-l*2, z-l*sin(rot),
+    //  x-l*cos(rot), y, z-l*sin(rot), 2);
+    quad3d(+l*cos(rot), 0, +l*sin(rot),
+      +l*cos(rot), -l*2, +l*sin(rot),
+      -l*cos(rot), -l*2, -l*sin(rot),
+      -l*cos(rot), 0, -l*sin(rot));
     pop();
   }
   pop();
@@ -103,20 +107,21 @@ void drawWall(float x, float y, float z, float l, float rot) {
 
 float _wallCount = 0;
 ArrayList<PVector> _lights;
-PVector _normalVector = 0;
+PVector _normalVector = new PVector(0, 0, 0);
 void _systemInit() {
   _wallCount = 0;
   _lights = new ArrayList();
 }
 void addLight(float r, float g, float b, PVector vector) {
-  pointLight(r, g, b, vector);
+  pointLight(r, g, b, vector.x, vector.y, vector.z);
   _lights.add(vector);
 
   push();
   noStroke();
-  emissiveMaterial(r, g, b);
+  //emissiveMaterial(r, g, b);
+  emissive(r, g, b);
   fill(r, g, b);
-  translate(vector);
+  translate(vector.x, vector.y, vector.z);
   sphere(5);
   pop();
 }
@@ -129,7 +134,8 @@ void drawLightGround() {
   fill(64);
   translate(0, -1, 0);
   rotateX(PI/2.0f);
-  plane(1000, 1000);
+  //plane(1000, 1000);
+  box(1000, 1000, 1);
   pop();
 }
 
