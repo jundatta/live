@@ -65,7 +65,7 @@ void drawWall(float x, float y, float z, float l, float rot) {
   push();
   translate(x, y-l, z);
   rotateY(-rot+PI);
-  box(2*l, 2*l, 0.0001f);
+  box(2*l, 2*l, 0.1f);
   pop();
 
   //  draw shadow
