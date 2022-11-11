@@ -65,6 +65,8 @@ void drawWall(float x, float y, float z, float l, float rot) {
   push();
   translate(x, y-l, z);
   rotateY(-rot+PI);
+  // 【はぅ君さん】box()がZファイティングを起こしていたので厚みを増加
+  //box(2*l, 2*l, 0.00001f);
   box(2*l, 2*l, 0.1f);
   pop();
 
@@ -75,10 +77,12 @@ void drawWall(float x, float y, float z, float l, float rot) {
     // あたまの中の置き換えはこうなのですが...orz
     // ぜんぜんうまくいかにゃい＼(^_^)／
     //shadowMatrix(_lights.get(i), _normalVector, new PVector(0, -_wallCount/100, 0));
-    float srcX = 2*l;
-    float srcY = 2*l;
-    float srcZ = 0.0001f;
+    //float srcX = 2*l;
+    //float srcY = 2*l;
+    //float srcZ = 0.0001f;
     //box(srcX, srcY, srcZ);
+    // 【はぅ君さん】applyMatrix()を追加
+    // 【はぅ君さん】applyMatrix()してからtranslate()とrotateY()を行うように変更
     PMatrix3D m = getShadowMatrix(_lights.get(i), _normalVector, new PVector(0, -_wallCount/100, 0));
     applyMatrix(m);
     translate(x, y, z);
@@ -86,14 +90,16 @@ void drawWall(float x, float y, float z, float l, float rot) {
     //float dstX = m.multX(srcX, srcY, srcZ);
     //float dstY = m.multY(srcX, srcY, srcZ);
     //float dstZ = m.multZ(srcX, srcY, srcZ);
+    // 【はぅ君さん】box()だと、影のポリゴンが重なってしまいZファイティングを起こすため、
+    // vertex()での描画に置き換えた
     //box(dstX, dstY, dstZ);
     beginShape();
-    vertex(-l,-l*2,0);
-    vertex(-l,0,0);
-    vertex(+l,0,0);
-    vertex(+l,-l*2,0);
+    vertex(-l, -l*2, 0);
+    vertex(-l, 0, 0);
+    vertex(+l, 0, 0);
+    vertex(+l, -l*2, 0);
     endShape();
-    
+
     _wallCount++;
     pop();
   }
@@ -153,13 +159,18 @@ PMatrix3D getShadowMatrix(PVector l, PVector n, PVector p) {
   //  -n.y * l.x, -n.y * l.y + d, -n.y * l.z, -n.y,
   //  -n.z * l.x, -n.z * l.y, -n.z * l.z + d, -n.z,
   //  np*l.x, np*l.y, np*l.z, nl];
+  // 【はぅ君さん】applyMatfix()の引数の順序がProcessingとp5.jsで異なるのであわせた
+  // https://processing.org/reference/applyMatrix_.html
+  //  Syntax参照
+  // https://p5js.org/reference/#/p5/applyMatrix
+  // Description 及び Syntax 参照
   /*
   return new PMatrix3D(
-    -n.x * l.x + d, -n.x * l.y, -n.x * l.z, -n.x,
-    -n.y * l.x, -n.y * l.y + d, -n.y * l.z, -n.y,
-    -n.z * l.x, -n.z * l.y, -n.z * l.z + d, -n.z,
-    np*l.x, np*l.y, np*l.z, nl);
-    */
+   -n.x * l.x + d, -n.x * l.y, -n.x * l.z, -n.x,
+   -n.y * l.x, -n.y * l.y + d, -n.y * l.z, -n.y,
+   -n.z * l.x, -n.z * l.y, -n.z * l.z + d, -n.z,
+   np*l.x, np*l.y, np*l.z, nl);
+   */
   return new PMatrix3D(
     -n.x * l.x + d, -n.y * l.x, -n.z * l.x, np*l.x,
     -n.x * l.y, -n.y * l.y + d, -n.z * l.y, np*l.y,
