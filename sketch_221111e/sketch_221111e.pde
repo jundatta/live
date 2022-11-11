@@ -72,8 +72,6 @@ void drawWall(float x, float y, float z, float l, float rot) {
   fill(0, 128);
   for (int i=0; i<_lights.size(); i++) {
     push();
-    translate(x, y-l, z);
-    rotateY(-rot+PI);
     // あたまの中の置き換えはこうなのですが...orz
     // ぜんぜんうまくいかにゃい＼(^_^)／
     //shadowMatrix(_lights.get(i), _normalVector, new PVector(0, -_wallCount/100, 0));
@@ -82,11 +80,20 @@ void drawWall(float x, float y, float z, float l, float rot) {
     float srcZ = 0.0001f;
     //box(srcX, srcY, srcZ);
     PMatrix3D m = getShadowMatrix(_lights.get(i), _normalVector, new PVector(0, -_wallCount/100, 0));
-    float dstX = m.multX(srcX, srcY, srcZ);
-    float dstY = m.multY(srcX, srcY, srcZ);
-    float dstZ = m.multZ(srcX, srcY, srcZ);
-    box(dstX, dstY, dstZ);
-
+    applyMatrix(m);
+    translate(x, y, z);
+    rotateY(-rot+PI);
+    //float dstX = m.multX(srcX, srcY, srcZ);
+    //float dstY = m.multY(srcX, srcY, srcZ);
+    //float dstZ = m.multZ(srcX, srcY, srcZ);
+    //box(dstX, dstY, dstZ);
+    beginShape();
+    vertex(-l,-l*2,0);
+    vertex(-l,0,0);
+    vertex(+l,0,0);
+    vertex(+l,-l*2,0);
+    endShape();
+    
     _wallCount++;
     pop();
   }
