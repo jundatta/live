@@ -3,9 +3,19 @@
 // 【作品名】ShadowDemoScene
 // https://openprocessing.org/sketch/1732323
 
+// 敗北宣言...orz
+// 私には太刀打ちできませんでした...orz
+
 float t=0;
 void setup() {
   size(720, 720, P3D);
+
+  // 激重＼(^_^)／
+  // 。。。しかも影に対する効果が見えない...orz
+  // ⇒
+  // （projection == transformみたいな感じの最適化はしない）
+  // （もともとのOpenGLイメージにview行列やmodel行列の扱いを戻す）
+  //hint(DISABLE_OPTIMIZED_STROKE);
 }
 
 void draw() {
@@ -64,16 +74,19 @@ void drawWall(float x, float y, float z, float l, float rot) {
     push();
     translate(x, y-l, z);
     rotateY(-rot+PI);
+    // あたまの中の置き換えはこうなのですが...orz
+    // ぜんぜんうまくいかにゃい＼(^_^)／
     //shadowMatrix(_lights.get(i), _normalVector, new PVector(0, -_wallCount/100, 0));
     float srcX = 2*l;
     float srcY = 2*l;
     float srcZ = 0.0001f;
+    //box(srcX, srcY, srcZ);
     PMatrix3D m = getShadowMatrix(_lights.get(i), _normalVector, new PVector(0, -_wallCount/100, 0));
     float dstX = m.multX(srcX, srcY, srcZ);
     float dstY = m.multY(srcX, srcY, srcZ);
     float dstZ = m.multZ(srcX, srcY, srcZ);
-
     box(dstX, dstY, dstZ);
+
     _wallCount++;
     pop();
   }
