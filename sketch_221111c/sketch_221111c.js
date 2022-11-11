@@ -4,7 +4,7 @@ t=0
 }
 
 function draw() {
-  t+=.02
+  //t+=.02
     _systemInit()
     background(0)
     noStroke()

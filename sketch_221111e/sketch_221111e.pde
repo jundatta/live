@@ -9,7 +9,9 @@ void setup() {
 }
 
 void draw() {
-  t+=.02;
+  translate(width/2, height/2);
+
+  //t+=.02;
   _systemInit();
   background(0);
   noStroke();
@@ -73,35 +75,32 @@ void drawWall(float x, float y, float z, float l, float rot) {
 
   push();
   translate(x, y, z);
-  quad3d(+l*cos(rot)+ox, 0, +l*sin(rot)+oz,
-    +l*cos(rot)+ox, -l*2, +l*sin(rot)+oz,
-    -l*cos(rot)+ox, -l*2, -l*sin(rot)+oz,
-    -l*cos(rot)+ox, 0, -l*sin(rot)+oz);
+  rotateY(-rot+PI);
+  //quad3d(+l, 0, +1,
+  //  +l, -l*2, +1,
+  //  -l, -l*2, -1,
+  //  -l, 0, -1);
+  box(2*l, 2*l, 1);
 
-  rot+=PI;
-  quad3d(+l*cos(rot), 0, +l*sin(rot),
-    +l*cos(rot), -l*2, +l*sin(rot),
-    -l*cos(rot), -l*2, -l*sin(rot),
-    -l*cos(rot), 0, -l*sin(rot));
   pop();
 
   //  draw shadow
-  fill(0, 128);
-  for (int i=0; i<_lights.size(); i++) {
-    push();
-    shadowMatrix(_lights.get(i), _normalVector, new PVector(0, -_wallCount/100, 0));
-    _wallCount++;
+  //fill(0, 128);
+  //for (int i=0; i<_lights.size(); i++) {
+  //  push();
+  //  shadowMatrix(_lights.get(i), _normalVector, new PVector(0, -_wallCount/100, 0));
+  //  _wallCount++;
 
-    //quad(x+l*cos(rot), y, z+l*sin(rot),
-    //  x+l*cos(rot), y-l*2, z+l*sin(rot),
-    //  x-l*cos(rot), y-l*2, z-l*sin(rot),
-    //  x-l*cos(rot), y, z-l*sin(rot), 2);
-    quad3d(+l*cos(rot), 0, +l*sin(rot),
-      +l*cos(rot), -l*2, +l*sin(rot),
-      -l*cos(rot), -l*2, -l*sin(rot),
-      -l*cos(rot), 0, -l*sin(rot));
-    pop();
-  }
+  //  //quad(x+l*cos(rot), y, z+l*sin(rot),
+  //  //  x+l*cos(rot), y-l*2, z+l*sin(rot),
+  //  //  x-l*cos(rot), y-l*2, z-l*sin(rot),
+  //  //  x-l*cos(rot), y, z-l*sin(rot), 2);
+  //  quad3d(+l*cos(rot), 0, +l*sin(rot),
+  //    +l*cos(rot), -l*2, +l*sin(rot),
+  //    -l*cos(rot), -l*2, -l*sin(rot),
+  //    -l*cos(rot), 0, -l*sin(rot));
+  //  pop();
+  //}
   pop();
 }
 
