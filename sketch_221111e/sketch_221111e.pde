@@ -13,15 +13,15 @@ void draw() {
   _systemInit();
   background(0);
   noStroke();
-  ambientLight(0);
+  ambientLight(0, 0, 0);
   lightFalloff(0, 0, 0.0001);
   setShadowNormalVector(new PVector(0, -1, 0));
 
   camera(cos(t/2.0f)*300, -200+sin(t*.5)*200-100, sin(t/2.0f)*300, 0, 0, 0, 0, 1, 0);
 
-  addLight(255, 255, 255, createVector(cos(-t)*50, -100 + 50*sin(t/2.0f), sin(-t)*50));
-  addLight(255, 64, 64, createVector(cos(t)*200, -100, sin(t)*200));
-  addLight(32, 32, 128, createVector(cos(t)*200, -10-abs(sin(t*5))*50, cos(t)*200));
+  addLight(255, 255, 255, new PVector(cos(-t)*50, -100 + 50*sin(t/2.0f), sin(-t)*50));
+  addLight(255, 64, 64, new PVector(cos(t)*200, -100, sin(t)*200));
+  addLight(32, 32, 128, new PVector(cos(t)*200, -10-abs(sin(t*5))*50, cos(t)*200));
 
   //  drawGround
   float F=0;
@@ -40,27 +40,50 @@ void draw() {
 
   //  drawWall
   for (float r=-PI/8.0f; r<TAU+PI/8.0f; r+=PI/4.0f) {
-    drawWall(cos(r)*150, 0-tan(pow(sin(t*.5+r/2.0f)/1.2), 8)*50, sin(r)*150, 50, r+PI/2.0f+(t%(TAU*2)>TAU?sin(t):0));
+    drawWall(cos(r)*150, 0-pow(tan(sin(t*.5+r/2.0f)/1.2), 8)*50, sin(r)*150, 50, r+PI/2.0f+(t%(TAU*2)>TAU?sin(t):0));
   }
 
   //  draw light wall
   drawLightGround();
 }
 
+void quad3d(float x1, float y1, float z1,
+  float x2, float y2, float z2,
+  float x3, float y3, float z3,
+  float x4, float y4, float z4) {
+  float w = abs(x3 - x1);
+  float h = abs(y3 - y1);
+  float d = abs(z3 - z1);
+  box(w, h, d);
+}
 void drawWall(float x, float y, float z, float l, float rot) {
   push();
-  ox = sin(-rot+PI)*0.1;
-  oz = cos(-rot+PI)*0.1;
-  quad(x+l*cos(rot)+ox, y, z+l*sin(rot)+oz,
-    x+l*cos(rot)+ox, y-l*2, z+l*sin(rot)+oz,
-    x-l*cos(rot)+ox, y-l*2, z-l*sin(rot)+oz,
-    x-l*cos(rot)+ox, y, z-l*sin(rot)+oz, 2);
+  float ox = sin(-rot+PI)*0.1;
+  float oz = cos(-rot+PI)*0.1;
+  //quad(x+l*cos(rot)+ox, y, z+l*sin(rot)+oz,
+  //  x+l*cos(rot)+ox, y-l*2, z+l*sin(rot)+oz,
+  //  x-l*cos(rot)+ox, y-l*2, z-l*sin(rot)+oz,
+  //  x-l*cos(rot)+ox, y, z-l*sin(rot)+oz, 2);
+
+  //rot+=PI;
+  //quad(x+l*cos(rot), y, z+l*sin(rot),
+  //  x+l*cos(rot), y-l*2, z+l*sin(rot),
+  //  x-l*cos(rot), y-l*2, z-l*sin(rot),
+  //  x-l*cos(rot), y, z-l*sin(rot), 2);
+
+  push();
+  translate(x, y, z);
+  quad3d(+l*cos(rot)+ox, 0, +l*sin(rot)+oz,
+    +l*cos(rot)+ox, -l*2, +l*sin(rot)+oz,
+    -l*cos(rot)+ox, -l*2, -l*sin(rot)+oz,
+    -l*cos(rot)+ox, 0, -l*sin(rot)+oz);
 
   rot+=PI;
-  quad(x+l*cos(rot), y, z+l*sin(rot),
-    x+l*cos(rot), y-l*2, z+l*sin(rot),
-    x-l*cos(rot), y-l*2, z-l*sin(rot),
-    x-l*cos(rot), y, z-l*sin(rot), 2);
+  quad3d(+l*cos(rot), 0, +l*sin(rot),
+    +l*cos(rot), -l*2, +l*sin(rot),
+    -l*cos(rot), -l*2, -l*sin(rot),
+    -l*cos(rot), 0, -l*sin(rot));
+  pop();
 
   //  draw shadow
   fill(0, 128);
@@ -81,7 +104,7 @@ void drawWall(float x, float y, float z, float l, float rot) {
 float _wallCount = 0;
 ArrayList<PVector> _lights;
 PVector _normalVector = 0;
-function _systemInit() {
+void _systemInit() {
   _wallCount = 0;
   _lights = new ArrayList();
 }
@@ -130,8 +153,8 @@ PMatrix3D getShadowMatrix(PVector l, PVector n, PVector p) {
   //  -n.z * l.x, -n.z * l.y, -n.z * l.z + d, -n.z,
   //  np*l.x, np*l.y, np*l.z, nl];
   return new PMatrix3D(
-      -n.x * l.x + d, -n.x * l.y, -n.x * l.z, -n.x,
-      -n.y * l.x, -n.y * l.y + d, -n.y * l.z, -n.y,
-      -n.z * l.x, -n.z * l.y, -n.z * l.z + d, -n.z,
-      np*l.x, np*l.y, np*l.z, nl);
+    -n.x * l.x + d, -n.x * l.y, -n.x * l.z, -n.x,
+    -n.y * l.x, -n.y * l.y + d, -n.y * l.z, -n.y,
+    -n.z * l.x, -n.z * l.y, -n.z * l.z + d, -n.z,
+    np*l.x, np*l.y, np*l.z, nl);
 }
