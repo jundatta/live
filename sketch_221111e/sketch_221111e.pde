@@ -23,7 +23,7 @@ void draw() {
 
   addLight(255, 255, 255, new PVector(cos(-t)*50, -100 + 50*sin(t/2.0f), sin(-t)*50));
   addLight(255, 64, 64, new PVector(cos(t)*200, -100, sin(t)*200));
-  addLight(32, 32, 128, new PVector(cos(t)*200, -10-abs(sin(t*5))*50, cos(t)*200));
+  addLight(32, 32, 128, new PVector(cos(t)*200, -10-abs(sin(t*5))*50, (cos(t)*200) * 1.25f));
 
   //  drawGround
   float F=0;
@@ -49,19 +49,8 @@ void draw() {
   drawLightGround();
 }
 
-void quad3d(float x1, float y1, float z1,
-  float x2, float y2, float z2,
-  float x3, float y3, float z3,
-  float x4, float y4, float z4) {
-  float w = abs(x3 - x1);
-  float h = abs(y3 - y1);
-  float d = abs(z3 - z1);
-  box(w, h, d);
-}
 void drawWall(float x, float y, float z, float l, float rot) {
   push();
-  float ox = sin(-rot+PI)*0.1;
-  float oz = cos(-rot+PI)*0.1;
   //quad(x+l*cos(rot)+ox, y, z+l*sin(rot)+oz,
   //  x+l*cos(rot)+ox, y-l*2, z+l*sin(rot)+oz,
   //  x-l*cos(rot)+ox, y-l*2, z-l*sin(rot)+oz,
@@ -74,13 +63,9 @@ void drawWall(float x, float y, float z, float l, float rot) {
   //  x-l*cos(rot), y, z-l*sin(rot), 2);
 
   push();
-  translate(x, y, z);
+  translate(x, y-l, z);
   rotateY(-rot+PI);
-  //quad3d(+l, 0, +1,
-  //  +l, -l*2, +1,
-  //  -l, -l*2, -1,
-  //  -l, 0, -1);
-  box(2*l, 2*l, 1);
+  box(2*l, 2*l, 0.0001f);
 
   pop();
 
