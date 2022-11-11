@@ -65,15 +65,13 @@ void drawWall(float x, float y, float z, float l, float rot) {
   push();
   translate(x, y-l, z);
   rotateY(-rot+PI);
-  box(2*l, 2*l, 0.0001f);
+  box(2*l, 2*l, 0.1f);
   pop();
 
   //  draw shadow
   fill(0, 128);
   for (int i=0; i<_lights.size(); i++) {
     push();
-    translate(x, y-l, z);
-    rotateY(-rot+PI);
     // あたまの中の置き換えはこうなのですが...orz
     // ぜんぜんうまくいかにゃい＼(^_^)／
     //shadowMatrix(_lights.get(i), _normalVector, new PVector(0, -_wallCount/100, 0));
@@ -82,11 +80,20 @@ void drawWall(float x, float y, float z, float l, float rot) {
     float srcZ = 0.0001f;
     //box(srcX, srcY, srcZ);
     PMatrix3D m = getShadowMatrix(_lights.get(i), _normalVector, new PVector(0, -_wallCount/100, 0));
-    float dstX = m.multX(srcX, srcY, srcZ);
-    float dstY = m.multY(srcX, srcY, srcZ);
-    float dstZ = m.multZ(srcX, srcY, srcZ);
-    box(dstX, dstY, dstZ);
-
+    applyMatrix(m);
+    translate(x, y, z);
+    rotateY(-rot+PI);
+    //float dstX = m.multX(srcX, srcY, srcZ);
+    //float dstY = m.multY(srcX, srcY, srcZ);
+    //float dstZ = m.multZ(srcX, srcY, srcZ);
+    //box(dstX, dstY, dstZ);
+    beginShape();
+    vertex(-l,-l*2,0);
+    vertex(-l,0,0);
+    vertex(+l,0,0);
+    vertex(+l,-l*2,0);
+    endShape();
+    
     _wallCount++;
     pop();
   }
@@ -146,9 +153,16 @@ PMatrix3D getShadowMatrix(PVector l, PVector n, PVector p) {
   //  -n.y * l.x, -n.y * l.y + d, -n.y * l.z, -n.y,
   //  -n.z * l.x, -n.z * l.y, -n.z * l.z + d, -n.z,
   //  np*l.x, np*l.y, np*l.z, nl];
+  /*
   return new PMatrix3D(
     -n.x * l.x + d, -n.x * l.y, -n.x * l.z, -n.x,
     -n.y * l.x, -n.y * l.y + d, -n.y * l.z, -n.y,
     -n.z * l.x, -n.z * l.y, -n.z * l.z + d, -n.z,
     np*l.x, np*l.y, np*l.z, nl);
+    */
+  return new PMatrix3D(
+    -n.x * l.x + d, -n.y * l.x, -n.z * l.x, np*l.x,
+    -n.x * l.y, -n.y * l.y + d, -n.z * l.y, np*l.y,
+    -n.x * l.z, -n.y * l.z, -n.z * l.z + d, np*l.z,
+    -n.x, -n.y, -n.z, nl);
 }
