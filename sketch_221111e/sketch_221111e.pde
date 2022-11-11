@@ -64,10 +64,17 @@ void drawWall(float x, float y, float z, float l, float rot) {
     push();
     translate(x, y-l, z);
     rotateY(-rot+PI);
-    shadowMatrix(_lights.get(i), _normalVector, new PVector(0, -_wallCount/100, 0));
-    _wallCount++;
+    //shadowMatrix(_lights.get(i), _normalVector, new PVector(0, -_wallCount/100, 0));
+    float srcX = 2*l;
+    float srcY = 2*l;
+    float srcZ = 0.0001f;
+    PMatrix3D m = getShadowMatrix(_lights.get(i), _normalVector, new PVector(0, -_wallCount/100, 0));
+    float dstX = m.multX(srcX, srcY, srcZ);
+    float dstY = m.multY(srcX, srcY, srcZ);
+    float dstZ = m.multZ(srcX, srcY, srcZ);
 
-    box(2*l, 2*l, 0.0001f);
+    box(dstX, dstY, dstZ);
+    _wallCount++;
     pop();
   }
   pop();
