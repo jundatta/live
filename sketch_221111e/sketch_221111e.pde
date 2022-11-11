@@ -11,7 +11,7 @@ void setup() {
 void draw() {
   translate(width/2, height/2);
 
-  //t+=.02;
+  t+=.02;
   _systemInit();
   background(0);
   noStroke();
@@ -51,41 +51,25 @@ void draw() {
 
 void drawWall(float x, float y, float z, float l, float rot) {
   push();
-  //quad(x+l*cos(rot)+ox, y, z+l*sin(rot)+oz,
-  //  x+l*cos(rot)+ox, y-l*2, z+l*sin(rot)+oz,
-  //  x-l*cos(rot)+ox, y-l*2, z-l*sin(rot)+oz,
-  //  x-l*cos(rot)+ox, y, z-l*sin(rot)+oz, 2);
-
-  //rot+=PI;
-  //quad(x+l*cos(rot), y, z+l*sin(rot),
-  //  x+l*cos(rot), y-l*2, z+l*sin(rot),
-  //  x-l*cos(rot), y-l*2, z-l*sin(rot),
-  //  x-l*cos(rot), y, z-l*sin(rot), 2);
 
   push();
   translate(x, y-l, z);
   rotateY(-rot+PI);
   box(2*l, 2*l, 0.0001f);
-
   pop();
 
   //  draw shadow
-  //fill(0, 128);
-  //for (int i=0; i<_lights.size(); i++) {
-  //  push();
-  //  shadowMatrix(_lights.get(i), _normalVector, new PVector(0, -_wallCount/100, 0));
-  //  _wallCount++;
+  fill(0, 128);
+  for (int i=0; i<_lights.size(); i++) {
+    push();
+    translate(x, y-l, z);
+    rotateY(-rot+PI);
+    shadowMatrix(_lights.get(i), _normalVector, new PVector(0, -_wallCount/100, 0));
+    _wallCount++;
 
-  //  //quad(x+l*cos(rot), y, z+l*sin(rot),
-  //  //  x+l*cos(rot), y-l*2, z+l*sin(rot),
-  //  //  x-l*cos(rot), y-l*2, z-l*sin(rot),
-  //  //  x-l*cos(rot), y, z-l*sin(rot), 2);
-  //  quad3d(+l*cos(rot), 0, +l*sin(rot),
-  //    +l*cos(rot), -l*2, +l*sin(rot),
-  //    -l*cos(rot), -l*2, -l*sin(rot),
-  //    -l*cos(rot), 0, -l*sin(rot));
-  //  pop();
-  //}
+    box(2*l, 2*l, 0.0001f);
+    pop();
+  }
   pop();
 }
 
@@ -127,7 +111,7 @@ void drawLightGround() {
 // n : normal vector
 // p : target point position
 void shadowMatrix(PVector l, PVector n, PVector p) {
-  applyMatrix(getShadowMatrix(l, n, p));
+  //applyMatrix(getShadowMatrix(l, n, p));
 }
 
 // from @tercel_s
