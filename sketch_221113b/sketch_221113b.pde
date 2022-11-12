@@ -4,63 +4,64 @@
 // https://junkiyoshi.com/2020/12/18/
 
 //--------------------------------------------------------------
-Actor::Actor(vector<glm::vec3>& location_list, vector<vector<int>>& next_index_list, vector<int>& destination_list) {
+class Actor {
+  int select_index;
+  int next_index;
 
-  this->select_index = ofRandom(location_list.size());
-  while (true) {
+  PVector location;
 
-    auto itr = find(destination_list.begin(), destination_list.end(), this->select_index);
-    if (itr == destination_list.end()) {
-
-      destination_list.push_back(this->select_index);
-      break;
-    }
-
-    this->select_index = (this->select_index + 1) % location_list.size();
-  }
-
-  this->next_index = this->select_index;
-}
-
-//--------------------------------------------------------------
-void Actor::update(const int& frame_span, vector<glm::vec3>& location_list, vector<vector<int>>& next_index_list, vector<int>& destination_list) {
-
-  if (ofGetFrameNum() % frame_span == 0) {
-
-    auto tmp_index = this->select_index;
-    this->select_index = this->next_index;
-    int retry = next_index_list[this->select_index].size();
-    this->next_index = next_index_list[this->select_index][(int)ofRandom(next_index_list[this->select_index].size())];
-    while (--retry > 0) {
-
-      auto destination_itr = find(destination_list.begin(), destination_list.end(), this->next_index);
-      if (destination_itr == destination_list.end()) {
-
-        if (tmp_index != this->next_index) {
-
-          destination_list.push_back(this->next_index);
-          break;
-        }
+  Actor(ArrayList<PVector> location_list, ArrayList<IntList> next_index_list, IntList destination_list) {
+    select_index = ofRandom(location_list.size());
+    while (true) {
+      if (!destination_list.hasValue(select_index)) {
+        destination_list.add(select_index);
+        break;
       }
-
-      this->next_index = next_index_list[this->select_index][(this->next_index + 1) % next_index_list[this->select_index].size()];
+      select_index = (select_index + 1) % location_list.size();
     }
-    if (retry <= 0) {
-
-      destination_list.push_back(this->select_index);
-      this->next_index = this->select_index;
-    }
+    next_index = select_index;
   }
 
-  auto param = ofGetFrameNum() % frame_span;
-  auto distance = location_list[this->next_index] - location_list[this->select_index];
-  this->location = location_list[this->select_index] + distance / frame_span * param;
-}
+  //--------------------------------------------------------------
+  void Actor::update(const int& frame_span, vector<PVector>& location_list, vector<vector<int>>& next_index_list, vector<int>& destination_list) {
 
-//--------------------------------------------------------------
-glm::vec3 Actor::getLocation() {
+    if (ofGetFrameNum() % frame_span == 0) {
 
-  return this->location;
+      var tmp_index = select_index;
+      select_index = next_index;
+      int retry = next_index_list[select_index].size();
+      next_index = next_index_list[select_index][(int)ofRandom(next_index_list[select_index].size())];
+      while (--retry > 0) {
+
+        var destination_itr = find(destination_list.begin(), destination_list.end(), next_index);
+        if (destination_itr == destination_list.end()) {
+
+          if (tmp_index != next_index) {
+
+            destination_list.add(next_index);
+            break;
+          }
+        }
+
+        next_index = next_index_list[select_index][(next_index + 1) % next_index_list[select_index].size()];
+      }
+      if (retry <= 0) {
+
+        destination_list.add(select_index);
+        next_index = select_index;
+      }
+    }
+
+    var param = ofGetFrameNum() % frame_span;
+    var distance = location_list[next_index] - location_list[select_index];
+    location = location_list[select_index] + distance / frame_span * param;
+  }
+
+  //--------------------------------------------------------------
+  PVector Actor::getLocation() {
+
+    return location;
+  }
 }
 
 //--------------------------------------------------------------
@@ -91,7 +92,7 @@ void ofApp::setup() {
 
   fbo.end();
 
-  auto span = 10;
+  var span = 10;
   ofPixels pixels;
   fbo.readToPixels(pixels);
   for (int x = 0; x < fbo.getWidth(); x += span) {
@@ -103,17 +104,17 @@ void ofApp::setup() {
 
         for (int z = span * -1; z <= span; z += span) {
 
-          this->location_list.push_back(glm::vec3(x - ofGetWidth() * 0.5, ofGetHeight() - y - ofGetWidth() * 0.25, z));
+          location_list.add(PVector(x - ofGetWidth() * 0.5, ofGetHeight() - y - ofGetWidth() * 0.25, z));
         }
       }
     }
   }
 
-  for (auto& location : this->location_list) {
+  for (var& location : location_list) {
 
     vector<int> next_index = vector<int>();
     int index = -1;
-    for (auto& other : this->location_list) {
+    for (var& other : location_list) {
 
       index++;
       if (location == other) {
@@ -123,19 +124,19 @@ void ofApp::setup() {
       float distance = glm::distance(location, other);
       if (distance <= span) {
 
-        next_index.push_back(index);
+        next_index.add(index);
       }
     }
 
-    this->next_index_list.push_back(next_index);
+    next_index_list.add(next_index);
   }
 
   for (int i = 0; i < 3500; i++) {
 
-    this->actor_list.push_back(make_unique<Actor>(this->location_list, this->next_index_list, this->destination_list));
+    actor_list.add(make_unique<Actor>(location_list, next_index_list, destination_list));
   }
 
-  this->frame.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
+  frame.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
 }
 
 //--------------------------------------------------------------
@@ -146,57 +147,57 @@ void ofApp::update() {
 
   if (ofGetFrameNum() % frame_span == 0) {
 
-    prev_index_size = this->destination_list.size();
+    prev_index_size = destination_list.size();
   }
 
-  for (auto& actor : this->actor_list) {
+  for (var& actor : actor_list) {
 
-    actor->update(frame_span, this->location_list, this->next_index_list, this->destination_list);
+    actor->update(frame_span, location_list, next_index_list, destination_list);
   }
 
   if (prev_index_size != 0) {
 
-    this->destination_list.erase(this->destination_list.begin(), this->destination_list.begin() + prev_index_size);
+    destination_list.erase(destination_list.begin(), destination_list.begin() + prev_index_size);
   }
 
-  this->face.clear();
-  this->frame.clear();
+  face.clear();
+  frame.clear();
 
-  for (auto& actor : this->actor_list) {
+  for (var& actor : actor_list) {
 
-    this->setBoxToMesh(this->face, this->frame, actor->getLocation(), 10, 10, 10);
+    setBoxToMesh(face, frame, actor->getLocation(), 10, 10, 10);
   }
 }
 
 //--------------------------------------------------------------
 void ofApp::draw() {
 
-  this->cam.begin();
+  cam.begin();
 
   ofSetColor(239);
-  this->face.draw();
+  face.draw();
 
   ofSetColor(39);
-  this->frame.drawWireframe();
+  frame.drawWireframe();
 
-  this->cam.end();
+  cam.end();
 }
 
 
 //--------------------------------------------------------------
-void ofApp::setBoxToMesh(ofMesh& face_target, ofMesh& frame_target, glm::vec3 location, float height, float width, float depth) {
+void ofApp::setBoxToMesh(ofMesh& face_target, ofMesh& frame_target, PVector location, float height, float width, float depth) {
 
   int index = face_target.getVertices().size();
 
-  face_target.addVertex(location + glm::vec3(width * -0.5 * 0.99, height * 0.5 * 0.99, depth * -0.5 * 0.99));
-  face_target.addVertex(location + glm::vec3(width * 0.5 * 0.99, height * 0.5 * 0.99, depth * -0.5 * 0.99));
-  face_target.addVertex(location + glm::vec3(width * 0.5 * 0.99, height * 0.5 * 0.99, depth * 0.5 * 0.99));
-  face_target.addVertex(location + glm::vec3(width * -0.5 * 0.99, height * 0.5 * 0.99, depth * 0.5 * 0.99));
+  face_target.addVertex(location + PVector(width * -0.5 * 0.99, height * 0.5 * 0.99, depth * -0.5 * 0.99));
+  face_target.addVertex(location + PVector(width * 0.5 * 0.99, height * 0.5 * 0.99, depth * -0.5 * 0.99));
+  face_target.addVertex(location + PVector(width * 0.5 * 0.99, height * 0.5 * 0.99, depth * 0.5 * 0.99));
+  face_target.addVertex(location + PVector(width * -0.5 * 0.99, height * 0.5 * 0.99, depth * 0.5 * 0.99));
 
-  face_target.addVertex(location + glm::vec3(width * -0.5 * 0.99, height * -0.5 * 0.99, depth * -0.5 * 0.99));
-  face_target.addVertex(location + glm::vec3(width * 0.5 * 0.99, height * -0.5 * 0.99, depth * -0.5 * 0.99));
-  face_target.addVertex(location + glm::vec3(width * 0.5 * 0.99, height * -0.5 * 0.99, depth * 0.5 * 0.99));
-  face_target.addVertex(location + glm::vec3(width * -0.5 * 0.99, height * -0.5 * 0.99, depth * 0.5 * 0.99));
+  face_target.addVertex(location + PVector(width * -0.5 * 0.99, height * -0.5 * 0.99, depth * -0.5 * 0.99));
+  face_target.addVertex(location + PVector(width * 0.5 * 0.99, height * -0.5 * 0.99, depth * -0.5 * 0.99));
+  face_target.addVertex(location + PVector(width * 0.5 * 0.99, height * -0.5 * 0.99, depth * 0.5 * 0.99));
+  face_target.addVertex(location + PVector(width * -0.5 * 0.99, height * -0.5 * 0.99, depth * 0.5 * 0.99));
 
   face_target.addIndex(index + 0);
   face_target.addIndex(index + 1);
@@ -240,15 +241,15 @@ void ofApp::setBoxToMesh(ofMesh& face_target, ofMesh& frame_target, glm::vec3 lo
   face_target.addIndex(index + 0);
   face_target.addIndex(index + 3);
 
-  frame_target.addVertex(location + glm::vec3(width * -0.5, height * 0.5, depth * -0.5));
-  frame_target.addVertex(location + glm::vec3(width * 0.5, height * 0.5, depth * -0.5));
-  frame_target.addVertex(location + glm::vec3(width * 0.5, height * 0.5, depth * 0.5));
-  frame_target.addVertex(location + glm::vec3(width * -0.5, height * 0.5, depth * 0.5));
+  frame_target.addVertex(location + PVector(width * -0.5, height * 0.5, depth * -0.5));
+  frame_target.addVertex(location + PVector(width * 0.5, height * 0.5, depth * -0.5));
+  frame_target.addVertex(location + PVector(width * 0.5, height * 0.5, depth * 0.5));
+  frame_target.addVertex(location + PVector(width * -0.5, height * 0.5, depth * 0.5));
 
-  frame_target.addVertex(location + glm::vec3(width * -0.5, height * -0.5, depth * -0.5));
-  frame_target.addVertex(location + glm::vec3(width * 0.5, height * -0.5, depth * -0.5));
-  frame_target.addVertex(location + glm::vec3(width * 0.5, height * -0.5, depth * 0.5));
-  frame_target.addVertex(location + glm::vec3(width * -0.5, height * -0.5, depth * 0.5));
+  frame_target.addVertex(location + PVector(width * -0.5, height * -0.5, depth * -0.5));
+  frame_target.addVertex(location + PVector(width * 0.5, height * -0.5, depth * -0.5));
+  frame_target.addVertex(location + PVector(width * 0.5, height * -0.5, depth * 0.5));
+  frame_target.addVertex(location + PVector(width * -0.5, height * -0.5, depth * 0.5));
 
   frame_target.addIndex(index + 0);
   frame_target.addIndex(index + 1);
