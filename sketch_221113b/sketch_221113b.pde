@@ -23,99 +23,73 @@ class Actor {
   }
 
   //--------------------------------------------------------------
-  void Actor::update(const int& frame_span, vector<PVector>& location_list, vector<vector<int>>& next_index_list, vector<int>& destination_list) {
-
+  void update(int frame_span, ArrayList<PVector> location_list, ArrayList<IntList> next_index_list, IntList destination_list) {
     if (ofGetFrameNum() % frame_span == 0) {
-
       var tmp_index = select_index;
       select_index = next_index;
-      int retry = next_index_list[select_index].size();
-      next_index = next_index_list[select_index][(int)ofRandom(next_index_list[select_index].size())];
+      IntList ni = next_index_list.get(select_index);
+      int retry = ni.size();
+      next_index = ni.get((int)ofRandom(ni.size()));
       while (--retry > 0) {
-
-        var destination_itr = find(destination_list.begin(), destination_list.end(), next_index);
-        if (destination_itr == destination_list.end()) {
-
+        if (!destination_list.hasValue(next_index)) {
           if (tmp_index != next_index) {
-
             destination_list.add(next_index);
             break;
           }
         }
-
-        next_index = next_index_list[select_index][(next_index + 1) % next_index_list[select_index].size()];
+        next_index = ni.get((next_index + 1) % next_index_list[select_index].size());
       }
       if (retry <= 0) {
-
         destination_list.add(select_index);
         next_index = select_index;
       }
     }
 
     var param = ofGetFrameNum() % frame_span;
-    var distance = location_list[next_index] - location_list[select_index];
-    location = location_list[select_index] + distance / frame_span * param;
+    var distance = location_list.get(next_index) - location_list.get(select_index);
+    location = location_list.get(select_index) + distance / frame_span * param;
   }
 
   //--------------------------------------------------------------
-  PVector Actor::getLocation() {
-
+  PVector getLocation() {
     return location;
   }
 }
 
 //--------------------------------------------------------------
-void ofApp::setup() {
+void setup() {
+  size(720, 720, P3D);
 
-  ofSetFrameRate(60);
-  ofSetWindowTitle("openFrameworks");
+  PGraphics fbo = createGraphics(width, height);
+  fbo.beginDraw();
+  fbo.background(239);
+  fbo.translate(ofGetWidth() * 0.5, ofGetHeight() * 0.45);
+  fbo.fill(0);
 
-  ofBackground(239);
-  ofEnableDepthTest();
-  ofSetLineWidth(2);
-
-  ofFbo fbo;
-  fbo.allocate(ofGetWidth(), ofGetHeight());
-  fbo.begin();
-  ofTranslate(ofGetWidth() * 0.5, ofGetHeight() * 0.45);
-  ofClear(0);
-  ofSetColor(0);
-
-  ofTrueTypeFont font;
-  ofTrueTypeFontSettings font_settings("fonts/HuiFont29.ttf", 195);
-  font_settings.antialiased = true;
-  font_settings.addRanges(ofAlphabet::Japanese);
-  font.load(font_settings);
-
-  font.drawString(u8"12", -250, 120);
-  font.drawString(u8"34", -250, 360);
-
-  fbo.end();
+  PFont font = createFont("HuiFont29.ttf", 195, true);
+  fbo.textFont(font);
+  fbo.text("12", -250, 120);
+  fbo.text("34", -250, 360);
+  fbo.endDraw();
 
   var span = 10;
-  ofPixels pixels;
-  fbo.readToPixels(pixels);
-  for (int x = 0; x < fbo.getWidth(); x += span) {
-
-    for (int y = 0; y < fbo.getHeight(); y += span) {
-
-      ofColor color = pixels.getColor(x, y);
-      if (color != ofColor(0, 0)) {
-
+  fbo.loadPixels();
+  color[] pixels = fbo.pixels;
+  for (int x = 0; x < fbo.width; x += span) {
+    for (int y = 0; y < fbo.height; y += span) {
+      color col = pixels.get(x, y);
+      if (col != ofColor(0, 0)) {
         for (int z = span * -1; z <= span; z += span) {
-
-          location_list.add(PVector(x - ofGetWidth() * 0.5, ofGetHeight() - y - ofGetWidth() * 0.25, z));
+          location_list.add(new PVector(x - width * 0.5, height - y - width * 0.25, z));
         }
       }
     }
   }
 
-  for (var& location : location_list) {
-
+  for (var location : location_list) {
     vector<int> next_index = vector<int>();
     int index = -1;
     for (var& other : location_list) {
-
       index++;
       if (location == other) {
         continue;
@@ -123,7 +97,6 @@ void ofApp::setup() {
 
       float distance = glm::distance(location, other);
       if (distance <= span) {
-
         next_index.add(index);
       }
     }
@@ -170,7 +143,12 @@ void ofApp::update() {
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
+  //translate(width/2, height/2);
+
+  ofBackground(239);
+  ofSetLineWidth(2);
 
   cam.begin();
 
@@ -277,11 +255,4 @@ void ofApp::setBoxToMesh(ofMesh& face_target, ofMesh& frame_target, PVector loca
   frame_target.addIndex(index + 6);
   frame_target.addIndex(index + 3);
   frame_target.addIndex(index + 7);
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
