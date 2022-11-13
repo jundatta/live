@@ -3,6 +3,14 @@
 // 【作品名】Random work is curry. openFrameworks
 // https://junkiyoshi.com/2020/12/18/
 
+ArrayList<PVector> location_list = new ArrayList();
+ArrayList<IntList> next_index_list = new ArrayList();
+IntList destination_list = new IntList();
+
+ArrayList<Actor> actor_list = new ArrayList();
+
+ofMesh face = new ofMesh();
+ofMesh frame = new ofMesh();
 //--------------------------------------------------------------
 class Actor {
   int select_index;
@@ -10,11 +18,11 @@ class Actor {
 
   PVector location;
 
-  Actor(ArrayList<PVector> location_list, ArrayList<IntList> next_index_list, IntList destination_list) {
-    select_index = ofRandom(location_list.size());
+  Actor(ArrayList<PVector> location_list, IntList destination_list) {
+    select_index = (int)ofRandom(location_list.size());
     while (true) {
       if (!destination_list.hasValue(select_index)) {
-        destination_list.add(select_index);
+        destination_list.append(select_index);
         break;
       }
       select_index = (select_index + 1) % location_list.size();
@@ -33,21 +41,25 @@ class Actor {
       while (--retry > 0) {
         if (!destination_list.hasValue(next_index)) {
           if (tmp_index != next_index) {
-            destination_list.add(next_index);
+            destination_list.append(next_index);
             break;
           }
         }
-        next_index = ni.get((next_index + 1) % next_index_list[select_index].size());
+        next_index = ni.get((next_index + 1) % ni.size());
       }
       if (retry <= 0) {
-        destination_list.add(select_index);
+        destination_list.append(select_index);
         next_index = select_index;
       }
     }
 
     var param = ofGetFrameNum() % frame_span;
-    var distance = location_list.get(next_index) - location_list.get(select_index);
-    location = location_list.get(select_index) + distance / frame_span * param;
+    PVector locN = location_list.get(next_index);
+    PVector locS = location_list.get(select_index);
+    var distance = PVector.sub(locN, locS);
+    location = PVector.add(locS, distance);
+    location.div(frame_span);
+    location.mult(param);
   }
 
   //--------------------------------------------------------------
@@ -62,8 +74,8 @@ void setup() {
 
   PGraphics fbo = createGraphics(width, height);
   fbo.beginDraw();
-  fbo.background(239);
-  fbo.translate(ofGetWidth() * 0.5, ofGetHeight() * 0.45);
+  fbo.clear();
+  fbo.translate(width * 0.5, height * 0.45);
   fbo.fill(0);
 
   PFont font = createFont("HuiFont29.ttf", 195, true);
@@ -73,12 +85,10 @@ void setup() {
   fbo.endDraw();
 
   var span = 10;
-  fbo.loadPixels();
-  color[] pixels = fbo.pixels;
   for (int x = 0; x < fbo.width; x += span) {
     for (int y = 0; y < fbo.height; y += span) {
-      color col = pixels.get(x, y);
-      if (col != ofColor(0, 0)) {
+      color col = fbo.get(x, y);
+      if (col != color(0, 0)) {
         for (int z = span * -1; z <= span; z += span) {
           location_list.add(new PVector(x - width * 0.5, height - y - width * 0.25, z));
         }
@@ -87,58 +97,49 @@ void setup() {
   }
 
   for (var location : location_list) {
-    vector<int> next_index = vector<int>();
+    IntList next_index = new IntList();
     int index = -1;
-    for (var& other : location_list) {
+    for (var other : location_list) {
       index++;
       if (location == other) {
         continue;
       }
-
-      float distance = glm::distance(location, other);
+      float distance = PVector.dist(location, other);
       if (distance <= span) {
-        next_index.add(index);
+        next_index.append(index);
       }
     }
-
     next_index_list.add(next_index);
   }
 
   for (int i = 0; i < 3500; i++) {
-
-    actor_list.add(make_unique<Actor>(location_list, next_index_list, destination_list));
+    actor_list.add(new Actor(location_list, destination_list));
   }
-
-  frame.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
-
+void update() {
   int frame_span = 30;
   int prev_index_size = 0;
-
   if (ofGetFrameNum() % frame_span == 0) {
-
     prev_index_size = destination_list.size();
   }
 
-  for (var& actor : actor_list) {
-
-    actor->update(frame_span, location_list, next_index_list, destination_list);
+  for (var actor : actor_list) {
+    actor.update(frame_span, location_list, next_index_list, destination_list);
   }
 
   if (prev_index_size != 0) {
-
-    destination_list.erase(destination_list.begin(), destination_list.begin() + prev_index_size);
+    for (int i = 0; i < prev_index_size; i++) {
+      destination_list.remove(0);
+    }
   }
 
   face.clear();
   frame.clear();
 
-  for (var& actor : actor_list) {
-
-    setBoxToMesh(face, frame, actor->getLocation(), 10, 10, 10);
+  for (var actor : actor_list) {
+    setBoxToMesh(face, frame, actor.getLocation(), 10, 10, 10);
   }
 }
 
@@ -150,32 +151,28 @@ void draw() {
   ofBackground(239);
   ofSetLineWidth(2);
 
-  cam.begin();
+  face.draw(color(239));
 
-  ofSetColor(239);
-  face.draw();
-
-  ofSetColor(39);
-  frame.drawWireframe();
-
-  cam.end();
+  frame.drawWireframe(color(39));
 }
 
 
 //--------------------------------------------------------------
-void ofApp::setBoxToMesh(ofMesh& face_target, ofMesh& frame_target, PVector location, float height, float width, float depth) {
-
+PVector vert(PVector loc, float x, float y, float z) {
+  return PVector.add(loc, new PVector(x, y, z));
+}
+void setBoxToMesh(ofMesh face_target, ofMesh frame_target, PVector location, float h, float w, float depth) {
   int index = face_target.getVertices().size();
 
-  face_target.addVertex(location + PVector(width * -0.5 * 0.99, height * 0.5 * 0.99, depth * -0.5 * 0.99));
-  face_target.addVertex(location + PVector(width * 0.5 * 0.99, height * 0.5 * 0.99, depth * -0.5 * 0.99));
-  face_target.addVertex(location + PVector(width * 0.5 * 0.99, height * 0.5 * 0.99, depth * 0.5 * 0.99));
-  face_target.addVertex(location + PVector(width * -0.5 * 0.99, height * 0.5 * 0.99, depth * 0.5 * 0.99));
+  face_target.addVertex(vert(location, w * -0.5 * 0.99, h * 0.5 * 0.99, depth * -0.5 * 0.99));
+  face_target.addVertex(vert(location, w * 0.5 * 0.99, h * 0.5 * 0.99, depth * -0.5 * 0.99));
+  face_target.addVertex(vert(location, w * 0.5 * 0.99, h * 0.5 * 0.99, depth * 0.5 * 0.99));
+  face_target.addVertex(vert(location, w * -0.5 * 0.99, h * 0.5 * 0.99, depth * 0.5 * 0.99));
 
-  face_target.addVertex(location + PVector(width * -0.5 * 0.99, height * -0.5 * 0.99, depth * -0.5 * 0.99));
-  face_target.addVertex(location + PVector(width * 0.5 * 0.99, height * -0.5 * 0.99, depth * -0.5 * 0.99));
-  face_target.addVertex(location + PVector(width * 0.5 * 0.99, height * -0.5 * 0.99, depth * 0.5 * 0.99));
-  face_target.addVertex(location + PVector(width * -0.5 * 0.99, height * -0.5 * 0.99, depth * 0.5 * 0.99));
+  face_target.addVertex(vert(location, w * -0.5 * 0.99, h * -0.5 * 0.99, depth * -0.5 * 0.99));
+  face_target.addVertex(vert(location, w * 0.5 * 0.99, h * -0.5 * 0.99, depth * -0.5 * 0.99));
+  face_target.addVertex(vert(location, w * 0.5 * 0.99, h * -0.5 * 0.99, depth * 0.5 * 0.99));
+  face_target.addVertex(vert(location, w * -0.5 * 0.99, h * -0.5 * 0.99, depth * 0.5 * 0.99));
 
   face_target.addIndex(index + 0);
   face_target.addIndex(index + 1);
@@ -219,15 +216,15 @@ void ofApp::setBoxToMesh(ofMesh& face_target, ofMesh& frame_target, PVector loca
   face_target.addIndex(index + 0);
   face_target.addIndex(index + 3);
 
-  frame_target.addVertex(location + PVector(width * -0.5, height * 0.5, depth * -0.5));
-  frame_target.addVertex(location + PVector(width * 0.5, height * 0.5, depth * -0.5));
-  frame_target.addVertex(location + PVector(width * 0.5, height * 0.5, depth * 0.5));
-  frame_target.addVertex(location + PVector(width * -0.5, height * 0.5, depth * 0.5));
+  frame_target.addVertex(vert(location, w * -0.5, h * 0.5, depth * -0.5));
+  frame_target.addVertex(vert(location, w * 0.5, h * 0.5, depth * -0.5));
+  frame_target.addVertex(vert(location, w * 0.5, h * 0.5, depth * 0.5));
+  frame_target.addVertex(vert(location, w * -0.5, h * 0.5, depth * 0.5));
 
-  frame_target.addVertex(location + PVector(width * -0.5, height * -0.5, depth * -0.5));
-  frame_target.addVertex(location + PVector(width * 0.5, height * -0.5, depth * -0.5));
-  frame_target.addVertex(location + PVector(width * 0.5, height * -0.5, depth * 0.5));
-  frame_target.addVertex(location + PVector(width * -0.5, height * -0.5, depth * 0.5));
+  frame_target.addVertex(vert(location, w * -0.5, h * -0.5, depth * -0.5));
+  frame_target.addVertex(vert(location, w * 0.5, h * -0.5, depth * -0.5));
+  frame_target.addVertex(vert(location, w * 0.5, h * -0.5, depth * 0.5));
+  frame_target.addVertex(vert(location, w * -0.5, h * -0.5, depth * 0.5));
 
   frame_target.addIndex(index + 0);
   frame_target.addIndex(index + 1);
