@@ -16,7 +16,7 @@ class Actor {
   int select_index;
   int next_index;
 
-  PVector location;
+  PVector location = new PVector(0,0,0);
 
   Actor(ArrayList<PVector> location_list, IntList destination_list) {
     select_index = (int)ofRandom(location_list.size());
@@ -57,9 +57,9 @@ class Actor {
     PVector locN = location_list.get(next_index);
     PVector locS = location_list.get(select_index);
     var distance = PVector.sub(locN, locS);
-    location = PVector.add(locS, distance);
-    location.div(frame_span);
-    location.mult(param);
+    //location = PVector.add(locS, distance);
+    //location.div(frame_span);
+    //location.mult(param);
   }
 
   //--------------------------------------------------------------
@@ -112,14 +112,14 @@ void setup() {
     next_index_list.add(next_index);
   }
 
-  for (int i = 0; i < 3500; i++) {
+  for (int i = 0; i < 350; i++) { //<>//
     actor_list.add(new Actor(location_list, destination_list));
   }
 }
 
 //--------------------------------------------------------------
 void update() {
-  int frame_span = 30;
+  int frame_span = 30; //<>//
   int prev_index_size = 0;
   if (ofGetFrameNum() % frame_span == 0) {
     prev_index_size = destination_list.size();
@@ -146,7 +146,7 @@ void update() {
 //--------------------------------------------------------------
 void draw() {
   update();
-  //translate(width/2, height/2);
+  translate(width/2, height/2);
 
   ofBackground(239);
   ofSetLineWidth(2);
