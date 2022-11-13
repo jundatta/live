@@ -78,10 +78,10 @@ void setup() {
   fbo.translate(width * 0.5, height * 0.45);
   fbo.fill(0);
 
-  PFont font = createFont("HuiFont29.ttf", 195, true);
+  PFont font = createFont("HuiFont29.ttf", 195 * 1.2, true);
   fbo.textFont(font);
-  fbo.text("12", -250, 120);
-  fbo.text("34", -250, 360);
+  fbo.text("風花", -250, 120);
+  fbo.text("雪月", -250, 360);
   fbo.endDraw();
 
   var span = 10;
@@ -90,7 +90,7 @@ void setup() {
       color col = fbo.get(x, y);
       if (col != color(0, 0)) {
         for (int z = span * -1; z <= span; z += span) {
-          location_list.add(new PVector(x - width * 0.5, height - y - width * 0.25, z));
+          location_list.add(new PVector(x - fbo.width * 0.5, fbo.height - y - fbo.width * 0.25, z));
         }
       }
     }
@@ -112,7 +112,7 @@ void setup() {
     next_index_list.add(next_index);
   }
 
-  for (int i = 0; i < 350; i++) { //<>//
+  for (int i = 0; i < 350 * 2.5; i++) { //<>//
     actor_list.add(new Actor(location_list, destination_list));
   }
 }
