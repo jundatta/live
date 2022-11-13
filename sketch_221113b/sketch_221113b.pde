@@ -70,7 +70,7 @@ class Actor {
 
 //--------------------------------------------------------------
 void setup() {
-  size(720, 720, P3D);
+  size(500, 800, P3D);
 
   PGraphics fbo = createGraphics(width, height);
   fbo.beginDraw();
@@ -149,6 +149,8 @@ void draw() {
   translate(width/2, height/2);
   scale(1, -1, 1);
 
+  // いい感じにするための適当な位置合わせ＼(^_^)／
+  translate(width * 0.025, -height * 0.2);
   ofBackground(239);
   ofSetLineWidth(2);
 
