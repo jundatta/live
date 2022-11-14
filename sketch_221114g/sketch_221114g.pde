@@ -8,23 +8,25 @@
 // 【作品名】Rough box
 // https://openprocessing.org/sketch/1476080
 
+float vmin, vmax;
+//let gl, glsl;
+PGraphics tex;
+int texSize;
+final float NUM = 5;
+float sz;
+float mx, my, me = 0.01;
 
-let vmin, vmax;
-let gl, glsl;
-let tex, texSize;
-let NUM = 5;
-let sz;
-let mx, my, me = 0.01;
+PShape boxShape;
 
-function setup() {
+void setup() {
   pixelDensity(1);
-  createCanvas(1112, 834, WEBGL);
+  size(1112, 834, P3D);
   noStroke();
-  gl = drawingContext;
+  //gl = drawingContext;
   vmin = min(width, height);
   vmax = max(width, height);
-  mx = width / 2;
-  my = height / 2;
+  mx = width / 2.0f;
+  my = height / 2.0f;
   sz = (vmin * 0.7) / NUM;
 
   /**
@@ -32,56 +34,65 @@ function setup() {
    */
   texSize = 256;
   tex = createGraphics(texSize, texSize);
+  tex.beginDraw();
   tex.background(0);
-  tex.colorMode(HSB, 255);
+  tex.colorMode(HSB, 255, 255, 255, 1.0f);
   tex.noStroke();
-  for (let i=0; i<texSize*texSize; i++) {
-    let u=random(-1, 1);
-    let x=random(2)<1?u**3:(1-u**3);
-    let v=random(-1, 1);
-    let y=random(2)<1?v**3:(1-v**3);
-    let d=abs(1-u)+abs(1-v);
-    tex.fill(d*255%255, 200, 255);
+  for (int i=0; i<texSize*texSize; i++) {
+    float u=random(-1, 1);
+    float x=random(2)<1?pow(u, 3):(1-pow(u, 3));
+    float v=random(-1, 1);
+    float y=random(2)<1?pow(v, 3):(1-pow(v, 3));
+    float d=abs(1-u)+abs(1-v);
+    tex.fill(d*255%255, 200, 255, 0.75f);
     tex.circle(x*texSize, y*texSize, d * 1.5 + 1);
   }
+  tex.endDraw();
+  boxShape = createShape(BOX, 1);
+  boxShape.setStroke(false);
+  boxShape.setTexture(tex);
 }
 
-function draw() {
-  let sec = millis() / 1000;
+void draw() {
+  translate(width/2, height/2);
+
+  float sec = millis() / 1000.0f;
   mx += (mouseX - mx) * me;
   my += (mouseY - my) * me;
-  let rx = map(my, 0, width, -1, 1) * PI * -0.5;
-  let ry = map(mx, 0, height, -1, 1) * PI * 0.5;
+  float rx = map(my, 0, width, -1, 1) * PI * -0.5;
+  float ry = map(mx, 0, height, -1, 1) * PI * 0.5;
 
   background(0);
 
-  gl.enable(gl.DEPTH_TEST);
-  gl.depthFunc(gl.ALWAYS);
-  gl.enable(gl.BLEND);
-  gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+  //gl.enable(gl.DEPTH_TEST);
+  //gl.depthFunc(gl.ALWAYS);
+  //gl.enable(gl.BLEND);
+  //gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+  blendMode(ADD);
 
   push();
   {
     rotateX(rx);
     rotateY(ry);
 
-    texture(tex);
+    //texture(tex);
 
-    for (let i = 0; i < NUM; i++) {
-      let z = (i - NUM / 2 + 0.5) * sz;
-      for (let j = 0; j < NUM; j++) {
-        let y = (j - NUM / 2 + 0.5) * sz;
-        for (let k = 0; k < NUM; k++) {
-          let x = (k - NUM / 2 + 0.5) * sz;
+    for (float i = 0; i < NUM; i++) {
+      float z = (i - NUM / 2.0f + 0.5) * sz;
+      for (float j = 0; j < NUM; j++) {
+        float y = (j - NUM / 2.0f + 0.5) * sz;
+        for (float k = 0; k < NUM; k++) {
+          float x = (k - NUM / 2.0f + 0.5) * sz;
           push();
           {
-            let d = dist(0, 0, 0, x, y, z);
-            let s = map(sin(d / (vmin * 0.7 / 2 * sqrt(2)) * TWO_PI - sec), -1, 1, 1, 0);
-            s = floor(s * 6) / 6;
+            float d = dist(0, 0, 0, x, y, z);
+            float s = map(sin(d / (vmin * 0.7 / 2 * sqrt(2)) * TWO_PI - sec), -1, 1, 1, 0);
+            s = floor(s * 6) / 6.0f;
             translate(x, y, z);
             scale(s * sz);
 
-            box(1);
+            //box(1);
+            shape(boxShape);
           }
           pop();
         }
