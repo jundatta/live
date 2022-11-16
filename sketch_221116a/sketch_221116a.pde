@@ -8,8 +8,8 @@ color[] colors = {#ffd630, #329fe3, #154296, #c4071d, #ff9f1c, #ffffff, #98ce00,
 
 void setup() {
   P5JS.setup(this);
-  size(800, 800);
-  
+  size(800, 800, P3D);
+
   //angleMode(DEGREES);
   strokeCap(SQUARE);
   float c = 9;
@@ -59,7 +59,7 @@ class Arc {
   float t, tStr1, tStr2;
   float sw;
   color col;
-  
+
   Arc(float x, float y, float d) {
     this.x = x;
     this.y = y;
@@ -88,8 +88,8 @@ class Arc {
   }
 
   void move() {
-    this.a = sin(this.t * this.tStr1) * 360;
-    this.d = map(sin(this.t * this.tStr2), -1, 1, this.sw, this.d0);
+    this.a = sin(radians(this.t * this.tStr1)) * 360;
+    this.d = map(sin(radians(this.t * this.tStr2)), -1, 1, this.sw, this.d0);
     this.t++;
   }
 }
