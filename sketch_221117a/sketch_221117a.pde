@@ -65,6 +65,7 @@ void update() {
 void draw() {
   update();
   translate(width/2, height/2);
+  scale(1, -1, 1);
 
   ofBackground(239);
   noFill();
@@ -77,10 +78,11 @@ void draw() {
     //    ofDrawRectangle(base_location, 300, 300);
     push();
     translate(base_location.x, base_location.y, base_location.z);
-    box(300);
+    box(300, 300, 0.1f);
     pop();
   }
 
+  fill(39);
   face.draw(color(39));
 
   frame.drawWireframe(color(239));
