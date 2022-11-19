@@ -25,7 +25,7 @@ void setup() {
 
 //--------------------------------------------------------------
 //     vertices.add(glm::normalize(triangle_list[i].getVertex(0)) * (radius + 2) - avg);
-PVector norm(PVector v, int rad, PVector avg) {
+PVector trans(PVector v, int rad, PVector avg) {
   PVector vv = v.copy();
   vv.normalize();
   vv.mult(rad);
@@ -38,30 +38,31 @@ void update() {
 
   int radius = 300;
   for (int i = 0; i < triangle_list.size(); i++) {
-    PVector avg = (triangle_list[i].getVertex(0) + triangle_list[i].getVertex(1) + triangle_list[i].getVertex(2)) / 3;
+    ofMeshFace triangle = triangle_list.get(i);
+    PVector avg = (triangle.getVertex(0) + triangle.getVertex(1) + triangle.getVertex(2)) / 3;
 
-    var noise_value = ofNoise(avg.x * 0.005, avg.y * 0.005, avg.z * 0.005, ofGetFrameNum() * 0.01);
+    var noise_value = openFrameworks.ofNoise(avg.x * 0.005, avg.y * 0.005, avg.z * 0.005, ofGetFrameNum() * 0.01);
 
     PMatrix3D rotation_xyz = new PMatrix3D();
     if (noise_value < 0.5) {
       float rad = map(noise_value, 0, 0.5, PI * 3, 0);
-      rotation_xyz.rotate(rotation_xyz);
+      rotation_xyz.rotate(rad);
     }
 
     ArrayList<PVector> vertices = new ArrayList();
-    ofMeshFace face = triangle_list.get(i);
-    vertices.add(glm::normalize(triangle_list[i].getVertex(0)) * (radius + 2) - avg);
-    vertices.add(glm::normalize(triangle_list[i].getVertex(1)) * (radius + 2) - avg);
-    vertices.add(glm::normalize(triangle_list[i].getVertex(2)) * (radius + 2) - avg);
+    vertices.add(trans(triangle.getVertex(0), radius + 2, avg));
+    vertices.add(trans(triangle.getVertex(1), radius + 2, avg));
+    vertices.add(trans(triangle.getVertex(2), radius + 2, avg));
 
-    vertices.add(glm::normalize(triangle_list[i].getVertex(0)) * (radius - 2) - avg);
-    vertices.add(glm::normalize(triangle_list[i].getVertex(1)) * (radius - 2) - avg);
-    vertices.add(glm::normalize(triangle_list[i].getVertex(2)) * (radius - 2) - avg);
+    vertices.add(trans(triangle.getVertex(0), radius - 2, avg));
+    vertices.add(trans(triangle.getVertex(1), radius - 2, avg));
+    vertices.add(trans(triangle.getVertex(2), radius - 2, avg));
 
-    for (var& vertex : vertices) {
-
-      vertex = glm::vec4(vertex, 0) * rotation_z * rotation_y * rotation_x;
-      vertex += avg;
+    for (var vertex : vertices) {
+      //vertex = glm::vec4(vertex, 0) * rotation_z * rotation_y * rotation_x;
+      //vertex += avg;
+      vertex = rotation_xyz.mult(vertex, null);
+      vertex.add(avg);
     }
 
     mesh.addVertices(vertices);
@@ -130,7 +131,7 @@ void draw() {
   ofRotateX(ofGetFrameNum() * 0.37);
   ofRotateY(ofGetFrameNum() * 0.72);
 
-  mesh.drawFaces(color(239));
+  mesh.drawFaces();
 
   frame.drawWireframe(color(39));
 }
