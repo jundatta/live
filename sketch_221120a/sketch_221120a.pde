@@ -39,7 +39,10 @@ void update() {
   int radius = 300;
   for (int i = 0; i < triangle_list.size(); i++) {
     ofMeshFace triangle = triangle_list.get(i);
-    PVector avg = (triangle.getVertex(0) + triangle.getVertex(1) + triangle.getVertex(2)) / 3;
+    //PVector avg = (triangle.getVertex(0) + triangle.getVertex(1) + triangle.getVertex(2)) / 3;
+    PVector avg = PVector.add(triangle.getVertex(0), triangle.getVertex(1));
+    avg.add(triangle.getVertex(2));
+    avg.div(3);
 
     var noise_value = openFrameworks.ofNoise(avg.x * 0.005, avg.y * 0.005, avg.z * 0.005, ofGetFrameNum() * 0.01);
 
@@ -58,12 +61,17 @@ void update() {
     vertices.add(trans(triangle.getVertex(1), radius - 2, avg));
     vertices.add(trans(triangle.getVertex(2), radius - 2, avg));
 
+    // もとは参照型でした。なのでverticesを書き換えるようにコーディングする
+    //     for (auto& vertex : vertices) {
+    ArrayList<PVector> newV = new ArrayList();
     for (var vertex : vertices) {
       //vertex = glm::vec4(vertex, 0) * rotation_z * rotation_y * rotation_x;
       //vertex += avg;
       vertex = rotation_xyz.mult(vertex, null);
       vertex.add(avg);
+      newV.add(vertex);
     }
+    vertices = newV;
 
     mesh.addVertices(vertices);
     frame.addVertices(vertices);
