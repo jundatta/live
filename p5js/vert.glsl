@@ -1,9 +1,10 @@
+attribute vec4 position;
 // attribute vec3 aPosition;
 
-#define aTexCoord (texCoord)
+#define aTexCoord texCoord
 attribute vec2 aTexCoord;
 
-#define aNormal (normal)
+#define aNormal normal
 attribute vec3 aNormal;
 
 // Built in p5.js uniforms
@@ -22,8 +23,9 @@ varying vec3 vNormal;
 varying vec3 vPosition;
 
 void main() {
-	// ((transform * potition) + 1.0) * 0.5 ⇒ aPosition？？？
+	// ((transform * position) + 1.0) * 0.5 ⇒ aPosition？？？
 	vec4 positionVec4 = transform * position;
+//	vec4 positionVec4 = ((transform * position) + 1.0) * 0.5;
 	vec3 aPosition = positionVec4.xyz;
 
   vec3 delta = 0.1 *  aNormal * sin(aPosition * 30. + uFrameCount * 0.1);

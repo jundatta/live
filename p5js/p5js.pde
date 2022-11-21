@@ -6,7 +6,8 @@
 PShader theShader;
 
 void preload() {
-  theShader = loadShader("frag.glsl", "vert.glsl");
+//  theShader = loadShader("frag.glsl", "vert.glsl");
+  theShader = loadShader("frag.glsl");
 }
 void setup() {
   preload();
@@ -22,10 +23,11 @@ void draw() {
 
   theShader.set("uFrameCount", frameCount);
 
+  //rotateX(frameCount * 0.002);
+  //rotateY(frameCount * 0.001);
 
-  rotateX(frameCount * 0.002);
-  rotateY(frameCount * 0.001);
-
-//  sphere(height / 2.8, 800, 500);
-  sphere(height / 2.8);
+  //  sphere(height / 2.8, 800, 500);
+  //  sphere(height / 2.8);
+  rect(0, 0, width, height);
+  resetShader();
 }
