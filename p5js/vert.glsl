@@ -1,34 +1,35 @@
-// ※processing javaのpositionからp5.jsのaPositionへの
-// 　マッピングがいまいちわかってにゃい
-// ((transform * potition) + 1.0) / 2.0 ⇒ aPosition？？？
+// attribute vec3 aPosition;
 
-// geometry vertex position provided by p5js.
-  attribute vec3 aPosition;
-// vertex texture coordinate provided by p5js.
-//attribute vec2 aTexCoord;
-attribute vec4 texCoord;
-attribute vec4 position;	// p5.jsのvec4(aPosition, 1.0)に対応する
+#define aTexCoord (texCoord)
+attribute vec2 aTexCoord;
+
+#define aNormal (normal)
+attribute vec3 aNormal;
 
 // Built in p5.js uniforms
 //uniform mat4 uModelViewMatrix;
 //uniform mat4 uProjectionMatrix;
+uniform float uFrameCount;
+
 // [processing java]
 //uniform mat4 modelviewMatrix;
 //uniform mat4 projectionMatrix;
 
 uniform mat4 transform;
 
-// Varying values passed to our fragment shader
 varying vec2 vTexCoord;
+varying vec3 vNormal;
+varying vec3 vPosition;
 
 void main() {
-	vTexCoord = texCoord.xy;
-
+	// ((transform * potition) + 1.0) * 0.5 ⇒ aPosition？？？
 	vec4 positionVec4 = transform * position;
-	// processing javaのpositionからp5.jsのaPositionへの
-	// 対応付けがいまいちわかってにゃい
-	// ((transform * potition) + 1.0) / 2.0 ⇒ aPosition？？？
-//	positionVec4.xy=positionVec4.xy*2.-1.;
-	positionVec4.xy=positionVec4.xy;
-	gl_Position=positionVec4;
+	vec3 aPosition = positionVec4.xyz;
+
+  vec3 delta = 0.1 *  aNormal * sin(aPosition * 30. + uFrameCount * 0.1);
+  vPosition = aPosition + delta ;
+  vNormal = normalize(aNormal + delta);
+  vTexCoord = aTexCoord;
+//  gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(vPosition, 1.);
+  gl_Position = vec4(vPosition, 1.);
 }
