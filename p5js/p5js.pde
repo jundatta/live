@@ -14,7 +14,7 @@ void setup() {
   size(1112, 834, P3D);
   noStroke();
 
-  //theShader.set("uResolution", (float)width, (float)height);
+  theShader.set("uResolution", (float)width, (float)height);
 }
 
 void draw() {

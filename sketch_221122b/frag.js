@@ -9,7 +9,7 @@ varying vec3 vNormal;
 varying vec3 vPosition;
 
 void main() {
-  #if 0
+  #if 1
     vec3 ambientColor = vec3(0.0, 0.0, 1.0);
   vec3 diffuseColor = vec3(0.0, 1.0, 0.0);
   vec3 specularColor = vec3(1.0, 0.0, 0.0);

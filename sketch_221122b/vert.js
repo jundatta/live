@@ -20,11 +20,9 @@ void main() {
   vNormal = normalize(aNormal + delta);
   gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(vPosition, 1.);
 #else
-  //vPosition = aPosition;
   vPosition = aPosition;
-//vNormal = aNormal;
-vNormal = vec3(0.0, 0.0, 1.0);
-gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aPosition, 1.);
+  vNormal = aNormal;
+  gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aPosition, 1.);
 #endif
 }
 
