@@ -14,7 +14,8 @@ void main() {
   float time = uFrameCount *  0.1;
   vec3 lightPos = vec3(-50. * cos(time), 20.* sin(time), -50.);
   vec3 lightDir = normalize(lightPos - vPosition);
-  float lambertian = max(dot(-vNormal, lightDir), 0.0);
+//  float lambertian = max(dot(-vNormal, lightDir), 0.0);
+  float lambertian = 0.0;
   float specular = 0.0;
   if (lambertian > 0.0) {
     vec3 reflectLight = reflect(-lightDir, vNormal);
@@ -24,6 +25,6 @@ void main() {
   }
   gl_FragColor = vec4(ambientColor + lambertian * diffuseColor + specular * specularColor, 1.0);
 #else
-  gl_FragColor = vec4(vPosition.x, vPosition.y, 0.0, 1.0);
+  gl_FragColor = vec4(vNormal.z * 0.5, 0.0, 0.0, 1.0);
 #endif
 }

@@ -19,11 +19,12 @@ void setup() {
 
 void draw() {
   translate(width/2, height/2);
-  
+
   background(0);
   shader(theShader);
 
-  theShader.set("uFrameCount", frameCount);
+  theShader.set("uFrameCount", (frameCount % 4));
+  //theShader.set("uFrameCount", 1);
 
   //rotateX(frameCount * 0.002);
   //rotateY(frameCount * 0.001);
