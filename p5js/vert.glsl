@@ -28,10 +28,12 @@ void main() {
 //	vec4 positionVec4 = ((transform * position) + 1.0) * 0.5;
 	vec3 aPosition = positionVec4.xyz;
 
-  vec3 delta = 0.1 *  aNormal * sin(aPosition * 30. + uFrameCount * 0.1);
+//  vec3 delta = 0.1 *  aNormal * sin(aPosition * 30. + uFrameCount * 0.1);
+  vec3 delta = 0.1 *  aNormal * sin(aPosition * 30.);
   vPosition = aPosition + delta ;
   vNormal = normalize(aNormal + delta);
   vTexCoord = aTexCoord;
 //  gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(vPosition, 1.);
-  gl_Position = vec4(vPosition, 1.);
+//  gl_Position = vec4(vPosition, 1.);
+  gl_Position = positionVec4;
 }

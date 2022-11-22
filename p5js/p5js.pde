@@ -6,8 +6,8 @@
 PShader theShader;
 
 void preload() {
-//  theShader = loadShader("frag.glsl", "vert.glsl");
-  theShader = loadShader("frag.glsl");
+  theShader = loadShader("frag.glsl", "vert.glsl");
+  //theShader = loadShader("frag.glsl");
 }
 void setup() {
   preload();
@@ -18,6 +18,8 @@ void setup() {
 }
 
 void draw() {
+  translate(width/2, height/2);
+  
   background(0);
   shader(theShader);
 
@@ -29,5 +31,5 @@ void draw() {
   //  sphere(height / 2.8, 800, 500);
   //  sphere(height / 2.8);
   rect(0, 0, width, height);
-  resetShader();
+  //resetShader();
 }

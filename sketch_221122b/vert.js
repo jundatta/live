@@ -15,7 +15,8 @@ varying vec3 vPosition;
 
 void main() {
 
-  vec3 delta = 0.1 *  aNormal * sin(aPosition * 30. + uFrameCount * 0.1);
+  //vec3 delta = 0.1 *  aNormal * sin(aPosition * 30. + uFrameCount * 0.1);
+  vec3 delta = 0.1 *  aNormal * sin(aPosition * 30.);
   vPosition = aPosition + delta ;
   vNormal = normalize(aNormal + delta);
   vTexCoord = aTexCoord;
