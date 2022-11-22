@@ -23,7 +23,7 @@ void draw() {
   background(0);
   shader(theShader);
 
-  theShader.set("uFrameCount", (frameCount % 4));
+  theShader.set("uFrameCount", (frameCount % 16));
   //theShader.set("uFrameCount", 1);
 
   //rotateX(frameCount * 0.002);

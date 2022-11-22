@@ -21,8 +21,8 @@ void main() {
   gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(vPosition, 1.);
 #else
   vPosition = aPosition;
-  vNormal = aNormal;
-  gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aPosition, 1.);
+vNormal = aNormal;
+gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aPosition, 1.);
 #endif
 }
 

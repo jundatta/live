@@ -42,7 +42,7 @@ void main() {
 #else
 	vec3 aPosition = vec3(position.xy / uResolution, 0.0);
 	vPosition = aPosition;
-	vNormal = normalize(aNormal);
+	vNormal = aNormal;
 	gl_Position = transform * position;
 #endif
 }
