@@ -24,16 +24,22 @@ varying vec3 vPosition;
 
 void main() {
 	// ((transform * position) + 1.0) * 0.5 ⇒ aPosition？？？
-	vec4 positionVec4 = transform * position;
 //	vec4 positionVec4 = ((transform * position) + 1.0) * 0.5;
-	vec3 aPosition = positionVec4.xyz;
+	vec4 positionVec4 = transform * position;
+//	vec3 aPosition = positionVec4.xyz;
+	vec3 aPosition = positionVec4.xyz / positionVec4.w;
 
+#if 0
 //  vec3 delta = 0.1 *  aNormal * sin(aPosition * 30. + uFrameCount * 0.1);
   vec3 delta = 0.1 *  aNormal * sin(aPosition * 30.);
   vPosition = aPosition + delta ;
   vNormal = normalize(aNormal + delta);
   vTexCoord = aTexCoord;
 //  gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(vPosition, 1.);
-//  gl_Position = vec4(vPosition, 1.);
-  gl_Position = positionVec4;
+#else
+  vPosition = position.xyz;
+  vNormal = aNormal;
+  vTexCoord = aTexCoord;
+  gl_Position = transform * vec4(vPosition, 1.);
+#endif
 }
