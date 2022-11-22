@@ -6,7 +6,7 @@ varying vec3 vNormal;
 varying vec3 vPosition;
 
 void main() {
-#if 1
+#if 0
   vec3 ambientColor = vec3(0.0, 0.0, 1.0);
   vec3 diffuseColor = vec3(0.0, 1.0, 0.0);
   vec3 specularColor = vec3(1.0, 0.0, 0.0);
@@ -24,6 +24,6 @@ void main() {
   }
   gl_FragColor = vec4(ambientColor + lambertian * diffuseColor + specular * specularColor, 1.0);
 #else
-  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+  gl_FragColor = vec4(vPosition.x, vPosition.y, 0.0, 1.0);
 #endif
 }

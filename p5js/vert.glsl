@@ -1,3 +1,5 @@
+uniform vec2 uResolution;
+
 attribute vec4 position;
 // attribute vec3 aPosition;
 
@@ -18,7 +20,6 @@ uniform float uFrameCount;
 
 uniform mat4 transform;
 
-varying vec2 vTexCoord;
 varying vec3 vNormal;
 varying vec3 vPosition;
 
@@ -37,9 +38,9 @@ void main() {
   vTexCoord = aTexCoord;
 //  gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(vPosition, 1.);
 #else
-  vPosition = position.xyz;
-  vNormal = aNormal;
-  vTexCoord = aTexCoord;
-  gl_Position = transform * vec4(vPosition, 1.);
+  vPosition = vec3(position.x / uResolution.x, position.y / uResolution.y, 0.0);
+//  vNormal = aNormal;
+  vNormal = vec3(0.0, 0.0, 1.0);
+  gl_Position = transform * position;
 #endif
 }

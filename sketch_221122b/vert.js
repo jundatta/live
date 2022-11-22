@@ -9,7 +9,6 @@ uniform mat4 uProjectionMatrix;
 uniform mat4 uModelViewMatrix;
 uniform float uFrameCount;
 
-varying vec2 vTexCoord;
 varying vec3 vNormal;
 varying vec3 vPosition;
 
@@ -19,13 +18,13 @@ void main() {
     vec3 delta = 0.1 *  aNormal * sin(aPosition * 30.);
   vPosition = aPosition + delta ;
   vNormal = normalize(aNormal + delta);
-  vTexCoord = aTexCoord;
   gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(vPosition, 1.);
 #else
-  vPosition = aPosition ;
-  vNormal = aNormal;
-  vTexCoord = aTexCoord;
-  gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(vPosition, 1.);
+  //vPosition = aPosition;
+  vPosition = aPosition;
+//vNormal = aNormal;
+vNormal = vec3(0.0, 0.0, 1.0);
+gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aPosition, 1.);
 #endif
 }
 
