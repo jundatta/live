@@ -13,16 +13,11 @@ varying vec3 vNormal;
 varying vec3 vPosition;
 
 void main() {
-  #if 1
-  vec3 delta = 0.1 * aNormal * sin(aPosition * 30. + uFrameCount * 0.1);
-  vPosition = aPosition + delta ;
+  vec3 delta = 0.1 *  aNormal * sin(aPosition * 30. + uFrameCount * 0.1);
+delta = vec3(0);
+  vPosition = aPosition + delta;
   vNormal = normalize(aNormal + delta);
   gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(vPosition, 1.);
-#else
-  vPosition = aPosition;
-vNormal = aNormal;
-gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aPosition, 1.);
-#endif
 }
 
 

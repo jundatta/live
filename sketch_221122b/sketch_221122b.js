@@ -22,11 +22,5 @@ function draw() {
   //rotateY(frameCount * 0.001);
 
   //sphere(height / 2.8, 800, 500);
-  sphere(height / 2.8);
-  //rect(0, 0, width, height);
-  //print(frameRate());
-}
-
-function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
+  sphere(height / 2.8, 30, 30);
 }

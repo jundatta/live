@@ -7,14 +7,11 @@ PShader theShader;
 
 void preload() {
   theShader = loadShader("frag.glsl", "vert.glsl");
-  //theShader = loadShader("frag.glsl");
 }
 void setup() {
   preload();
   size(1112, 834, P3D);
   noStroke();
-
-  theShader.set("uResolution", (float)width, (float)height);
 }
 
 void draw() {
@@ -29,8 +26,6 @@ void draw() {
   //rotateX(frameCount * 0.002);
   //rotateY(frameCount * 0.001);
 
-  //  sphere(height / 2.8, 800, 500);
-  //  sphere(height / 2.8);
-  rect(0, 0, width, height);
+  sphere(height / 2.8);
   //resetShader();
 }
