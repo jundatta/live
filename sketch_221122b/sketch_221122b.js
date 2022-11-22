@@ -22,7 +22,8 @@ function draw() {
   //rotateY(frameCount * 0.001);
 
   //sphere(height / 2.8, 800, 500);
-  rect(0, 0, width, height);
+  sphere(height / 2.8);
+  //rect(0, 0, width, height);
   //print(frameRate());
 }
 

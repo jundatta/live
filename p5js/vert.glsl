@@ -32,13 +32,12 @@ varying vec3 vNormal;
 varying vec3 vPosition;
 
 void main() {
-#if 0
-//  vec3 delta = 0.1 *  aNormal * sin(aPosition * 30. + uFrameCount * 0.1);
-  vec3 delta = 0.1 *  aNormal * sin(aPosition * 30.);
+#if 1
+  vec3 aPosition = vec3(position.xy / uResolution, 0.0);
+  vec3 delta = 0.1 * aNormal * sin(aPosition * 30. + uFrameCount * 0.1);
   vPosition = aPosition + delta ;
   vNormal = normalize(aNormal + delta);
-  vTexCoord = aTexCoord;
-//  gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(vPosition, 1.);
+	gl_Position = transform * position;
 #else
 	vec3 aPosition = vec3(position.xy / uResolution, 0.0);
 	vPosition = aPosition;
