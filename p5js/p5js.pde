@@ -23,8 +23,8 @@ void draw() {
   background(0);
   shader(theShader);
 
-  theShader.set("uFrameCount", (frameCount % 16));
-  //theShader.set("uFrameCount", 1);
+  // ※frameCountが(int)で落ちるので(float)のキャストをつける
+  theShader.set("uFrameCount", (float)frameCount);
 
   //rotateX(frameCount * 0.002);
   //rotateY(frameCount * 0.001);

@@ -15,8 +15,7 @@ function draw() {
   background(0);
   shader(theShader);
 
-  theShader.setUniform("uFrameCount", (frameCount % 16));
-  //theShader.setUniform("uFrameCount", 1);
+  theShader.setUniform("uFrameCount", frameCount);
 
 
   //rotateX(frameCount * 0.002);
