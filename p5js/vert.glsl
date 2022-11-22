@@ -25,11 +25,10 @@ varying vec3 vPosition;
 
 void main() {
 	vec3 aPosition = position.xyz;
+// 法線の向きをひっくり返してみたが。。。
 vec3 aNormal = -normal;
 	vec3 delta = 0.1 * aNormal * sin(aPosition * 30. + uFrameCount * 0.1);
-delta = vec3(0.0);
 	vPosition = aPosition + (aPosition * delta);
 	vNormal = normalize(aNormal + delta);
-//	gl_Position = transform * vec4(vPosition, position.w);
-	gl_Position = transform * position;
+	gl_Position = transform * vec4(vPosition, position.w);
 }
