@@ -23,9 +23,9 @@ void draw() {
   // ※frameCountが(int)で落ちるので(float)のキャストをつける
   theShader.set("uFrameCount", (float)frameCount);
 
-  //rotateX(frameCount * 0.002);
-  //rotateY(frameCount * 0.001);
+  rotateX(radians(frameCount * 0.002));
+  rotateY(radians(frameCount * 0.001));
 
   sphere(height / 2.8);
-  //resetShader();
+  resetShader();
 }
