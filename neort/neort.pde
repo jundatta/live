@@ -20,7 +20,7 @@ void setup() {
 //--------------------------------------------------------------
 void update() {
   fbo1.beginDraw();
-  fbo1.clear();
+  fbo1.background(0);
 
   fbo1.translate(fbo1.width * 0.5, fbo1.height * 0.5);
   fbo1.rotateX(radians(ofGetFrameNum() * 0.37));
@@ -115,9 +115,9 @@ void update() {
   fbo1.endDraw();
 
   fbo2.beginDraw();
-  fbo2.clear();
+  fbo2.background(0);
   fbo2.noStroke();
-  fbo2.fill(color(0));
+  fbo2.fill(0);
 
   int span = 180;
   var flag = true;
