@@ -12,11 +12,9 @@ void setup() {
 
   fbo1 = createGraphics(width, height, P3D);
   fbo2 = createGraphics(width, height, P3D);
-  shader = loadShader("shader.frag", "shader.vert");
+  shader = loadShader("shader.frag");
 
-  s.set("resolution", width, height);
-  // 最初のミリ秒を取り込んでおく
-  startMillis = millis();
+  shader.set("resolution", width, height);
 }
 
 //--------------------------------------------------------------
@@ -48,7 +46,7 @@ void update() {
       var noise_4 = openFrameworks.ofNoise(radius * cos(phi_deg * DEG_TO_RAD) * 0.02, radius * sin(phi_deg * DEG_TO_RAD) * 0.02, radius * cos((theta_deg + theta_deg_step) * DEG_TO_RAD) * 0.02, ofGetFrameNum() * 0.005);
 
       var index = face.getNumVertices();
-      ArrayList<PVector> vertices;
+      ArrayList<PVector> vertices = new ArrayList();
 
       vertices.add(new PVector(
         radius * sin((theta_deg - theta_deg_step * 0.5) * DEG_TO_RAD) * cos((phi_deg + phi_deg_step * 0.5) * DEG_TO_RAD),
@@ -116,25 +114,24 @@ void update() {
 
   fbo1.endDraw();
 
-  fbo2.begin();
-  ofClear(0);
-  ofSetColor(0);
+  fbo2.beginDraw();
+  fbo2.clear();
+  fbo2.noStroke();
+  fbo2.fill(color(0));
 
   int span = 180;
   var flag = true;
-  for (int x = 0; x < ofGetWidth(); x += span) {
-
-    for (int y = 0; y < ofGetHeight(); y += span) {
-
+  for (int x = 0; x < fbo2.width; x += span) {
+    for (int y = 0; y < fbo2.height; y += span) {
       if (flag) {
-        ofDrawRectangle(x, y, span, span);
+        fbo2.rect(x, y, span, span);
       }
       flag = !flag;
     }
     flag = !flag;
   }
 
-  fbo2.end();
+  fbo2.endDraw();
 }
 
 //--------------------------------------------------------------
@@ -142,9 +139,8 @@ void draw() {
   update();
 
   background(239);
-  ofSetLineWidth(3);
+  noStroke();
 
-  shader.set("time", (millis() - startMillis) / 1000.0f);
   shader.set("tex1", fbo1);
   shader.set("tex2", fbo2);
 
