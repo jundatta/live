@@ -7,30 +7,31 @@ PGraphics fbo1, fbo2;
 PShader shader;
 //--------------------------------------------------------------
 void setup() {
-  size(720, 720, P3D);
+  size(500, 800, P3D);
   //blendMode(REPLACE);
   strokeWeight(3*0.5f);
 
   fbo1 = createGraphics(width, height, P3D);
-  
+
   fbo2 = createGraphics(width, height, P3D);
   fbo2.beginDraw();
   fbo2.clear();
   fbo2.noStroke();
   fbo2.fill(0);
-  int span = 180;
+  int spanW = int(fbo2.width * 0.25);
+  int spanH = int(fbo2.height * 0.25);
   var flag = true;
-  for (int x = 0; x < fbo2.width; x += span) {
-    for (int y = 0; y < fbo2.height; y += span) {
+  for (int x = 0; x < fbo2.width; x += spanW) {
+    for (int y = 0; y < fbo2.height; y += spanH) {
       if (flag) {
-        fbo2.rect(x, y, span, span);
+        fbo2.rect(x, y, spanW, spanH);
       }
       flag = !flag;
     }
     flag = !flag;
   }
   fbo2.endDraw();
-  
+
   shader = loadShader("shader.frag");
   shader.set("resolution", width, height);
 }
