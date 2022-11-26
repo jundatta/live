@@ -5,15 +5,33 @@
 
 PGraphics fbo1, fbo2;
 PShader shader;
-int startMillis;
 //--------------------------------------------------------------
 void setup() {
   size(720, 720, P3D);
+  //blendMode(REPLACE);
+  strokeWeight(3*0.5f);
 
   fbo1 = createGraphics(width, height, P3D);
+  
   fbo2 = createGraphics(width, height, P3D);
+  fbo2.beginDraw();
+  fbo2.clear();
+  fbo2.noStroke();
+  fbo2.fill(0);
+  int span = 180;
+  var flag = true;
+  for (int x = 0; x < fbo2.width; x += span) {
+    for (int y = 0; y < fbo2.height; y += span) {
+      if (flag) {
+        fbo2.rect(x, y, span, span);
+      }
+      flag = !flag;
+    }
+    flag = !flag;
+  }
+  fbo2.endDraw();
+  
   shader = loadShader("shader.frag");
-
   shader.set("resolution", width, height);
 }
 
@@ -108,43 +126,25 @@ void update() {
     }
   }
 
-  face.draw(fbo1, color(0, 0, 0, 0));
+  face.draw(fbo1, color(0));
 
   frame.drawWireframe(fbo1, color(255));
 
   fbo1.endDraw();
-
-  fbo2.beginDraw();
-  fbo2.clear();
-  fbo2.noStroke();
-  fbo2.fill(0, 0, 0, 0);
-
-  int span = 180;
-  var flag = true;
-  for (int x = 0; x < fbo2.width; x += span) {
-    for (int y = 0; y < fbo2.height; y += span) {
-      if (flag) {
-        fbo2.rect(x, y, span, span);
-      }
-      flag = !flag;
-    }
-    flag = !flag;
-  }
-
-  fbo2.endDraw();
 }
 
 //--------------------------------------------------------------
 void draw() {
   update();
-
   background(239);
-  noStroke();
 
   shader.set("tex1", fbo1);
   shader.set("tex2", fbo2);
 
   shader(shader);
+  push();
+  noStroke();
   rect(0, 0, width, height);
+  pop();
   resetShader();
 }
