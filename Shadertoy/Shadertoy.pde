@@ -18,6 +18,7 @@ void setup() {
   startMillis = millis();
   startCount = frameCount;
   sd.set("iChannel0", loadImage("iChannel0.jpg"));
+  sd.set("iChannel1", loadImage("iChannel1.jpg"));
   sd.set("iChannel2", loadImage("iChannel2.jpg"));
   sd.set("iChannel3", loadImage("iChannel3.jpg"));
 }
