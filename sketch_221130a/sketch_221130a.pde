@@ -11,11 +11,11 @@ void setup() {
 
   Sphere sp = new Sphere(150, 3);
   ArrayList<PVector> triangles = sp.getVertices();
-  for (int i = 0; i < vertices.size(); i+=3) {
+  for (int i = 0; i < triangles.size(); i+=3) {
     //var avg = new PVector(triangle.getVertex(0) + triangle.getVertex(1) + triangle.getVertex(2)) / 3;
-    PVector t0 = vertices.get(i+0);
-    PVector t1 = vertices.get(i+1);
-    PVector t2 = vertices.get(i+2);
+    PVector t0 = triangles.get(i+0);
+    PVector t1 = triangles.get(i+1);
+    PVector t2 = triangles.get(i+2);
     PVector avg = PVector.add(t0, t1);
     avg.add(t2);
     avg.div(3.0f);
@@ -35,24 +35,27 @@ void setup() {
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
-
+void update() {
   draw_line = line;
 
+  ofMesh dl = new ofMesh();
   for (var vertex : draw_line.getVertices()) {
+    float x = vertex.x * 0.0015f;
+    float y = vertex.y * 0.0015f;
+    float z = vertex.z * 0.0015f;
+    float w = ofGetFrameNum() * 0.01;
+    var noise_value = openFrameworks.ofNoise(x, y, z, w);
 
-    var noise_value = ofNoise(glm::vec4(vertex * 0.0015, ofGetFrameNum() * 0.01));
-
+    PVector nV = vertex.copy();
+    nV = nV.normalize();
     if (noise_value > 0.5 && noise_value < 0.55) {
-
-      vertex = glm::normalize(vertex) * ofMap(noise_value, 0.5, 0.55, 200, 300);
+      nV = nV.mult(map(noise_value, 0.5, 0.55, 200, 300));
     } else if (noise_value > 0.55) {
-
-      vertex = glm::normalize(vertex) * 300;
+      nV = nV.mult(300);
     } else {
-
-      vertex = glm::normalize(vertex) * 200;
+      nV = nV.mult(200);
     }
+    dl.add(nV);
   }
 }
 
