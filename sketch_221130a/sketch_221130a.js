@@ -47,9 +47,9 @@ v0 = createVector(d.x, d.y)
 
     buildings.push(new Building(v2, w, h, size))
 }
-//buildings = buildings.sort((b1, b2)=> {
-//}
-//)
+buildings = buildings.sort((b1, b2)=> {
+}
+)
 bgGradient(width/2, height*0.6)
   drawMoon(width*0.5, height*0.5)
   buildings.forEach(b=> {

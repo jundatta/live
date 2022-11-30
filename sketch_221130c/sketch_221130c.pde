@@ -6,7 +6,7 @@
 ArrayList<Building> buildings = new ArrayList();
 float buildingCount = 150 * 0.125f;
 PVector v1;
-float gradient = 100;
+float gradient = 100 * 0.5f;
 
 boolean isScale;
 
