@@ -111,7 +111,7 @@ class Building {
     this.h = h;
     this.wBtn = this.w*0.8
       this.mBtn = (this.w-this.wBtn)/2
-      this.color = color(random(360), 50, 50)
+      //this.color = color(random(360), 50, 50)
       this.m = 5
       this.deg = 10
       this.inclination = random(
@@ -120,7 +120,8 @@ class Building {
       )
       this.offset = this.inclination*360/2
       this.inclineDir = abs(this.inclination) === this.inclination
-      this.color=random(180, 270)
+      //console.log(this.inclineDir);
+    this.color=random(180, 270)
       this.v = createVector(this.x - width/2, this.y + height)
       this.ang = v1.angleBetween(this.v);
   }

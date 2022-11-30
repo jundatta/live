@@ -3,99 +3,122 @@
 // 【作品名】Dark City
 // https://openprocessing.org/sketch/1380184
 
-let buildings = [];
-let buildingCount = 150;
-let v1;
-let angle = 180;
-var gradient = 100;
+ArrayList<Building> buildings = new ArrayList();
+float buildingCount = 150;
+PVector v1;
+float gradient = 100;
 
-function setup() {
-  createCanvas(1112, 834);
+boolean isScale;
+
+void setup() {
+  size(1112, 834);
+
   isScale = width <= 1112;
-  buildingCount = max(floor(width/15), 100);
+  buildingCount = max(floor(width/15.0f), 100);
   pixelDensity(2);
   rotate(PI);
   translate(-width, -height);
   background(0);
   rectMode(CENTER);
-  colorMode(HSB, 360, 100, 100);
+  colorMode(HSB, 360, 100, 100, 1.0);
   noStroke();
-  background(220, 60, 70, 1);
+  //background(220, 60, 70, 1);
   push();
-  fill('red');
-d = {x:
-width/2, y:
-  height;
+  fill(220, 60, 70, 1);
+  rect(0, 0, width, height);
+  pop();
+
+  push();
+  //fill('red');
+  fill(0, 100, 100);
+  v1 = new PVector(0, height);
+  translate(width, height);
+  rotate(PI);
+
+  for (float i=0; i<buildingCount; i++) {
+    float size = 1;
+
+    float w = 45*random(size*2.5, size*3.5);
+    float h = 60*random(size*3, size*15);
+    float x = random(width);
+
+    // outer lower
+    float y = height - h*0.25 + (abs(width*0.5-x)/(float)width)*100;
+    PVector v2 = new PVector(x, y);
+
+    buildings.add(new Building(v2, w, h));
+  }
+  // 何基準やろ？
+  //buildings = buildings.sort((b1, b2)=> {
+  //}
+  //);
+  bgGradient(width/2, height*0.6);
+  drawMoon(width*0.5, height*0.5);
+  for (Building b : buildings) {
+    b.update();
+    b.draw();
+  }
+  pop();
 }
-v0 = createVector(d.x, d.y);
-v1 = createVector(0, height);
-translate(width, height);
-rotate(PI);
 
-for (let i=0; i<buildingCount; i++) {
-
-  size = 1;
-
-  w = 45*random(size*2.5, size*3.5);
-  h = 60*random(size*3, size*15);
-  x = random(width);
-
-  // outer lower
-  y = height - h*0.25 + (abs(width*0.5-x)/width)*100;
-  v2 = createVector(x, y);
-
-  buildings.push(new Building(v2, w, h, size));
-}
-buildings = buildings.sort((b1, b2)=> {
-}
-);
-bgGradient(width/2, height*0.6);
-drawMoon(width*0.5, height*0.5);
-buildings.forEach(b=> {
-  b.update();
-  b.draw();
-}
-);
-
-pop();
-}
-
-function draw() {
+void draw() {
   rotate(PI);
 }
 
 class Building {
-  constructor(p, w, h, size) {
+  float x, y;
+  float w, h;
+  float wBtn, mBtn;
+  float col;
+  float m;
+  float deg;
+  float inclination;
+  float offset;
+  boolean inclineDir;
+  PVector v;
+  float ang;
+  Building(PVector p, float w, float h) {
     this.x = p.x;
     this.y = p.y;
-    this.size = size||1;
     this.w = w;
     this.h = h;
     this.wBtn = this.w*0.8;
-    this.mBtn = (this.w-this.wBtn)/2;
-    this.color = color(random(360), 50, 50);
+    this.mBtn = (this.w-this.wBtn)/2.0f;
     this.m = 5;
     this.deg = 10;
     this.inclination = random(
-      -TWO_PI * this.deg/360,
-      TWO_PI * this.deg/360
-      )
-      this.offset = this.inclination*360/2;
-    this.inclineDir = abs(this.inclination) === this.inclination;
-    this.color=random(180, 270);
-    this.v = createVector(this.x - width/2, this.y + height);
-    this.ang = v1.angleBetween(this.v);
+      -TWO_PI * this.deg/360.0f,
+      TWO_PI * this.deg/360.0f
+      );
+    this.offset = this.inclination*360/2.0f;
+    this.inclineDir = (abs(this.inclination) == this.inclination);
+    this.col=random(180, 270);
+    this.v = new PVector(this.x - width/2.0f, this.y + height);
+    this.ang = PVector.angleBetween(v1, this.v);
   }
 
-  update() {
-    this.v = createVector(this.x - width/2, this.y + height);
-    this.ang = v1.angleBetween(this.v);
+  void update() {
+    this.v = new PVector(this.x - width/2.0f, this.y + height);
+    this.ang = PVector.angleBetween(v1, this.v);
     this.inclination = max(min(this.ang *1, 0.2), -0.2);
     this.offset = this.inclination > 0? max(this.inclination*360, 5): min(this.inclination*360, -5);
-    this.inclineDir = abs(this.inclination) === this.inclination ? 1 : -1;
+    //this.inclineDir = (abs(this.inclination) == this.inclination ? 1 : -1);
+    float inc;
+    if (this.inclination != 0.0f) {
+      inc = 1.0f;
+    } else {
+      inc = -1.0f;
+    }
+    if (abs(this.inclination) == inc) {
+      //this.inclineDir = true;
+      this.inclineDir = false;
+    } else {
+      //this.inclineDir = false;
+      this.inclineDir = false;
+    }
   }
-  draw() {
-    let n = (this.w/150) * 0.85;
+  void draw() {
+    float n = (this.w/150.0f) * 0.85;
 
     push();
 
@@ -108,36 +131,36 @@ class Building {
     shearX(this.inclination);
 
     // outline
-    if (random()>0) {
+    if (random(1)>0) {
       fill(0, 0.5);
-      let borderW = 0.3;
+      float borderW = 0.3;
       quad(
         -this.w/2-borderW, -this.h/2-borderW,
         this.w/2+borderW, -this.h/2-borderW,
         this.w/2-this.mBtn+borderW, this.h/2+borderW,
-        -this.w/2+this.mBtn-borderW, this.h/2+borderW,
+        -this.w/2+this.mBtn-borderW, this.h/2+borderW
         );
       quad(
         -this.w/2-this.offset-borderW, -this.h/2-abs(this.offset*n)-borderW,
         this.w/2-this.offset+borderW, -this.h/2-abs(this.offset*n)-borderW,
         this.w/2-this.offset-this.mBtn*2+borderW, this.h/2-abs(this.offset*n)+borderW,
-        -this.w/2-this.offset+this.mBtn*2-borderW, this.h/2-abs(this.offset*n)+borderW,
+        -this.w/2-this.offset+this.mBtn*2-borderW, this.h/2-abs(this.offset*n)+borderW
         );
       quad(
         -this.w/2-this.offset-borderW, -this.h/2 -abs(this.offset*n)-borderW,
         this.w/2 - this.offset+borderW, -this.h/2 -abs(this.offset*n)-borderW,
         this.w/2 +borderW, -this.h/2-borderW,
-        -this.w/2-borderW, -this.h/2-borderW,
+        -this.w/2-borderW, -this.h/2-borderW
         );
     }
 
     // side and bottomback
-    fill(this.color, 35, 30);
+    fill(this.col, 35, 30);
     quad(
       -this.w/2-this.offset, -this.h/2-abs(this.offset*n),
       this.w/2-this.offset, -this.h/2-abs(this.offset*n),
       this.w/2-this.offset-this.mBtn*2, this.h/2-abs(this.offset*n),
-      -this.w/2-this.offset+this.mBtn*2, this.h/2-abs(this.offset*n),
+      -this.w/2-this.offset+this.mBtn*2, this.h/2-abs(this.offset*n)
       );
 
     quad(
@@ -148,38 +171,45 @@ class Building {
       );
 
     // top
-    fill(this.color, 35, 50);
+    fill(this.col, 35, 50);
     quad(
       -this.w/2-this.offset, -this.h/2 -abs(this.offset*n),
       this.w/2 - this.offset, -this.h/2 -abs(this.offset*n),
       this.w/2, -this.h/2,
-      -this.w/2, -this.h/2,
+      -this.w/2, -this.h/2
       );
 
     //body
-    fill(this.color, 30, 20);
+    fill(this.col, 30, 20);
     quad(
       -this.w/2, -this.h/2,
       this.w/2, -this.h/2,
       this.w/2-this.mBtn, this.h/2,
-      -this.w/2+this.mBtn, this.h/2,
+      -this.w/2+this.mBtn, this.h/2
       );
 
     drawBtnDarkLayer(0, 0, 0.000005);
 
     //windows
-    let windowClr = color(random(30, 65), 100, 100);
-    let oft = 0;
-    for (let i=30; i<this.w-this.m*4; i+=20) {
-      let h = random(4, 8);
-      for (let j=20; j<this.h-this.m*6; j+=15) {
-        random()>0.8 ? fill(windowClr): fill(0, 60, 10);
+    color windowClr = color(random(30, 65), 100, 100);
+    for (float i=30; i<this.w-this.m*4; i+=20) {
+      float h = random(4, 8);
+      for (float j=20; j<this.h-this.m*6; j+=15) {
+        //random(1)>0.8 ? fill(windowClr): fill(0, 60, 10);
+        if (random(1)>0.8) {
+          fill(windowClr);
+        } else {
+          fill(0, 60, 10);
+        }
+        float iD = 0.0f;
+        if (this.inclineDir) {
+          iD = 1.0f;
+        }
         rect(
-          i - this.w/2 + this.inclineDir*this.m + 2,
-          j - this.h/2 + this.inclineDir*this.m + 2*j/(this.w-this.m*6),
+          i - this.w/2 + iD*this.m + 2,
+          j - this.h/2 + iD*this.m + 2*j/(float)(this.w-this.m*6),
           10, h);
       }
-      oft+=2;
     }
 
     shearX(-this.inclination);
@@ -187,7 +217,7 @@ class Building {
   }
 }
 
-function drawArrow(base, vec, myColor) {
+void drawArrow(PVector base, PVector vec, color myColor) {
   push();
   stroke(myColor);
   strokeWeight(3);
@@ -195,12 +225,12 @@ function drawArrow(base, vec, myColor) {
   translate(base.x, base.y);
   line(0, 0, vec.x, vec.y);
   rotate(vec.heading());
-  let arrowSize = 7;
+  float arrowSize = 7;
   translate(vec.mag() - arrowSize, 0);
-  triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);
+  triangle(0, arrowSize / 2.0f, 0, -arrowSize / 2.0f, arrowSize, 0);
   pop();
 }
-function drawMoon(x, y) {
+void drawMoon(float x, float y) {
   push();
   translate(x, y);
   for (var moonlight = gradient; moonlight > 0; moonlight = moonlight - 1) {
@@ -212,7 +242,7 @@ function drawMoon(x, y) {
   } //moonlight
   pop();
 }
-function bgGradient(x, y) {
+void bgGradient(float x, float y) {
   push();
   translate(x, y);
   scale(2);
@@ -226,11 +256,11 @@ function bgGradient(x, y) {
   pop();
 }
 
-function drawBtnDarkLayer(x, y, fade) {
+void drawBtnDarkLayer(float x, float y, float fade) {
   push();
   translate(x, y);
   scale(2);
-  let a = 1;
+  float a = 1;
   for (var moonlight = gradient; moonlight > 0; moonlight = moonlight - 1) {
     var moonlightSize = map(moonlight*1.5, gradient*1, 0, 100, width); //size of moonlight
     noStroke();
@@ -241,11 +271,11 @@ function drawBtnDarkLayer(x, y, fade) {
   pop();
 }
 
-function drawGradientLayer(x, y) {
+void drawGradientLayer(float x, float y) {
   push();
   translate(x, y);
   scale(2);
-  let a = 1;
+  float a = 1;
   for (var moonlight = gradient; moonlight > 0; moonlight = moonlight - 1) {
     var moonlightSize = map(moonlight*1.5, gradient*1, 0, 100, max(height, width)); //size of moonlight
     noStroke();
