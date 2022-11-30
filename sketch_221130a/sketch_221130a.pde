@@ -65,7 +65,7 @@ void draw() {
   background(0);
   stroke(255);
   fill(255);
-  ofSetLineWidth(1.5);
+  ofSetLineWidth(1.5 * 1.5f);
 
   ofRotateY(ofGetFrameNum());
 
