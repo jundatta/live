@@ -5,11 +5,12 @@
 
 ofMesh line = new ofMesh();
 ofMesh draw_line = new ofMesh();
+final int kRadius = 150;
 //--------------------------------------------------------------
 void setup() {
   size(720, 720, P3D);
 
-  Sphere sp = new Sphere(150, 3);
+  Sphere sp = new Sphere(kRadius, 3);
   ArrayList<PVector> triangles = sp.getVertices();
   for (int i = 0; i < triangles.size(); i+=3) {
     //var avg = new PVector(triangle.getVertex(0) + triangle.getVertex(1) + triangle.getVertex(2)) / 3;
@@ -38,7 +39,6 @@ void setup() {
 void update() {
   draw_line = line;
 
-  ofMesh dl = new ofMesh();
   for (var vertex : draw_line.getVertices()) {
     float x = vertex.x * 0.0015f;
     float y = vertex.y * 0.0015f;
@@ -46,16 +46,14 @@ void update() {
     float w = ofGetFrameNum() * 0.01;
     var noise_value = openFrameworks.ofNoise(x, y, z, w);
 
-    PVector nV = vertex.copy();
-    nV = nV.normalize();
+    vertex.normalize();
     if (noise_value > 0.5 && noise_value < 0.55) {
-      nV = nV.mult(map(noise_value, 0.5, 0.55, 200, 300));
+      vertex.mult(map(noise_value, 0.5, 0.55, 200, 300));
     } else if (noise_value > 0.55) {
-      nV = nV.mult(300);
+      vertex.mult(300);
     } else {
-      nV = nV.mult(200);
+      vertex.mult(200);
     }
-    dl.add(nV);
   }
 }
 
@@ -64,24 +62,32 @@ void draw() {
   update();
   translate(width/2, height/2);
 
-  ofBackground(0);
-  ofSetColor(255);
-  ofEnableDepthTest();
+  background(0);
+  stroke(255);
+  fill(255);
   ofSetLineWidth(1.5);
 
-  cam.begin();
   ofRotateY(ofGetFrameNum());
 
-  ofTranslate(-320, 0, 0);
+  translate(-320, 0, 0);
 
-  draw_line.drawWireframe();
+  draw_line.drawWireframe(color(255));
 
-  ofTranslate(640, 0, 0);
+  translate(640, 0, 0);
 
+  final float SW = 3.5f;
   for (var vertex : draw_line.getVertices()) {
-
-    ofDrawSphere(vertex, 3.5);
+    push();
+    // （視点から見た感じじゃなくてしかも回転しているので世界座標でもないので
+    //　なんちゃってすぎてゴメンw
+    //　ちょっと大きさに遠近感？があったほうがいいかな。と思ったんですよん
+    //　視点から見た世界座標のzを逆算すればいいんでしょうけどw）
+    //translate(vertex.x, vertex.y, vertex.z);
+    //sphere(3.5);
+    float sw = map(vertex.z, -kRadius, +kRadius, SW*2.0f, SW*3.5f);
+    strokeWeight(sw);
+    translate(0, 0, vertex.z);
+    point(vertex.x, vertex.y);
+    pop();
   }
-
-  cam.end();
 }
