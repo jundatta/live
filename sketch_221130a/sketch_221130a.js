@@ -47,9 +47,9 @@ v0 = createVector(d.x, d.y)
 
     buildings.push(new Building(v2, w, h, size))
 }
-buildings = buildings.sort((b1, b2)=> {
-}
-)
+//buildings = buildings.sort((b1, b2)=> {
+//}
+//)
 bgGradient(width/2, height*0.6)
   drawMoon(width*0.5, height*0.5)
   buildings.forEach(b=> {
@@ -131,6 +131,7 @@ class Building {
     // this.y = mouseY
     this.v = createVector(this.x - width/2, this.y + height)
       this.ang = v1.angleBetween(this.v)
+console.log(this.ang);
       this.inclination = max(min(this.ang *1, 0.2), -0.2)
       this.offset = this.inclination > 0? max(this.inclination*360, 5): min(this.inclination*360, -5)
       this.inclineDir = abs(this.inclination) === this.inclination ? 1 : -1
