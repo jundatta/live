@@ -134,50 +134,50 @@ class Building {
     if (random(1)>0) {
       fill(0, 0.5);
       float borderW = 0.3;
-      quad(
-        -this.w/2-borderW, -this.h/2-borderW,
-        this.w/2+borderW, -this.h/2-borderW,
-        this.w/2-this.mBtn+borderW, this.h/2+borderW,
-        -this.w/2+this.mBtn-borderW, this.h/2+borderW
-        );
-      quad(
-        -this.w/2-this.offset-borderW, -this.h/2-abs(this.offset*n)-borderW,
-        this.w/2-this.offset+borderW, -this.h/2-abs(this.offset*n)-borderW,
-        this.w/2-this.offset-this.mBtn*2+borderW, this.h/2-abs(this.offset*n)+borderW,
-        -this.w/2-this.offset+this.mBtn*2-borderW, this.h/2-abs(this.offset*n)+borderW
-        );
-      quad(
-        -this.w/2-this.offset-borderW, -this.h/2 -abs(this.offset*n)-borderW,
-        this.w/2 - this.offset+borderW, -this.h/2 -abs(this.offset*n)-borderW,
-        this.w/2 +borderW, -this.h/2-borderW,
-        -this.w/2-borderW, -this.h/2-borderW
-        );
+      //quad(
+      //  -this.w/2-borderW, -this.h/2-borderW,
+      //  this.w/2+borderW, -this.h/2-borderW,
+      //  this.w/2-this.mBtn+borderW, this.h/2+borderW,
+      //  -this.w/2+this.mBtn-borderW, this.h/2+borderW
+      //  );
+      //quad(
+      //  -this.w/2-this.offset-borderW, -this.h/2-abs(this.offset*n)-borderW,
+      //  this.w/2-this.offset+borderW, -this.h/2-abs(this.offset*n)-borderW,
+      //  this.w/2-this.offset-this.mBtn*2+borderW, this.h/2-abs(this.offset*n)+borderW,
+      //  -this.w/2-this.offset+this.mBtn*2-borderW, this.h/2-abs(this.offset*n)+borderW
+      //  );
+      //quad(
+      //  -this.w/2-this.offset-borderW, -this.h/2 -abs(this.offset*n)-borderW,
+      //  this.w/2 - this.offset+borderW, -this.h/2 -abs(this.offset*n)-borderW,
+      //  this.w/2 +borderW, -this.h/2-borderW,
+      //  -this.w/2-borderW, -this.h/2-borderW
+      //  );
     }
 
     // side and bottomback
     fill(this.col, 35, 30);
-    quad(
-      -this.w/2-this.offset, -this.h/2-abs(this.offset*n),
-      this.w/2-this.offset, -this.h/2-abs(this.offset*n),
-      this.w/2-this.offset-this.mBtn*2, this.h/2-abs(this.offset*n),
-      -this.w/2-this.offset+this.mBtn*2, this.h/2-abs(this.offset*n)
-      );
+    //quad(
+    //  -this.w/2-this.offset, -this.h/2-abs(this.offset*n),
+    //  this.w/2-this.offset, -this.h/2-abs(this.offset*n),
+    //  this.w/2-this.offset-this.mBtn*2, this.h/2-abs(this.offset*n),
+    //  -this.w/2-this.offset+this.mBtn*2, this.h/2-abs(this.offset*n)
+    //  );
 
-    quad(
-      -this.w/2-this.offset+this.mBtn*2, this.h/2-abs(this.offset*n)-1,
-      this.w/2-this.offset-this.mBtn*2, this.h/2-abs(this.offset*n)-1,
-      this.w/2-this.mBtn, this.h/2,
-      -this.w/2+this.mBtn, this.h/2
-      );
+    //quad(
+    //  -this.w/2-this.offset+this.mBtn*2, this.h/2-abs(this.offset*n)-1,
+    //  this.w/2-this.offset-this.mBtn*2, this.h/2-abs(this.offset*n)-1,
+    //  this.w/2-this.mBtn, this.h/2,
+    //  -this.w/2+this.mBtn, this.h/2
+    //  );
 
     // top
     fill(this.col, 35, 50);
-    quad(
-      -this.w/2-this.offset, -this.h/2 -abs(this.offset*n),
-      this.w/2 - this.offset, -this.h/2 -abs(this.offset*n),
-      this.w/2, -this.h/2,
-      -this.w/2, -this.h/2
-      );
+    //quad(
+    //  -this.w/2-this.offset, -this.h/2 -abs(this.offset*n),
+    //  this.w/2 - this.offset, -this.h/2 -abs(this.offset*n),
+    //  this.w/2, -this.h/2,
+    //  -this.w/2, -this.h/2
+    //  );
 
     //body
     fill(this.col, 30, 20);
@@ -205,10 +205,10 @@ class Building {
         if (this.inclineDir) {
           iD = 1.0f;
         }
-        rect(
-          i - this.w/2 + iD*this.m + 2,
-          j - this.h/2 + iD*this.m + 2*j/(float)(this.w-this.m*6),
-          10, h);
+        //rect(
+        //  i - this.w/2 + iD*this.m + 2,
+        //  j - this.h/2 + iD*this.m + 2*j/(float)(this.w-this.m*6),
+        //  10, h);
       }
     }
 
