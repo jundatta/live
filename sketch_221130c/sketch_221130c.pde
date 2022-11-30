@@ -4,22 +4,20 @@
 // https://openprocessing.org/sketch/1380184
 
 ArrayList<Building> buildings = new ArrayList();
-float buildingCount = 150;
+float buildingCount = 150 * 0.125f;
 PVector v1;
 float gradient = 100;
 
 boolean isScale;
 
 void setup() {
-  size(1112, 834);
+  size(500, 800, P3D);
 
   isScale = width <= 1112;
   buildingCount = max(floor(width/15.0f), 100);
-  pixelDensity(2);
+  //pixelDensity(2);
   rotate(PI);
   translate(-width, -height);
-  background(0);
-  rectMode(CENTER);
   colorMode(HSB, 360, 100, 100, 1.0);
   noStroke();
   //background(220, 60, 70, 1);
@@ -27,6 +25,7 @@ void setup() {
   fill(220, 60, 70, 1);
   rect(0, 0, width, height);
   pop();
+  rectMode(CENTER);
 
   push();
   //fill('red');
@@ -94,12 +93,15 @@ class Building {
     this.inclineDir = (abs(this.inclination) == this.inclination);
     this.col=random(180, 270);
     this.v = new PVector(this.x - width/2.0f, this.y + height);
-    this.ang = PVector.angleBetween(v1, this.v);
+    //this.ang = PVector.angleBetween(v1, this.v);
   }
 
   void update() {
     this.v = new PVector(this.x - width/2.0f, this.y + height);
     this.ang = PVector.angleBetween(v1, this.v);
+    if (0.0f < v.x) {
+      this.ang = -this.ang;
+    }
     this.inclination = max(min(this.ang *1, 0.2), -0.2);
     this.offset = this.inclination > 0? max(this.inclination*360, 5): min(this.inclination*360, -5);
     //this.inclineDir = (abs(this.inclination) == this.inclination ? 1 : -1);
@@ -134,50 +136,50 @@ class Building {
     if (random(1)>0) {
       fill(0, 0.5);
       float borderW = 0.3;
-      //quad(
-      //  -this.w/2-borderW, -this.h/2-borderW,
-      //  this.w/2+borderW, -this.h/2-borderW,
-      //  this.w/2-this.mBtn+borderW, this.h/2+borderW,
-      //  -this.w/2+this.mBtn-borderW, this.h/2+borderW
-      //  );
-      //quad(
-      //  -this.w/2-this.offset-borderW, -this.h/2-abs(this.offset*n)-borderW,
-      //  this.w/2-this.offset+borderW, -this.h/2-abs(this.offset*n)-borderW,
-      //  this.w/2-this.offset-this.mBtn*2+borderW, this.h/2-abs(this.offset*n)+borderW,
-      //  -this.w/2-this.offset+this.mBtn*2-borderW, this.h/2-abs(this.offset*n)+borderW
-      //  );
-      //quad(
-      //  -this.w/2-this.offset-borderW, -this.h/2 -abs(this.offset*n)-borderW,
-      //  this.w/2 - this.offset+borderW, -this.h/2 -abs(this.offset*n)-borderW,
-      //  this.w/2 +borderW, -this.h/2-borderW,
-      //  -this.w/2-borderW, -this.h/2-borderW
-      //  );
+      quad(
+        -this.w/2-borderW, -this.h/2-borderW,
+        this.w/2+borderW, -this.h/2-borderW,
+        this.w/2-this.mBtn+borderW, this.h/2+borderW,
+        -this.w/2+this.mBtn-borderW, this.h/2+borderW
+        );
+      quad(
+        -this.w/2-this.offset-borderW, -this.h/2-abs(this.offset*n)-borderW,
+        this.w/2-this.offset+borderW, -this.h/2-abs(this.offset*n)-borderW,
+        this.w/2-this.offset-this.mBtn*2+borderW, this.h/2-abs(this.offset*n)+borderW,
+        -this.w/2-this.offset+this.mBtn*2-borderW, this.h/2-abs(this.offset*n)+borderW
+        );
+      quad(
+        -this.w/2-this.offset-borderW, -this.h/2 -abs(this.offset*n)-borderW,
+        this.w/2 - this.offset+borderW, -this.h/2 -abs(this.offset*n)-borderW,
+        this.w/2 +borderW, -this.h/2-borderW,
+        -this.w/2-borderW, -this.h/2-borderW
+        );
     }
 
     // side and bottomback
     fill(this.col, 35, 30);
-    //quad(
-    //  -this.w/2-this.offset, -this.h/2-abs(this.offset*n),
-    //  this.w/2-this.offset, -this.h/2-abs(this.offset*n),
-    //  this.w/2-this.offset-this.mBtn*2, this.h/2-abs(this.offset*n),
-    //  -this.w/2-this.offset+this.mBtn*2, this.h/2-abs(this.offset*n)
-    //  );
+    quad(
+      -this.w/2-this.offset, -this.h/2-abs(this.offset*n),
+      this.w/2-this.offset, -this.h/2-abs(this.offset*n),
+      this.w/2-this.offset-this.mBtn*2, this.h/2-abs(this.offset*n),
+      -this.w/2-this.offset+this.mBtn*2, this.h/2-abs(this.offset*n)
+      );
 
-    //quad(
-    //  -this.w/2-this.offset+this.mBtn*2, this.h/2-abs(this.offset*n)-1,
-    //  this.w/2-this.offset-this.mBtn*2, this.h/2-abs(this.offset*n)-1,
-    //  this.w/2-this.mBtn, this.h/2,
-    //  -this.w/2+this.mBtn, this.h/2
-    //  );
+    quad(
+      -this.w/2-this.offset+this.mBtn*2, this.h/2-abs(this.offset*n)-1,
+      this.w/2-this.offset-this.mBtn*2, this.h/2-abs(this.offset*n)-1,
+      this.w/2-this.mBtn, this.h/2,
+      -this.w/2+this.mBtn, this.h/2
+      );
 
     // top
     fill(this.col, 35, 50);
-    //quad(
-    //  -this.w/2-this.offset, -this.h/2 -abs(this.offset*n),
-    //  this.w/2 - this.offset, -this.h/2 -abs(this.offset*n),
-    //  this.w/2, -this.h/2,
-    //  -this.w/2, -this.h/2
-    //  );
+    quad(
+      -this.w/2-this.offset, -this.h/2 -abs(this.offset*n),
+      this.w/2 - this.offset, -this.h/2 -abs(this.offset*n),
+      this.w/2, -this.h/2,
+      -this.w/2, -this.h/2
+      );
 
     //body
     fill(this.col, 30, 20);
@@ -205,10 +207,10 @@ class Building {
         if (this.inclineDir) {
           iD = 1.0f;
         }
-        //rect(
-        //  i - this.w/2 + iD*this.m + 2,
-        //  j - this.h/2 + iD*this.m + 2*j/(float)(this.w-this.m*6),
-        //  10, h);
+        rect(
+          i - this.w/2 + iD*this.m + 2,
+          j - this.h/2 + iD*this.m + 2*j/(float)(this.w-this.m*6),
+          10, h);
       }
     }
 
@@ -235,7 +237,7 @@ void drawMoon(float x, float y) {
   translate(x, y);
   for (var moonlight = gradient; moonlight > 0; moonlight = moonlight - 1) {
     var moonlightSize = map(moonlight, gradient*1, 0, min(width*0.8, 800), 10); //size of moonlight
-    moonlightSize += sin(frameCount/100)*50;
+    moonlightSize += sin(frameCount/100.0f)*50;
     noStroke();
     fill(60, 60, 85, 1 - moonlight / gradient);
     ellipse(0, 0, moonlightSize, moonlightSize); //position of moonlight
