@@ -3,40 +3,32 @@
 // 【作品名】Dot or Line. Draw by openFrameworks
 // https://junkiyoshi.com/2022/01/20/
 
-ofMesh line, draw_line;
+ofMesh line = new ofMesh();
+ofMesh draw_line = new ofMesh();
 //--------------------------------------------------------------
-void ofApp::setup() {
+void setup() {
+  size(720, 720, P3D);
 
-  ofSetFrameRate(60);
-  ofSetWindowTitle("openFrameworks");
-
-  ofBackground(0);
-  ofSetColor(255);
-  ofEnableDepthTest();
-  ofSetLineWidth(1.5);
-
-  this->line.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
-  this->draw_line.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
-
-  auto ico_sphere = ofIcoSpherePrimitive(150, 3);
-  auto triangles = ico_sphere.getMesh().getUniqueFaces();
-  for (auto& triangle : triangles) {
-
-    auto avg = glm::vec3(triangle.getVertex(0) + triangle.getVertex(1) + triangle.getVertex(2)) / 3;
-    this->line.addVertex(avg);
+  Sphere sp = new Sphere(150, 3);
+  ArrayList<PVector> triangles = sp.getVertices();
+  for (int i = 0; i < vertices.size(); i+=3) {
+    //var avg = new PVector(triangle.getVertex(0) + triangle.getVertex(1) + triangle.getVertex(2)) / 3;
+    PVector t0 = vertices.get(i+0);
+    PVector t1 = vertices.get(i+1);
+    PVector t2 = vertices.get(i+2);
+    PVector avg = PVector.add(t0, t1);
+    avg.add(t2);
+    avg.div(3.0f);
+    line.addVertex(avg);
   }
 
-  for (int i = 0; i < this->line.getNumVertices(); i++) {
-
-    for (int k = i + 1; k < this->line.getNumVertices(); k++) {
-
-      auto& location = this->line.getVertex(i);
-      auto& other = this->line.getVertex(k);
-
-      if (glm::distance(location, other) < 15) {
-
-        this->line.addIndex(i);
-        this->line.addIndex(k);
+  for (int i = 0; i < line.getNumVertices(); i++) {
+    for (int k = i + 1; k < line.getNumVertices(); k++) {
+      var location = line.getVertex(i);
+      var other = line.getVertex(k);
+      if (PVector.dist(location, other) < 15) {
+        line.addIndex(i);
+        line.addIndex(k);
       }
     }
   }
@@ -45,11 +37,11 @@ void ofApp::setup() {
 //--------------------------------------------------------------
 void ofApp::update() {
 
-  this->draw_line = this->line;
+  draw_line = line;
 
-  for (auto& vertex : this->draw_line.getVertices()) {
+  for (var vertex : draw_line.getVertices()) {
 
-    auto noise_value = ofNoise(glm::vec4(vertex * 0.0015, ofGetFrameNum() * 0.01));
+    var noise_value = ofNoise(glm::vec4(vertex * 0.0015, ofGetFrameNum() * 0.01));
 
     if (noise_value > 0.5 && noise_value < 0.55) {
 
@@ -65,21 +57,28 @@ void ofApp::update() {
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
+  translate(width/2, height/2);
 
-  this->cam.begin();
+  ofBackground(0);
+  ofSetColor(255);
+  ofEnableDepthTest();
+  ofSetLineWidth(1.5);
+
+  cam.begin();
   ofRotateY(ofGetFrameNum());
 
   ofTranslate(-320, 0, 0);
 
-  this->draw_line.drawWireframe();
+  draw_line.drawWireframe();
 
   ofTranslate(640, 0, 0);
 
-  for (auto& vertex : this->draw_line.getVertices()) {
+  for (var vertex : draw_line.getVertices()) {
 
     ofDrawSphere(vertex, 3.5);
   }
 
-  this->cam.end();
+  cam.end();
 }
