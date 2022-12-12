@@ -7,45 +7,33 @@ ofMesh face;
 ofMesh frame;
 
 //--------------------------------------------------------------
-void ofApp::setup() {
-
-  ofSetFrameRate(60);
-  ofSetWindowTitle("openFrameworks");
-
-  ofBackground(239);
-  ofEnableDepthTest();
-
-  this->frame.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
+void setup() {
+  size(720, 720, P3D);
+  
+  face = new ofMesh();
+  frame = new ofMesh();
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
-
-  this->face.clear();
-  this->frame.clear();
+void update() {
+  face.clear();
+  frame.clear();
 
   int span = 15;
   int len = 300;
   for (int x = len * -0.5; x <= len * 0.5; x += span) {
-
     for (int y = len * -2; y <= len * 0.5; y += span) {
-
       for (int z = len * -0.5; z <= len * 0.5; z += span) {
-
-        auto noise_value = ofNoise(x * 0.01, z * 0.01, y * 0.01 + ofGetFrameNum() * 0.08);
-
+        float noise_value = openFrameworks.ofNoise(x * 0.01, z * 0.01, y * 0.01 + ofGetFrameNum() * 0.08);
         if (y > len * 0.35) {
-
-          noise_value += ofMap(y, len * 0.35, len, 0.25, 1);
+          noise_value += map(y, len * 0.35, len, 0.25, 1);
         } else if (y < len * 0.15) {
-
-          noise_value += ofMap(y, len * -2, len * 0.15, -0.65, 0);
+          noise_value += map(y, len * -2, len * 0.15, -0.65, 0);
         }
 
         if (noise_value > 0.35) {
-
-          int color_value = y < len * 0.35 ? y > -len * 0.75 ? ofMap(y, len * 0.35, -len * 0.75, 39, 128) : ofMap(y, -len * 0.75, len * -2, 128, 239) : 39;
-          this->setBoxToMesh(this->face, this->frame, glm::vec3(x, y, z), span, ofColor(color_value), ofColor(239));
+          int color_value = y < len * 0.35 ? y > -len * 0.75 ? map(y, len * 0.35, -len * 0.75, 39, 128) : map(y, -len * 0.75, len * -2, 128, 239) : 39;
+          setBoxToMesh(face, frame, new PVector(x, y, z), span, color(color_value), color(239));
         }
       }
     }
@@ -53,28 +41,25 @@ void ofApp::update() {
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
+  translate(width/2, height/2);
 
-  this->cam.begin();
+  background(239);
+
   ofRotateY(ofGetFrameNum() * 0.5);
 
-  ofSetColor(39);
-  this->face.draw();
-
-  ofSetColor(239);
-  this->frame.drawWireframe();
-
-  this->cam.end();
+  face.draw(color(39));
+  frame.drawWireframe(color(239));
 }
 
 //--------------------------------------------------------------
-void ofApp::setBoxToMesh(ofMesh& face_target, ofMesh& frame_target, glm::vec3 location, float size, ofColor face_color, ofColor frame_color) {
-
-  this->setBoxToMesh(face_target, frame_target, location, size, size, size, face_color, frame_color);
+void setBoxToMesh(ofMesh face_target, ofMesh frame_target, PVector location, float size, color face_color, color frame_color) {
+  setBoxToMesh(face_target, frame_target, location, size, size, size, face_color, frame_color);
 }
 
 //--------------------------------------------------------------
-void ofApp::setBoxToMesh(ofMesh& face_target, ofMesh& frame_target, glm::vec3 location, float height, float width, float depth, ofColor face_color, ofColor frame_color) {
+void ofApp::setBoxToMesh(ofMesh& face_target, ofMesh& frame_target, glm::vec3 location, float height, float width, float depth, color face_color, color frame_color) {
 
   int index = face_target.getVertices().size();
 
@@ -172,11 +157,4 @@ void ofApp::setBoxToMesh(ofMesh& face_target, ofMesh& frame_target, glm::vec3 lo
     face_target.addColor(face_color);
     frame_target.addColor(frame_color);
   }
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
