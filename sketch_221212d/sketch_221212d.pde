@@ -10,7 +10,7 @@ float vmax = 0.0f;
 Mode mode;
 float t = 0.0f;
 void setup() {
-  size(720, 720);
+  size(500, 800, P3D);
 
   rectMode(CENTER);
   colorMode(HSB, 360, 100, 100, 1.0f);
