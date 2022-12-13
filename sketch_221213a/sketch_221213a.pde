@@ -9,7 +9,7 @@ ofMesh frame;
 //--------------------------------------------------------------
 void setup() {
   size(720, 720, P3D);
-  
+
   face = new ofMesh();
   frame = new ofMesh();
 }
@@ -21,9 +21,9 @@ void update() {
 
   int span = 15;
   int len = 300;
-  for (int x = len * -0.5; x <= len * 0.5; x += span) {
+  for (int x = (int)(len * -0.5); x <= len * 0.5; x += span) {
     for (int y = len * -2; y <= len * 0.5; y += span) {
-      for (int z = len * -0.5; z <= len * 0.5; z += span) {
+      for (int z = (int)(len * -0.5); z <= len * 0.5; z += span) {
         float noise_value = openFrameworks.ofNoise(x * 0.01, z * 0.01, y * 0.01 + ofGetFrameNum() * 0.08);
         if (y > len * 0.35) {
           noise_value += map(y, len * 0.35, len, 0.25, 1);
@@ -32,7 +32,15 @@ void update() {
         }
 
         if (noise_value > 0.35) {
-          int color_value = y < len * 0.35 ? y > -len * 0.75 ? map(y, len * 0.35, -len * 0.75, 39, 128) : map(y, -len * 0.75, len * -2, 128, 239) : 39;
+          //int color_value = y < len * 0.35 ? y > -len * 0.75 ? map(y, len * 0.35, -len * 0.75, 39, 128) : map(y, -len * 0.75, len * -2, 128, 239) : 39;
+          int color_value = 39;
+          if (y < len * 0.35) {
+            if (y > -len * 0.75) {
+              map(y, len * 0.35, -len * 0.75, 39, 128);
+            } else {
+              map(y, -len * 0.75, len * -2, 128, 239);
+            }
+          }
           setBoxToMesh(face, frame, new PVector(x, y, z), span, color(color_value), color(239));
         }
       }
@@ -44,6 +52,7 @@ void update() {
 void draw() {
   update();
   translate(width/2, height/2);
+  scale(1, -1, 1);
 
   background(239);
 
@@ -59,19 +68,23 @@ void setBoxToMesh(ofMesh face_target, ofMesh frame_target, PVector location, flo
 }
 
 //--------------------------------------------------------------
-void ofApp::setBoxToMesh(ofMesh& face_target, ofMesh& frame_target, glm::vec3 location, float height, float width, float depth, color face_color, color frame_color) {
-
+PVector makePoint(PVector location, float x, float y, float z) {
+  PVector p = new PVector(x, y, z);
+  p.add(location);
+  return p;
+}
+void setBoxToMesh(ofMesh face_target, ofMesh frame_target, PVector location, float hh, float ww, float depth, color face_color, color frame_color) {
   int index = face_target.getVertices().size();
 
-  face_target.addVertex(location + glm::vec3(width * -0.5 * 0.99, height * 0.5 * 0.99, depth * -0.5 * 0.99));
-  face_target.addVertex(location + glm::vec3(width * 0.5 * 0.99, height * 0.5 * 0.99, depth * -0.5 * 0.99));
-  face_target.addVertex(location + glm::vec3(width * 0.5 * 0.99, height * 0.5 * 0.99, depth * 0.5 * 0.99));
-  face_target.addVertex(location + glm::vec3(width * -0.5 * 0.99, height * 0.5 * 0.99, depth * 0.5 * 0.99));
+  face_target.addVertex(makePoint(location, ww * -0.5 * 0.99, hh * 0.5 * 0.99, depth * -0.5 * 0.99));
+  face_target.addVertex(makePoint(location, ww * 0.5 * 0.99, hh * 0.5 * 0.99, depth * -0.5 * 0.99));
+  face_target.addVertex(makePoint(location, ww * 0.5 * 0.99, hh * 0.5 * 0.99, depth * 0.5 * 0.99));
+  face_target.addVertex(makePoint(location, ww * -0.5 * 0.99, hh * 0.5 * 0.99, depth * 0.5 * 0.99));
 
-  face_target.addVertex(location + glm::vec3(width * -0.5 * 0.99, height * -0.5 * 0.99, depth * -0.5 * 0.99));
-  face_target.addVertex(location + glm::vec3(width * 0.5 * 0.99, height * -0.5 * 0.99, depth * -0.5 * 0.99));
-  face_target.addVertex(location + glm::vec3(width * 0.5 * 0.99, height * -0.5 * 0.99, depth * 0.5 * 0.99));
-  face_target.addVertex(location + glm::vec3(width * -0.5 * 0.99, height * -0.5 * 0.99, depth * 0.5 * 0.99));
+  face_target.addVertex(makePoint(location, ww * -0.5 * 0.99, hh * -0.5 * 0.99, depth * -0.5 * 0.99));
+  face_target.addVertex(makePoint(location, ww * 0.5 * 0.99, hh * -0.5 * 0.99, depth * -0.5 * 0.99));
+  face_target.addVertex(makePoint(location, ww * 0.5 * 0.99, hh * -0.5 * 0.99, depth * 0.5 * 0.99));
+  face_target.addVertex(makePoint(location, ww * -0.5 * 0.99, hh * -0.5 * 0.99, depth * 0.5 * 0.99));
 
   face_target.addIndex(index + 0);
   face_target.addIndex(index + 1);
@@ -115,15 +128,15 @@ void ofApp::setBoxToMesh(ofMesh& face_target, ofMesh& frame_target, glm::vec3 lo
   face_target.addIndex(index + 0);
   face_target.addIndex(index + 3);
 
-  frame_target.addVertex(location + glm::vec3(width * -0.5, height * 0.5, depth * -0.5));
-  frame_target.addVertex(location + glm::vec3(width * 0.5, height * 0.5, depth * -0.5));
-  frame_target.addVertex(location + glm::vec3(width * 0.5, height * 0.5, depth * 0.5));
-  frame_target.addVertex(location + glm::vec3(width * -0.5, height * 0.5, depth * 0.5));
+  frame_target.addVertex(makePoint(location, ww * -0.5, hh * 0.5, depth * -0.5));
+  frame_target.addVertex(makePoint(location, ww * 0.5, hh * 0.5, depth * -0.5));
+  frame_target.addVertex(makePoint(location, ww * 0.5, hh * 0.5, depth * 0.5));
+  frame_target.addVertex(makePoint(location, ww * -0.5, hh * 0.5, depth * 0.5));
 
-  frame_target.addVertex(location + glm::vec3(width * -0.5, height * -0.5, depth * -0.5));
-  frame_target.addVertex(location + glm::vec3(width * 0.5, height * -0.5, depth * -0.5));
-  frame_target.addVertex(location + glm::vec3(width * 0.5, height * -0.5, depth * 0.5));
-  frame_target.addVertex(location + glm::vec3(width * -0.5, height * -0.5, depth * 0.5));
+  frame_target.addVertex(makePoint(location, ww * -0.5, hh * -0.5, depth * -0.5));
+  frame_target.addVertex(makePoint(location, ww * 0.5, hh * -0.5, depth * -0.5));
+  frame_target.addVertex(makePoint(location, ww * 0.5, hh * -0.5, depth * 0.5));
+  frame_target.addVertex(makePoint(location, ww * -0.5, hh * -0.5, depth * 0.5));
 
   frame_target.addIndex(index + 0);
   frame_target.addIndex(index + 1);
@@ -153,7 +166,6 @@ void ofApp::setBoxToMesh(ofMesh& face_target, ofMesh& frame_target, glm::vec3 lo
   frame_target.addIndex(index + 7);
 
   for (int i = 0; i < 8; i++) {
-
     face_target.addColor(face_color);
     frame_target.addColor(frame_color);
   }
