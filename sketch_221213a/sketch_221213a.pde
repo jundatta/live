@@ -36,9 +36,9 @@ void update() {
           int color_value = 39;
           if (y < len * 0.35) {
             if (y > -len * 0.75) {
-              map(y, len * 0.35, -len * 0.75, 39, 128);
+              color_value = (int)map(y, len * 0.35, -len * 0.75, 39, 128);
             } else {
-              map(y, -len * 0.75, len * -2, 128, 239);
+              color_value = (int)map(y, -len * 0.75, len * -2, 128, 239);
             }
           }
           setBoxToMesh(face, frame, new PVector(x, y, z), span, color(color_value), color(239));
@@ -58,8 +58,8 @@ void draw() {
 
   ofRotateY(ofGetFrameNum() * 0.5);
 
-  face.draw(color(39));
-  frame.drawWireframe(color(239));
+  face.draw();
+  frame.drawWireframe();
 }
 
 //--------------------------------------------------------------
