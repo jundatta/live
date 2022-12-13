@@ -8,7 +8,7 @@ ofMesh frame;
 
 //--------------------------------------------------------------
 void setup() {
-  size(720, 720, P3D);
+  size(500, 800, P3D);
 
   face = new ofMesh();
   frame = new ofMesh();
@@ -52,7 +52,10 @@ void update() {
 void draw() {
   update();
   translate(width/2, height/2);
-  scale(1, -1, 1);
+//  scale(1, -1, 1);
+
+  // よくわかりゃん＼(^_^)／適当ｗ
+  camera(0, 250, -750, 0, -100, 0, 0, -1, 0);
 
   background(239);
 
