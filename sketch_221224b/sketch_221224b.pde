@@ -4,7 +4,7 @@
 // https://junkiyoshi.com/2022/03/20/
 
 ArrayList<PVector> location_list = new ArrayList();
-FloatList life_list = new FloatList();
+IntList life_list = new IntList();
 FloatList noise_param_list = new FloatList();
 ArrayList<PVector> noise_location_list = new ArrayList();
 
@@ -45,15 +45,14 @@ void update() {
 
   for (int i = 0; i < location_list.size(); i++) {
     //life_list[i] = life_list[i] > 0 ? life_list[i] - 0.05 : 0;
-    float life = life_list.get(i);
-    float value = 0;
+    int life = life_list.get(i);
     if (0 < life) {
-      value = life - 0.05f;
+      life--;
     }
-    life_list.set(i, value);
-    if (0 < value) {
+    life_list.set(i, life);
+    if (0 < life) {
       float np = noise_param_list.get(i);
-      np += map(value, 0, 100, 0.05, 0.1);
+      np += map(life, 0, 100, 0.05, 0.1);
       noise_param_list.set(i, np);
     }
   }
@@ -68,12 +67,13 @@ void update() {
         PVector loc = location_list.get(ii);
         if (PVector.dist(noise_location, loc) < 35) {
           //life_list[i] = life_list[i] < 100 ? life_list[i] + 8 : 100;
-          float life = life_list.get(ii);
-          float value = 100;
+          int life = life_list.get(ii);
           if (life < 100) {
-            value = life + 8;
+            life += 8;
+          } else {
+            life = 100;
           }
-          life_list.set(ii, value);
+          life_list.set(ii, life);
         }
       }
     }
@@ -98,10 +98,11 @@ void draw() {
   update();
   translate(width/2, height/2);
   background(255);
-  ofSetLineWidth(3);
+    ofSetLineWidth(3*0.5f);
 
   face.draw();
-  frame.draw();
+  //frame.draw();
+  frame.drawWireframe();
 }
 
 //--------------------------------------------------------------
