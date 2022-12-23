@@ -4,7 +4,7 @@
 // https://junkiyoshi.com/2022/03/20/
 
 ArrayList<PVector> location_list = new ArrayList();
-IntList life_list = new IntList();
+FloatList life_list = new FloatList();
 FloatList noise_param_list = new FloatList();
 ArrayList<PVector> noise_location_list = new ArrayList();
 
@@ -27,9 +27,9 @@ void setup() {
         location = new PVector(x + (x_span / 2), y, 0);
       }
 
-      location_list.push_back(location);
-      life_list.push_back(0);
-      noise_param_list.push_back(ofRandom(1000));
+      location_list.add(location);
+      life_list.append(0);
+      noise_param_list.append(random(1000));
     }
     flg = !flg;
   }
@@ -44,22 +44,36 @@ void update() {
   noise_location_list.clear();
 
   for (int i = 0; i < location_list.size(); i++) {
-    life_list[i] = life_list[i] > 0 ? life_list[i] - 0.05 : 0;
-    if (life_list[i] > 0) {
-      noise_param_list[i] += ofMap(life_list[i], 0, 100, 0.05, 0.1);
+    //life_list[i] = life_list[i] > 0 ? life_list[i] - 0.05 : 0;
+    float life = life_list.get(i);
+    float value = 0;
+    if (0 < life) {
+      value = life - 0.05f;
+    }
+    life_list.set(i, value);
+    if (0 < value) {
+      float np = noise_param_list.get(i);
+      np += map(value, 0, 100, 0.05, 0.1);
+      noise_param_list.set(i, np);
     }
   }
 
   for (int i = 0; i < 1; i++) {
-    int deg_start = ofMap(ofNoise(ofRandom(1000), ofGetFrameNum() * 0.005), 0, 1, -360, 360);
-    int radius = ofMap(ofNoise(ofRandom(1000), ofGetFrameNum() * 0.01), 0, 1, 0, 400);
-
+    int deg_start = (int)map(openFrameworks.ofNoise(random(1000), ofGetFrameNum() * 0.005), 0, 1, -360, 360);
+    int radius = (int)map(openFrameworks.ofNoise(random(1000), ofGetFrameNum() * 0.01), 0, 1, 0, 400);
     for (int deg = deg_start; deg < deg_start + 360; deg += 60) {
       PVector noise_location = new PVector(radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD), 0);
-      noise_location_list.push_back(noise_location);
-      for (int i = 0; i < location_list.size(); i++) {
-        if (PVector.dist(noise_location, location_list[i]) < 35) {
-          life_list[i] = life_list[i] < 100 ? life_list[i] + 8 : 100;
+      noise_location_list.add(noise_location);
+      for (int ii = 0; ii < location_list.size(); ii++) {
+        PVector loc = location_list.get(ii);
+        if (PVector.dist(noise_location, loc) < 35) {
+          //life_list[i] = life_list[i] < 100 ? life_list[i] + 8 : 100;
+          float life = life_list.get(ii);
+          float value = 100;
+          if (life < 100) {
+            value = life + 8;
+          }
+          life_list.set(ii, value);
         }
       }
     }
@@ -67,10 +81,12 @@ void update() {
 
   for (int i = 0; i < location_list.size(); i++) {
     float height = 5.f;
-    if (life_list[i] > 10) {
-      setHexagonToMesh(face, frame, location_list[i], 8, height);
-    } else if (life_list[i] > 0) {
-      setHexagonToMesh(face, frame, location_list[i], ofMap(life_list[i], 0, 10, 0, 8), height);
+    float life = life_list.get(i);
+    PVector loc = location_list.get(i);
+    if (life > 10) {
+      setHexagonToMesh(face, frame, loc, 8, height);
+    } else if (life > 0) {
+      setHexagonToMesh(face, frame, loc, map(life, 0, 10, 0, 8), height);
     } else {
       //setHexagonToMesh(face, frame, location_list[i], 15, height);
     }
@@ -98,15 +114,15 @@ void setHexagonToMesh(ofMesh face_target, ofMesh frame_target, PVector location,
 
   for (int deg = 90; deg < 450; deg += 60) {
     float face_radius = radius - 0.5;
-    float face_index = face_target.getNumVertices();
+    int face_index = face_target.getNumVertices();
 
-    ArrayList<Pvector> vertices = new ArrayList();
-    vertices.push_back(makeLocation(location, 0, 0, 0));
-    vertices.push_back(makeLocation(location, face_radius * cos(deg * DEG_TO_RAD), face_radius * sin(deg * DEG_TO_RAD), 0));
-    vertices.push_back(makeLocation(location, face_radius * cos((deg + 60) * DEG_TO_RAD), face_radius * sin((deg + 60) * DEG_TO_RAD), 0));
-    vertices.push_back(makeLocation(location, 0, 0, height));
-    vertices.push_back(makeLocation(location, face_radius * cos((deg + 60) * DEG_TO_RAD), face_radius * sin((deg + 60) * DEG_TO_RAD), height));
-    vertices.push_back(makeLocation(location, face_radius * cos(deg * DEG_TO_RAD), face_radius * sin(deg * DEG_TO_RAD), height));
+    ArrayList<PVector> vertices = new ArrayList();
+    vertices.add(makeLocation(location, 0, 0, 0));
+    vertices.add(makeLocation(location, face_radius * cos(deg * DEG_TO_RAD), face_radius * sin(deg * DEG_TO_RAD), 0));
+    vertices.add(makeLocation(location, face_radius * cos((deg + 60) * DEG_TO_RAD), face_radius * sin((deg + 60) * DEG_TO_RAD), 0));
+    vertices.add(makeLocation(location, 0, 0, height));
+    vertices.add(makeLocation(location, face_radius * cos((deg + 60) * DEG_TO_RAD), face_radius * sin((deg + 60) * DEG_TO_RAD), height));
+    vertices.add(makeLocation(location, face_radius * cos(deg * DEG_TO_RAD), face_radius * sin(deg * DEG_TO_RAD), height));
 
     face_target.addVertices(vertices);
 
@@ -123,15 +139,15 @@ void setHexagonToMesh(ofMesh face_target, ofMesh frame_target, PVector location,
     face_target.addIndex(face_index + 4);
     face_target.addIndex(face_index + 5);
 
-    auto frame_index = frame_target.getNumVertices();
+    int frame_index = frame_target.getNumVertices();
 
     vertices.clear();
-    vertices.push_back(makeLocation(location, 0, 0, 0));
-    vertices.push_back(makeLocation(location, radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD), 0));
-    vertices.push_back(makeLocation(location, radius * cos((deg + 60) * DEG_TO_RAD), radius * sin((deg + 60) * DEG_TO_RAD), 0));
-    vertices.push_back(makeLocation(location, 0, 0, height));
-    vertices.push_back(makeLocation(location, radius * cos((deg + 60) * DEG_TO_RAD), radius * sin((deg + 60) * DEG_TO_RAD), height));
-    vertices.push_back(makeLocation(location, radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD), height));
+    vertices.add(makeLocation(location, 0, 0, 0));
+    vertices.add(makeLocation(location, radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD), 0));
+    vertices.add(makeLocation(location, radius * cos((deg + 60) * DEG_TO_RAD), radius * sin((deg + 60) * DEG_TO_RAD), 0));
+    vertices.add(makeLocation(location, 0, 0, height));
+    vertices.add(makeLocation(location, radius * cos((deg + 60) * DEG_TO_RAD), radius * sin((deg + 60) * DEG_TO_RAD), height));
+    vertices.add(makeLocation(location, radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD), height));
 
     frame_target.addVertices(vertices);
 
