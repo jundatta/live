@@ -37,7 +37,6 @@ void update() {
       p0 = make_apple_point(u - span * 0.5, v - span * 0.5);
       p0.mult(scale);
       mesh.addVertex(p0);
-println(p0);
       p1 = make_apple_point(u - span * 0.5, v + span * 0.5);
       p1.mult(scale);
       mesh.addVertex(p1);
@@ -86,18 +85,22 @@ void draw() {
   update();
   translate(width/2, height/2);
 
-  //background(239);
-  background(255, 0, 0);
+  background(239);
+  //background(255, 0, 0);
 
   ofRotateZ(ofGetFrameNum() * 0.5);
+  //ofRotateY(ofGetFrameNum() * 0.5);
 
-  mesh.drawFaces(39);
+  fill(39);
+  mesh.drawFaces();
 
-  mesh.drawWireframe(239);
+  stroke(239);
+  mesh.drawWireframe();
 }
 
 //--------------------------------------------------------------
 float log10 (float x) {
+  //x = abs(x); NaNは気にしなくてもよさそう＼(^_^)／
   return (log(x) / log(10));
 }
 PVector make_apple_point(float u, float v) {

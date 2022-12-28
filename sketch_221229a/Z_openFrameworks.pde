@@ -69,10 +69,12 @@ class ofMesh {
       sh.vertex(v.x, v.y, v.z);
     }
     sh.endShape();
-    for (int i = 0; i < indices.size(); i++) {
-      int idx = indices.get(i);
-      color col = colors.get(idx);
-      sh.setStroke(i, col);
+    if (0 < colors.size()) {
+      for (int i = 0; i < indices.size(); i++) {
+        int idx = indices.get(i);
+        color col = colors.get(idx);
+        sh.setStroke(i, col);
+      }
     }
     shape(sh);
   }
@@ -143,9 +145,6 @@ class ofMesh {
   }
   void drawFaces() {
     draw();
-  }
-  void drawFaces(color fill) {
-    draw(fill);
   }
 }
 class ofMeshFace {
