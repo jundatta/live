@@ -144,6 +144,9 @@ class ofMesh {
   void drawFaces() {
     draw();
   }
+  void drawFaces(color fill) {
+    draw(fill);
+  }
 }
 class ofMeshFace {
   PVector[] triangle = new PVector[3];

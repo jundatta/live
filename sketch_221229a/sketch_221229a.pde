@@ -3,7 +3,7 @@
 // 【作品名】Splitting apple. openFrameworks
 // https://junkiyoshi.com/openframeworks20191210/
 
-ofMesh mesh;
+ofMesh mesh = new ofMesh();
 
 //--------------------------------------------------------------
 void setup() {
@@ -37,6 +37,7 @@ void update() {
       p0 = make_apple_point(u - span * 0.5, v - span * 0.5);
       p0.mult(scale);
       mesh.addVertex(p0);
+println(p0);
       p1 = make_apple_point(u - span * 0.5, v + span * 0.5);
       p1.mult(scale);
       mesh.addVertex(p1);
@@ -59,13 +60,19 @@ void update() {
       noise_value = openFrameworks.ofNoise(noise_seed.x * 0.25f, noise_seed.y * 0.25f, noise_seed.z * 0.25f, ofGetFrameNum() * 0.008f);
       scale = 30;
       if (noise_value > 0.65) {
-        scale = map(noise_value, 0.65, 1, 30, 50);
+        scale = (int)map(noise_value, 0.65, 1, 30, 50);
       }
       index = mesh.getNumVertices();
 
-      mesh.addVertex(make_apple_point(u - span * 0.5, v - span * 0.5) * scale);
-      mesh.addVertex(make_apple_point(u + span * 0.5, v - span * 0.5) * scale);
-      mesh.addVertex(make_apple_point(u + span * 0.5, v + span * 0.5) * scale);
+      p0 = make_apple_point(u - span * 0.5, v - span * 0.5);
+      p0.mult(scale);
+      mesh.addVertex(p0);
+      p1 = make_apple_point(u + span * 0.5, v - span * 0.5);
+      p1.mult(scale);
+      mesh.addVertex(p1);
+      p2 = make_apple_point(u + span * 0.5, v + span * 0.5);
+      p2.mult(scale);
+      mesh.addVertex(p2);
 
       mesh.addIndex(index);
       mesh.addIndex(index + 1);
@@ -79,7 +86,8 @@ void draw() {
   update();
   translate(width/2, height/2);
 
-  ofBackground(239);
+  //background(239);
+  background(255, 0, 0);
 
   ofRotateZ(ofGetFrameNum() * 0.5);
 
@@ -89,6 +97,9 @@ void draw() {
 }
 
 //--------------------------------------------------------------
+float log10 (float x) {
+  return (log(x) / log(10));
+}
 PVector make_apple_point(float u, float v) {
 
   // 数学デッサン教室 描いて楽しむ数学たち リンゴ局面 apple surface P.33
