@@ -6,82 +6,90 @@
 ofMesh mesh;
 
 //--------------------------------------------------------------
-void ofApp::setup() {
-
-  ofSetFrameRate(60);
-  ofSetWindowTitle("openframeworks");
-
-  ofBackground(239);
-  ofSetColor(39);
-  ofEnableDepthTest();
+void setup() {
+  size(720, 720, P3D);
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
-
+void update() {
   ofSeedRandom(39);
-  this->mesh.clear();
+  mesh.clear();
 
   int span = 8;
   int scale, index;
   for (int v = 0; v < 360; v += span) {
-
     for (int u = -170; u < 250; u += span) {
-
-      auto noise_seed = (this->make_apple_point(u - span * 0.5, v - span * 0.5) + this->make_apple_point(u - span * 0.5, v + span * 0.5) + this->make_apple_point(u + span * 0.5, v + span * 0.5)) / 3;
-      auto noise_value = ofNoise(glm::vec4(noise_seed * 0.25, ofGetFrameNum() * 0.008));
+      //PVector noise_seed = (make_apple_point(u - span * 0.5, v - span * 0.5) + make_apple_point(u - span * 0.5, v + span * 0.5) + make_apple_point(u + span * 0.5, v + span * 0.5)) / 3;
+      PVector p0 = make_apple_point(u - span * 0.5, v - span * 0.5);
+      PVector p1 = make_apple_point(u - span * 0.5, v + span * 0.5);
+      PVector p2 = make_apple_point(u + span * 0.5, v + span * 0.5);
+      PVector ppp = PVector.add(p0, p1);
+      ppp.add(p2);
+      PVector noise_seed = PVector.div(ppp, 3.0f);
+      //float noise_value = openFrameworks.ofNoise(glm::vec4(noise_seed * 0.25, ofGetFrameNum() * 0.008));
+      float noise_value = openFrameworks.ofNoise(noise_seed.x * 0.25f, noise_seed.y * 0.25f, noise_seed.z * 0.25f, ofGetFrameNum() * 0.008f);
       scale = 30;
       if (noise_value > 0.65) {
-
-        scale = ofMap(noise_value, 0.65, 1, 30, 50);
+        scale = (int)map(noise_value, 0.65, 1, 30, 50);
       }
-      index = this->mesh.getNumVertices();
+      index = mesh.getNumVertices();
 
-      this->mesh.addVertex(this->make_apple_point(u - span * 0.5, v - span * 0.5) * scale);
-      this->mesh.addVertex(this->make_apple_point(u - span * 0.5, v + span * 0.5) * scale);
-      this->mesh.addVertex(this->make_apple_point(u + span * 0.5, v + span * 0.5) * scale);
+      p0 = make_apple_point(u - span * 0.5, v - span * 0.5);
+      p0.mult(scale);
+      mesh.addVertex(p0);
+      p1 = make_apple_point(u - span * 0.5, v + span * 0.5);
+      p1.mult(scale);
+      mesh.addVertex(p1);
+      p2 = make_apple_point(u + span * 0.5, v + span * 0.5);
+      p2.mult(scale);
+      mesh.addVertex(p2);
 
-      this->mesh.addIndex(index);
-      this->mesh.addIndex(index + 1);
-      this->mesh.addIndex(index + 2);
+      mesh.addIndex(index);
+      mesh.addIndex(index + 1);
+      mesh.addIndex(index + 2);
 
-      noise_seed = (this->make_apple_point(u - span * 0.5, v - span * 0.5) + this->make_apple_point(u + span * 0.5, v - span * 0.5) + this->make_apple_point(u + span * 0.5, v + span * 0.5)) / 3;
-      noise_value = ofNoise(glm::vec4(noise_seed * 0.25, ofGetFrameNum() * 0.008));
+      //      noise_seed = (make_apple_point(u - span * 0.5, v - span * 0.5) + make_apple_point(u + span * 0.5, v - span * 0.5) + make_apple_point(u + span * 0.5, v + span * 0.5)) / 3;
+      p0 = make_apple_point(u - span * 0.5, v - span * 0.5);
+      p1 = make_apple_point(u + span * 0.5, v - span * 0.5);
+      p2 = make_apple_point(u + span * 0.5, v + span * 0.5);
+      ppp = PVector.add(p0, p1);
+      ppp.add(p2);
+      noise_seed = PVector.div(ppp, 3.0f);
+      //noise_value = openFrameworks.ofNoise(glm::vec4(noise_seed * 0.25, ofGetFrameNum() * 0.008));
+      noise_value = openFrameworks.ofNoise(noise_seed.x * 0.25f, noise_seed.y * 0.25f, noise_seed.z * 0.25f, ofGetFrameNum() * 0.008f);
       scale = 30;
       if (noise_value > 0.65) {
-
-        scale = ofMap(noise_value, 0.65, 1, 30, 50);
+        scale = map(noise_value, 0.65, 1, 30, 50);
       }
-      index = this->mesh.getNumVertices();
+      index = mesh.getNumVertices();
 
-      this->mesh.addVertex(this->make_apple_point(u - span * 0.5, v - span * 0.5) * scale);
-      this->mesh.addVertex(this->make_apple_point(u + span * 0.5, v - span * 0.5) * scale);
-      this->mesh.addVertex(this->make_apple_point(u + span * 0.5, v + span * 0.5) * scale);
+      mesh.addVertex(make_apple_point(u - span * 0.5, v - span * 0.5) * scale);
+      mesh.addVertex(make_apple_point(u + span * 0.5, v - span * 0.5) * scale);
+      mesh.addVertex(make_apple_point(u + span * 0.5, v + span * 0.5) * scale);
 
-      this->mesh.addIndex(index);
-      this->mesh.addIndex(index + 1);
-      this->mesh.addIndex(index + 2);
+      mesh.addIndex(index);
+      mesh.addIndex(index + 1);
+      mesh.addIndex(index + 2);
     }
   }
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
+  translate(width/2, height/2);
 
-  this->cam.begin();
+  ofBackground(239);
+
   ofRotateZ(ofGetFrameNum() * 0.5);
 
-  ofSetColor(39);
-  this->mesh.drawFaces();
+  mesh.drawFaces(39);
 
-  ofSetColor(239);
-  this->mesh.drawWireframe();
-
-  this->cam.end();
+  mesh.drawWireframe(239);
 }
 
 //--------------------------------------------------------------
-glm::vec3 ofApp::make_apple_point(float u, float v) {
+PVector make_apple_point(float u, float v) {
 
   // 数学デッサン教室 描いて楽しむ数学たち リンゴ局面 apple surface P.33
 
@@ -92,12 +100,5 @@ glm::vec3 ofApp::make_apple_point(float u, float v) {
   float y = (4 + 3.8 * cos(u)) * sin(v);
   float z = -5 * log10(1 - 0.315 * u) + 5 * sin(u) + 2 * cos(u);
 
-  return glm::vec3(x, y, z);
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
+  return new PVector(x, y, z);
 }
