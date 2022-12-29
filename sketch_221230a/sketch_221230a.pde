@@ -13,18 +13,15 @@ void setup() {
 
 //--------------------------------------------------------------
 void update() {
-
   ofSeedRandom(39);
   frame.clear();
 
   for (int len = 100; len <= 350; len += 250) {
-
-    auto noise_seed = glm::vec3(ofRandom(1000), ofRandom(1000), ofRandom(1000));
+    PVector noise_seed = new PVector(random(1000), random(1000), random(1000));
     for (int i = 0; i < 20; i++) {
-
-      auto angle_x = ofMap(ofNoise(noise_seed.x, (ofGetFrameNum() + i) * 0.003), 0, 1, -PI, PI);
-      auto angle_y = ofMap(ofNoise(noise_seed.y, (ofGetFrameNum() + i) * 0.003), 0, 1, -PI, PI);
-      auto angle_z = ofMap(ofNoise(noise_seed.z, (ofGetFrameNum() + i) * 0.003), 0, 1, -PI, PI);
+      float angle_x = map(ofNoise(noise_seed.x, (ofGetFrameNum() + i) * 0.003), 0, 1, -PI, PI);
+      float angle_y = map(ofNoise(noise_seed.y, (ofGetFrameNum() + i) * 0.003), 0, 1, -PI, PI);
+      float angle_z = map(ofNoise(noise_seed.z, (ofGetFrameNum() + i) * 0.003), 0, 1, -PI, PI);
 
       auto rotation_x = glm::rotate(glm::mat4(), angle_x, glm::vec3(1, 0, 0));
       auto rotation_y = glm::rotate(glm::mat4(), angle_y, glm::vec3(0, 1, 0));
