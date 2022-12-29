@@ -8,6 +8,7 @@ float[] mountainHeights;
 color c1, c2;
 
 void setup() {
+  P5JS.setup(this);
   size(1112, 834);
   mountainHeights = new float[width];
   background(0);
@@ -17,14 +18,13 @@ void setup() {
 
 void draw() {
   background(0);
-  //gradationBackground(0, 0, width, height, c1, c2);
-  //starLight();
-  //moon();
-  //deppMountain();
-  //townLight(1000);
-  //townLightLine(width / 2, height / 2, width, height);
+  gradationBackground(0, 0, width, height, c1, c2);
+  starLight();
+  moon();
+  deppMountain();
+  townLight(1000);
   townLightLines(50);
-  //mountain();
+  mountain();
   noLoop();
 }
 
@@ -56,7 +56,6 @@ void mountain() {
   strokeWeight(5);
   float rand = random(1.1, 1.7);
   for (int x = 0; x < width; x++) {
-    //line(x, height, x, (height - 50) - (rand * mountainHeights[x]));
     line(x, height, x, ((height - rand * 100) - mountainHeights[x]));
   }
   pop();
@@ -84,17 +83,16 @@ void townLight(float num) {
     ellipse(x, y, r, r);
   }
 
-  push();
-  colorMode(HSB, 360, 100, 100, 1.0f);
   for (int i = 0; i < num * 3; i++) {
     float x = random(0, width);
     float y = random(height / 2, height / 2 + height / 10.0f);
     float r = map(y, height / 2, height, 1, 2);
-    float rand = int(random(360));
-    fill(rand, 100, 50, 0.5);
-    //ellipse(x, y, r, r);
+    int rand = int(random(360));
+    //fill('hsla(' + rand + ', 100%, 50%, 0.5)');
+    color c = P5JS.hsla2rgba(rand, 100, 50, 0.5f);
+    fill(c);
+    ellipse(x, y, r, r);
   }
-  pop();
 
   for (int i = 0; i < num; i++) {
     float x = random(0, width);
@@ -104,17 +102,16 @@ void townLight(float num) {
     ellipse(x, y, r, r);
   }
 
-  push();
-  colorMode(HSB, 360, 100, 100, 1.0f);
   for (int i = 0; i < num * 2; i++) {
     float x = random(0, width);
     float y = random(height / 2, height);
     float r = map(y, height / 2, height, 1, 10);
-    float rand = int(random(100));
-    fill(rand, 100, 80, 1.0f);
+    int rand = int(random(100));
+    //fill('hsla(' + rand + ', 100%, 80%, 1)');
+    color c = P5JS.hsla2rgba(rand, 100, 80, 1.0f);
+    fill(c);
     ellipse(x, y, r, r);
   }
-  pop();
   pop();
 }
 
@@ -137,10 +134,11 @@ void moon() {
   float moonX = random(100, width - 100);
   float moonY = random(100, height / 2 - 100);
   float diamater = random(20, 80);
-  colorMode(HSB, 360, 100, 100, 1.0f);
   for (int i = 0; i < diamater; i++) {
-    float c = int(map(i, 0, 100, 80, 100));
-    fill(200, 50, c, 0.3);
+    int c = int(map(i, 0, 100, 80, 100));
+    //fill('hsla(200, 50%,' + c + '%, 0.3)');
+    color col = P5JS.hsla2rgba(200, 50, c, 0.3f);
+    fill(col);
     ellipse(moonX, moonY, diamater - i, diamater - i);
   }
   pop();
@@ -148,19 +146,19 @@ void moon() {
 
 void townLightLine(float x, float y, float x2, float y2, float leng) {
   float angle = atan2(y2 - y, x2 - x);
-  //int randColor = int(random(100));
-  int randColor = 0;
+  int randColor = int(random(100));
   push();
   noStroke();
   // HSLとHSBは違うらしい...orz
   // https://www.peko-step.com/tool/hslrgb.html#ppick1
-  colorMode(HSB, 360, 100, 100, 1.0f);  // きゃあ＼(^_^)／
+  //colorMode(HSB, 360, 100, 100, 1.0f);  // きゃあ＼(^_^)／
   for (int i = 0; i < 1000; i += 10) {
     float rand = random(leng);
     float px = x + cos(angle) * rand;
     float py = y + sin(angle) * rand;
     //fill('hsla(' + randColor + ', 100%, 90%, 1)');  // きゃあきゃあきゃあぁあああ＼(^_^)／
-    fill(randColor, 100, 90, 1.0f);
+    color c = P5JS.hsla2rgba(randColor, 100, 90, 1.0f);
+    fill(c);
     ellipse(px, py, py / 150.0f, py / 150.0f);
   }
   pop();

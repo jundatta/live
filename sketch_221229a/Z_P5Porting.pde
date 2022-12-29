@@ -82,9 +82,16 @@ static class P5JS {
     return value - (int)value;
   }
 
+  // https://www.peko-step.com/tool/hslrgb.html#ppick3
   static color hsla2rgba(int H, int S, int L, float A) {
-    final int MAX = 255;
-    final int MIN = 0;
+    int MAX, MIN;
+    if (L < 50) {
+      MAX = (int)(2.55f * (L + L * (S / 100.0f)));
+      MIN = (int)(2.55f * (L - L * (S / 100.0f)));
+    } else {
+      MAX = (int)(2.55f * (L + (100 - L) * (S / 100.0f)));
+      MIN = (int)(2.55f * (L - (100 - L) * (S / 100.0f)));
+    }
 
     mPApplet.push();
     mPApplet.colorMode(RGB, 255, 255, 255, 1.0f);
@@ -116,8 +123,9 @@ static class P5JS {
       b = (int)(((360 - H) / 60.0f) * (MAX - MIN)) + MIN;
     }
     color c = mPApplet.color(r, g, b, A);
+
     mPApplet.pop();
-    
+
     return c;
   }
 }

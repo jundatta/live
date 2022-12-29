@@ -11,13 +11,13 @@ function setup() {
 
 function draw() {
   background(0);
-  gradationBackground(0, 0, width, height, c1, c2);
+  //gradationBackground(0, 0, width, height, c1, c2);
   //    starLight();
   //    moon();
   //    deppMountain();
-  townLight(1000);
+  //townLight(1000);
   //townLightLine(width / 2, height / 2, width, height);
-  //   townLightLines(50);
+     townLightLines(50);
   //    mountain();
   noLoop();
 }
@@ -135,7 +135,8 @@ function moon() {
 
 function townLightLine(x, y, x2, y2, leng) {
   let angle = atan2(y2 - y, x2 - x);
-  let randColor = int(random(100));
+  //let randColor = int(random(100));
+  let randColor = 0;  // 赤
   push();
   noStroke();
   for (let i = 0; i < 1000; i += 10) {
