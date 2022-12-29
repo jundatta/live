@@ -10,7 +10,7 @@ function setup() {
 
 
 function draw() {
-  background(255, 0, 0);
+  background(0);
   gradationBackground(0, 0, width, height, c1, c2);
   //    starLight();
   //    moon();

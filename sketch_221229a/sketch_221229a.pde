@@ -16,7 +16,7 @@ void setup() {
 
 
 void draw() {
-  background(255,0,0);
+  background(0);
   gradationBackground(0, 0, width, height, c1, c2);
   //starLight();
   //moon();
@@ -43,7 +43,8 @@ void init() {
 void gradationBackground(float x, float y, float w, float h, color _c1, color _c2) {
   for (float i = y; i <= y + h; i += 1) {
     float inter = map(i, y, y + h, 0, 1);
-    float c = lerpColor(_c1, _c2, inter);
+    //float c = lerpColor(_c1, _c2, inter);  // きゃあ＼(^_^)／
+    color c = lerpColor(_c1, _c2, inter);    // うぎゃぁぁあああああああ！！
     stroke(c);
     line(x, i, x + w, i);
   }
