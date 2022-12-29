@@ -44,6 +44,7 @@ void main(void) {
     vec3 Q,S;
     P.z=5.;
     float d=1.;
+    vec4 ooo = vec4(0);
     for(int i=0;i<99;i++){
         if(d<1e-4)break;
         Q=P*rotate3D(t/PI,vec3(1,5,3));
@@ -54,7 +55,10 @@ void main(void) {
             d=min(d,max(abs(S.y),abs(length(S.zx)-j))-.1);
         }
         P+=normalize(vec3((FC.xy*2.-r)/r.y,-2))*d;
-        o+=exp(-d)*.05;
-        o.a=1.;
+//        o+=exp(-d)*.05;
+//        o.a=1.;
+        ooo+=exp(-d)*.05;
+        ooo.a=1.;
     }
+    o = ooo;
 }
