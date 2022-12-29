@@ -17,13 +17,13 @@ void setup() {
 
 void draw() {
   background(0);
-  gradationBackground(0, 0, width, height, c1, c2);
+  //gradationBackground(0, 0, width, height, c1, c2);
   //starLight();
   //moon();
   //deppMountain();
-  townLight(1000);
+  //townLight(1000);
   //townLightLine(width / 2, height / 2, width, height);
-  //townLightLines(50);
+  townLightLines(50);
   //mountain();
   noLoop();
 }
@@ -148,14 +148,18 @@ void moon() {
 
 void townLightLine(float x, float y, float x2, float y2, float leng) {
   float angle = atan2(y2 - y, x2 - x);
-  int randColor = int(random(100));
+  //int randColor = int(random(100));
+  int randColor = 0;
   push();
   noStroke();
-  colorMode(HSB, 360, 100, 100, 1.0f);
+  // HSLとHSBは違うらしい...orz
+  // https://www.peko-step.com/tool/hslrgb.html#ppick1
+  colorMode(HSB, 360, 100, 100, 1.0f);  // きゃあ＼(^_^)／
   for (int i = 0; i < 1000; i += 10) {
     float rand = random(leng);
     float px = x + cos(angle) * rand;
     float py = y + sin(angle) * rand;
+    //fill('hsla(' + randColor + ', 100%, 90%, 1)');  // きゃあきゃあきゃあぁあああ＼(^_^)／
     fill(randColor, 100, 90, 1.0f);
     ellipse(px, py, py / 150.0f, py / 150.0f);
   }
