@@ -16,15 +16,15 @@ void setup() {
 
 
 void draw() {
-  background(0);
+  background(255,0,0);
   gradationBackground(0, 0, width, height, c1, c2);
-  starLight();
-  moon();
-  deppMountain();
+  //starLight();
+  //moon();
+  //deppMountain();
   townLight(1000);
   //townLightLine(width / 2, height / 2, width, height);
-  townLightLines(50);
-  mountain();
+  //townLightLines(50);
+  //mountain();
   noLoop();
 }
 
@@ -83,17 +83,17 @@ void townLight(float num) {
     ellipse(x, y, r, r);
   }
 
+  push();
+  colorMode(HSB, 360, 100, 100, 1.0f);
   for (int i = 0; i < num * 3; i++) {
     float x = random(0, width);
     float y = random(height / 2, height / 2 + height / 10.0f);
     float r = map(y, height / 2, height, 1, 2);
     float rand = int(random(360));
-    push();
-    colorMode(HSB, 360, 100, 100, 1.0f);
     fill(rand, 100, 50, 0.5);
-    pop();
-    ellipse(x, y, r, r);
+    //ellipse(x, y, r, r);
   }
+  pop();
 
   for (int i = 0; i < num; i++) {
     float x = random(0, width);
@@ -102,17 +102,18 @@ void townLight(float num) {
     fill(255);
     ellipse(x, y, r, r);
   }
+
+  push();
+  colorMode(HSB, 360, 100, 100, 1.0f);
   for (int i = 0; i < num * 2; i++) {
     float x = random(0, width);
     float y = random(height / 2, height);
     float r = map(y, height / 2, height, 1, 10);
     float rand = int(random(100));
-    push();
-    colorMode(HSB, 360, 100, 100, 1.0f);
     fill(rand, 100, 80, 1.0f);
-    pop();
     ellipse(x, y, r, r);
   }
+  pop();
   pop();
 }
 
@@ -135,12 +136,10 @@ void moon() {
   float moonX = random(100, width - 100);
   float moonY = random(100, height / 2 - 100);
   float diamater = random(20, 80);
+  colorMode(HSB, 360, 100, 100, 1.0f);
   for (int i = 0; i < diamater; i++) {
     float c = int(map(i, 0, 100, 80, 100));
-    push();
-    colorMode(HSB, 360, 100, 100, 1.0f);
     fill(200, 50, c, 0.3);
-    pop();
     ellipse(moonX, moonY, diamater - i, diamater - i);
   }
   pop();
@@ -151,14 +150,12 @@ void townLightLine(float x, float y, float x2, float y2, float leng) {
   int randColor = int(random(100));
   push();
   noStroke();
+  colorMode(HSB, 360, 100, 100, 1.0f);
   for (int i = 0; i < 1000; i += 10) {
     float rand = random(leng);
     float px = x + cos(angle) * rand;
     float py = y + sin(angle) * rand;
-    push();
-    colorMode(HSB, 360, 100, 100, 1.0f);
     fill(randColor, 100, 90, 1.0f);
-    pop();
     ellipse(px, py, py / 150.0f, py / 150.0f);
   }
   pop();
