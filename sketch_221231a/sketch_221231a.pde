@@ -1,110 +1,89 @@
 // こちらがオリジナルです。
-// 【作者】中内　純(ハンドルネーム：JunKiyoshi)さん
-// 【作品名】Triangle Box. Draw by openFrameworks
-// https://junkiyoshi.com/openframeworks20221221/
+// 【作者】Jenni Hutsonさん
+// 【作品名】4a
+// https://openprocessing.org/sketch/838280
 
-//--------------------------------------------------------------
-void setup() {
-  size(720, 720, P3D);
+size(600, 600);
+noStroke();
+
+for (int i = 0; i<=600; i+=1) {
+  stroke(156+i*.2, 188+i*.2, 255+i*.2);
+  line(0, i, 600, i);
 }
 
-//--------------------------------------------------------------
-void update() {
-  ofSeedRandom(39);
+fill(255, 248, 48, 200);
+ellipse(300, 600, 600, 600);
+
+stroke(251, 215, 241);
+strokeWeight(6);
+strokeJoin(ROUND);
+strokeCap(ROUND);
+fill(174, 196, 245);
+beginShape();
+for (int x=0; x<600; x+=50) {
+  beginShape();
+  vertex(0, 600);
+  if ((x<=200) && (x%200==0)) {
+    vertex(x, 600);
+    line(x, 600, 100, 400);
+    vertex(100, 400);
+  }
+  if ((x==100) || (x==500)) {
+    vertex(x, 600);
+    line(x, 600, 300, 100);
+    vertex(300, 100);
+  }
+  if ((x==350)|| (x==550)) {
+    vertex(x, 600);
+    line(x, 600, 450, 300);
+    vertex(450, 300);
+  }
+  vertex(550, 600);
+  endShape();
 }
-
-//--------------------------------------------------------------
-void draw() {
-  update();
-  translate(width/2, height/2);
-
-  background(0);
-  noFill();
-  blendMode(ADD);
-
-  ofRotateY(ofGetFrameNum() * 2);
-
-  color col;
-  for (int len = 300; len <= 300; len += 100) {
-    for (int i = 0; i < 6; i++) {
-      if (i < 4) {
-        ofRotateX(90);
-      } else if (i < 5) {
-        ofRotateY(90);
-      } else {
-        ofRotateY(180);
-      }
-
-      for (int k = 0; k < 12; k++) {
-        PVector location = new PVector(random(-len * 0.5, len * 0.5), random(-len * 0.5, len * 0.5), len * 0.5);
-        int radius = (int)(random(200) + ofGetFrameNum() * 3) % 100;
-
-        int alpha = 255;
-        if (radius > 80) {
-          alpha = (int)map(radius, 80, 100, 255, 128);
-        }
-
-        push();
-        colorMode(HSB, 255, 255, 255, 255);
-        col = color(random(255), 200, 255, alpha);
-        pop();
-        stroke(col);
-
-        int deg_start = (int)random(360);
-        noFill();
-        beginShape();
-        for (int deg = deg_start; deg < deg_start + 360; deg += 120) {
-          //auto point = location + glm::vec2(radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD));
-          PVector point = new PVector(
-            location.x + radius * cos(deg * DEG_TO_RAD),
-            location.y + radius * sin(deg * DEG_TO_RAD),
-            location.z);
-          if (point.y > len * 0.5) {
-            point.y = len * 0.5;
-          }
-          if (point.y < -len * 0.5) {
-            point.y = -len * 0.5;
-          }
-          if (point.x > len * 0.5) {
-            point.x = len * 0.5;
-          }
-          if (point.x < -len * 0.5) {
-            point.x = -len * 0.5;
-          }
-          vertex(point.x, point.y, point.z);
-        }
-        endShape(CLOSE);
-
-        alpha = 128;
-        if (radius > 80) {
-          alpha = (int)map(radius, 80, 100, 128, 0);
-        }
-
-        col = color(red(col), green(col), blue(col), alpha);
-        fill(col);
-        beginShape();
-        for (int deg = deg_start; deg < deg_start + 360; deg += 120) {
-          //auto point = location + glm::vec2(radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD));
-          PVector point = new PVector(
-            location.x + radius * cos(deg * DEG_TO_RAD),
-            location.y + radius * sin(deg * DEG_TO_RAD),
-            location.z);
-          if (point.y > len * 0.5) {
-            point.y = len * 0.5;
-          }
-          if (point.y < -len * 0.5) {
-            point.y = -len * 0.5;
-          }
-          if (point.x > len * 0.5) {
-            point.x = len * 0.5;
-          }
-          if (point.x < -len * 0.5) {
-            point.x = -len * 0.5;
-          }
-          vertex(point.x, point.y, point.z);
-        }
-        endShape(CLOSE);
-      }
+noStroke();
+fill(255, 255, 255, 255);
+int i = 200;
+for (int x =0; x<=600; x+=50) {
+  if ((x>=50) && (x<150)) {
+    ellipse(x, i+275, 60, 60);
+    ellipse(x+25, i+250, 60, 60);
+    ellipse(x+25, i+300, 60, 60);
+  }
+  if (x==150) {
+    ellipse(x, i+275, 60, 60);
+  }
+  if ((x>200) && (x<425)) {
+    ellipse(x, i, 60, 60);
+    i-=25;
+    ellipse(x+25, i, 60, 60);
+    i+=40;
+    ellipse(x+10, i, 80, 80);
+    i-=15;
+    // ellipse(x+15,230,80,80);
+    if (x == 350) {
+      ellipse(x-15, 175, 110, 100);
     }
+  }
+  if ((x>=425) && (x<600)) {
+    if (i == 200) {
+      i+=200;
+    }
+    if (x==450) {
+      ellipse(x, 200, 60, 60);
+    }
+    if (x==500) {
+      ellipse(x, i, 100, 100);
+    }
+    if (x==550) {
+      ellipse(x-10, i-25, 100, 100);
+    }
+    ellipse(x, i, 60, 60);
+    ellipse(x+30, i-30, 60, 60);
+    if (x==550) {
+      ellipse(x+25, i, 60, 60);
+    }
+  } else {
+    continue;
   }
 }
