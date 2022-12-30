@@ -57,7 +57,8 @@ void draw() {
           //auto point = location + glm::vec2(radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD));
           PVector point = new PVector(
             location.x + radius * cos(deg * DEG_TO_RAD),
-            location.y + radius * sin(deg * DEG_TO_RAD));
+            location.y + radius * sin(deg * DEG_TO_RAD),
+            location.z);
           if (point.y > len * 0.5) {
             point.y = len * 0.5;
           }
@@ -86,7 +87,8 @@ void draw() {
           //auto point = location + glm::vec2(radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD));
           PVector point = new PVector(
             location.x + radius * cos(deg * DEG_TO_RAD),
-            location.y + radius * sin(deg * DEG_TO_RAD));
+            location.y + radius * sin(deg * DEG_TO_RAD),
+            location.z);
           if (point.y > len * 0.5) {
             point.y = len * 0.5;
           }
