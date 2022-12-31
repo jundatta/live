@@ -3,51 +3,45 @@
 // 【作品名】camp fire. Draw by openFrameworks
 // https://junkiyoshi.com/openframeworks20221222/
 
-ofMesh face, frame;
+ofMesh face = new ofMesh();
+ofMesh frame = new ofMesh();
 
 //--------------------------------------------------------------
-void ofApp::setup() {
-
-  ofSetFrameRate(60);
-  ofSetWindowTitle("openFrameworks");
-
-  ofBackground(0);
-  ofEnableDepthTest();
-
-  this->frame.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
+void setup() {
+  size(720, 720, P3D);
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
-
-  this->face.clear();
-  this->frame.clear();
+void update() {
+  face.clear();
+  frame.clear();
 
   int span = 10;
   int len = 300;
-  ofColor color;
-  for (int x = len * -0.5; x <= len * 0.5; x += span) {
-
+  color col;
+  for (int x = (int)(len * -0.5); x <= len * 0.5; x += span) {
     for (int y = len * -2; y <= len * 0; y += span) {
-
-      for (int z = len * -0.5; z <= len * 0.5; z += span) {
-
-        auto noise_value = ofNoise(x * 0.01, z * 0.01, y * 0.01 + ofGetFrameNum() * 0.08);
-        auto length = glm::length(glm::vec3(x, y, z));
+      for (int z = (int)(len * -0.5); z <= len * 0.5; z += span) {
+        float noise_value = openFrameworks.ofNoise(x * 0.01, z * 0.01, y * 0.01 + ofGetFrameNum() * 0.08);
+        PVector loc = new PVector(x, y, z);
+        float length = loc.mag();
 
         if (y > len * 0.35) {
-
-          noise_value += ofMap(y, len * 0.35, len, 0.25, 1);
+          noise_value += map(y, len * 0.35, len, 0.25, 1);
         } else if (y < len * 0.15) {
-
-          noise_value += ofMap(y, len * -2, len * 0.15, -0.65, 0);
+          noise_value += map(y, len * -2, len * 0.15, -0.65, 0);
         }
 
         if (noise_value > 0.35) {
-
-          color.setHsb(0, ofMap(length, 0, len, 0, 255), ofMap(length, 0, len, 0, 255));
-          auto alpha = y > len * 0 ? 255 : ofMap(y, len * -2, len * 0, 0, 255);
-          this->setBoxToMesh(this->face, this->frame, glm::vec3(x, y, z), span, ofColor(color, alpha), ofColor(255, alpha));
+          //color.setHsb(0, ofMap(length, 0, len, 0, 255), ofMap(length, 0, len, 0, 255));
+          push();
+          colorMode(HSB, 255, 255, 255, 255);
+          col = color(0, map(length, 0, len, 0, 255), map(length, 0, len, 0, 255));
+          pop();
+          int alpha = y > len * 0 ? 255 : (int)map(y, len * -2, len * 0, 0, 255);
+          color face_color = color(red(col), green(col), blue(col), alpha);
+          color frame_color = color(255, alpha);
+          setBoxToMesh(face, frame, loc, span, face_color, frame_color);
         }
       }
     }
@@ -55,38 +49,40 @@ void ofApp::update() {
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
+  translate(width/2, height/2);
 
-  this->cam.begin();
+  background(0);
+
   ofRotateX(180);
   ofRotateY(ofGetFrameNum() * 0.3333333333);
 
-  this->face.draw();
-  this->frame.drawWireframe();
-
-  this->cam.end();
+  face.draw();
+  frame.drawWireframe();
 }
 
 //--------------------------------------------------------------
-void ofApp::setBoxToMesh(ofMesh& face_target, ofMesh& frame_target, glm::vec3 location, float size, ofColor face_color, ofColor frame_color) {
-
-  this->setBoxToMesh(face_target, frame_target, location, size, size, size, face_color, frame_color);
+void setBoxToMesh(ofMesh face_target, ofMesh frame_target, PVector location, float size, color face_color, color frame_color) {
+  setBoxToMesh(face_target, frame_target, location, size, size, size, face_color, frame_color);
 }
 
 //--------------------------------------------------------------
-void ofApp::setBoxToMesh(ofMesh& face_target, ofMesh& frame_target, glm::vec3 location, float height, float width, float depth, ofColor face_color, ofColor frame_color) {
-
+PVector makeLocation(PVector loc, float x, float y, float z) {
+  return new PVector(loc.x + x, loc.y + y, loc.z + z);
+}
+void setBoxToMesh(ofMesh face_target, ofMesh frame_target, PVector location, float height, float width, float depth, color face_color, color frame_color) {
   int index = face_target.getVertices().size();
 
-  face_target.addVertex(location + glm::vec3(width * -0.5 * 0.99, height * 0.5 * 0.99, depth * -0.5 * 0.99));
-  face_target.addVertex(location + glm::vec3(width * 0.5 * 0.99, height * 0.5 * 0.99, depth * -0.5 * 0.99));
-  face_target.addVertex(location + glm::vec3(width * 0.5 * 0.99, height * 0.5 * 0.99, depth * 0.5 * 0.99));
-  face_target.addVertex(location + glm::vec3(width * -0.5 * 0.99, height * 0.5 * 0.99, depth * 0.5 * 0.99));
+  face_target.addVertex(makeLocation(location, width * -0.5 * 0.99, height * 0.5 * 0.99, depth * -0.5 * 0.99));
+  face_target.addVertex(makeLocation(location, width * 0.5 * 0.99, height * 0.5 * 0.99, depth * -0.5 * 0.99));
+  face_target.addVertex(makeLocation(location, width * 0.5 * 0.99, height * 0.5 * 0.99, depth * 0.5 * 0.99));
+  face_target.addVertex(makeLocation(location, width * -0.5 * 0.99, height * 0.5 * 0.99, depth * 0.5 * 0.99));
 
-  face_target.addVertex(location + glm::vec3(width * -0.5 * 0.99, height * -0.5 * 0.99, depth * -0.5 * 0.99));
-  face_target.addVertex(location + glm::vec3(width * 0.5 * 0.99, height * -0.5 * 0.99, depth * -0.5 * 0.99));
-  face_target.addVertex(location + glm::vec3(width * 0.5 * 0.99, height * -0.5 * 0.99, depth * 0.5 * 0.99));
-  face_target.addVertex(location + glm::vec3(width * -0.5 * 0.99, height * -0.5 * 0.99, depth * 0.5 * 0.99));
+  face_target.addVertex(makeLocation(location, width * -0.5 * 0.99, height * -0.5 * 0.99, depth * -0.5 * 0.99));
+  face_target.addVertex(makeLocation(location, width * 0.5 * 0.99, height * -0.5 * 0.99, depth * -0.5 * 0.99));
+  face_target.addVertex(makeLocation(location, width * 0.5 * 0.99, height * -0.5 * 0.99, depth * 0.5 * 0.99));
+  face_target.addVertex(makeLocation(location, width * -0.5 * 0.99, height * -0.5 * 0.99, depth * 0.5 * 0.99));
 
   face_target.addIndex(index + 0);
   face_target.addIndex(index + 1);
@@ -130,15 +126,15 @@ void ofApp::setBoxToMesh(ofMesh& face_target, ofMesh& frame_target, glm::vec3 lo
   face_target.addIndex(index + 0);
   face_target.addIndex(index + 3);
 
-  frame_target.addVertex(location + glm::vec3(width * -0.5, height * 0.5, depth * -0.5));
-  frame_target.addVertex(location + glm::vec3(width * 0.5, height * 0.5, depth * -0.5));
-  frame_target.addVertex(location + glm::vec3(width * 0.5, height * 0.5, depth * 0.5));
-  frame_target.addVertex(location + glm::vec3(width * -0.5, height * 0.5, depth * 0.5));
+  frame_target.addVertex(makeLocation(location, width * -0.5, height * 0.5, depth * -0.5));
+  frame_target.addVertex(makeLocation(location, width * 0.5, height * 0.5, depth * -0.5));
+  frame_target.addVertex(makeLocation(location, width * 0.5, height * 0.5, depth * 0.5));
+  frame_target.addVertex(makeLocation(location, width * -0.5, height * 0.5, depth * 0.5));
 
-  frame_target.addVertex(location + glm::vec3(width * -0.5, height * -0.5, depth * -0.5));
-  frame_target.addVertex(location + glm::vec3(width * 0.5, height * -0.5, depth * -0.5));
-  frame_target.addVertex(location + glm::vec3(width * 0.5, height * -0.5, depth * 0.5));
-  frame_target.addVertex(location + glm::vec3(width * -0.5, height * -0.5, depth * 0.5));
+  frame_target.addVertex(makeLocation(location, width * -0.5, height * -0.5, depth * -0.5));
+  frame_target.addVertex(makeLocation(location, width * 0.5, height * -0.5, depth * -0.5));
+  frame_target.addVertex(makeLocation(location, width * 0.5, height * -0.5, depth * 0.5));
+  frame_target.addVertex(makeLocation(location, width * -0.5, height * -0.5, depth * 0.5));
 
   frame_target.addIndex(index + 0);
   frame_target.addIndex(index + 1);
@@ -168,15 +164,7 @@ void ofApp::setBoxToMesh(ofMesh& face_target, ofMesh& frame_target, glm::vec3 lo
   frame_target.addIndex(index + 7);
 
   for (int i = 0; i < 8; i++) {
-
     face_target.addColor(face_color);
     frame_target.addColor(frame_color);
   }
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
