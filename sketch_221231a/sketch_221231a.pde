@@ -53,6 +53,9 @@ void draw() {
   update();
   translate(width/2, height/2);
 
+  scale(1,-1,1);
+  translate(0, -(height * 0.3f), 0);
+
   background(0);
 
   ofRotateX(180);
