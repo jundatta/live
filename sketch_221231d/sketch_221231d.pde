@@ -3,31 +3,26 @@
 // 【作品名】Space invaders (WIP) procedural
 // https://openprocessing.org/sketch/997803
 
-let score = 0;
+int score = 0;
 
-let config = {
-  alienSpriteSize:
-30,
-  alienStepSize:
-4,
-  framesBeforeAlienMove:
-10,
-  playerMoveSpeed:
-2,
-  bulletSpeed:
-5
-  }
+class Config{
+  float alienSpriteSize = 30;
+  float alienStepSize = 4;
+  float framesBeforeAlienMove = 10;
+  float playerMoveSpeed = 2;
+  float bulletSpeed = 5;
+};
+Config config = new Config();
 
-
-function setup() {
-  createCanvas(600, 600);
-  rectMode(CENTER)
+void setup() {
+  size(600, 600);
+  rectMode(CENTER);
     createAliens();
   createPlayer();
   aliensMoveDirectionIx = 0;
 }
 
-function draw() {
+void draw() {
   background(50);
 
   drawAliens();
@@ -39,10 +34,10 @@ function draw() {
   updateBullets();
   updatePlayer();
   textSize(20);
-  text(score, 100, 50);
+  text(str(score), 100, 50);
 }
 
-function newLevel() {
+void newLevel() {
   removeAllBullets();
   createAliens();
 }

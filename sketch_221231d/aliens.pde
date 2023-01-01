@@ -1,57 +1,49 @@
-let aliens;
-let aliensMoveDirectionIx;
+ArrayList<Alien> aliens;
+int aliensMoveDirectionIx;
 let spriteDesigns;
 
-let aliensMoveDirections = [
-  [1, 0],
-  [0, 1],
-  [-1, 0],
-  [0, 1]
-];
-
-
+int[][] aliensMoveDirections = { {1, 0}, {0, 1}, {-1, 0}, {0, 1} };
 
 function createAliens() {
   createAlienSpriteDesigns();
-  aliens = [];
+  aliens = new ArrayList();
   for (let col = 0; col < 11; col++) {
     for (let row = 0; row < 5; row++) {
-      aliens.push(createAlien(col, row));
+      aliens.add(new Alien(col, row));
     }
   }
 }
 
-function createAlien(col, row) {
-  spacing = width / 14;
-  const x = (1 + col) * spacing;
-  const y = (1 + row) * spacing;
-  return {
-  pos:
-    {
-      x,
-        y
-    }
-    ,
-      row,
-    isDead:
-    false
-  };
+class Alien {
+  PVector pos;
+  int row;
+  boolean isDead;
+  Alien(int col, int row) {
+    float spacing = width / 14.0f;
+    float x = (1 + col) * spacing;
+    float y = (1 + row) * spacing;
+    this.pos = new PVector(x, y);
+    this.row = row;
+    this.isDead = false;
+  }
+  void draw(float sz) {
+    fill(255);
+    noStroke();
+    push();
+    translate(pos.x, pos.y);
+    drawAlienSprite(row, sz);
+    pop();
+  }
 }
 
-function drawAliens() {
+void drawAliens() {
   aliens.forEach(drawAlien);
+  for (Alien a : aliens) {
+    a.draw(config.alienSpriteSize);
+  }
 }
 
-function drawAlien(alien) {
-  fill(255);
-  noStroke();
-  push();
-  translate(alien.pos.x, alien.pos.y);
-  drawAlienSprite(alien.row, config.alienSpriteSize);
-  pop();
-}
-
-function drawAlienSprite(alienNumber, sz) {
+function drawAlienSprite(int alienNumber, float sz) {
   const c = lerpColor(color("magenta"), color("cyan"), alienNumber / 4);
   fill(c);
   const design = spriteDesigns[alienNumber];
