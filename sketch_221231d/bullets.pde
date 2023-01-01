@@ -1,42 +1,45 @@
-let bullets = [];
+ArrayList<Bullet> bullets = new ArrayList();
 
-function createBullet(x, y) {
-  return {
-  pos:
-    {
-      x,
-        y
-    }
-    ,
-    isDead:
-    false
-  };
-}
-
-
-function drawBullets() {
-  bullets.forEach(drawBullet);
-}
-
-function drawBullet(b) {
-  const frac = (b.pos.y / height);
-  const colour = lerpColor(color("magenta"), color("cyan"), frac);
-  fill(colour);
-  noStroke();
-  rect(b.pos.x, b.pos.y, 5, -10);
-}
-
-function updateBullets() {
-  bullets.forEach(updateBullet);
-  bullets = bullets.filter(a => !a.isDead);
-}
-
-function updateBullet(b) {
-  if (b.isDead) {
-    return;
+class Bullet {
+  PVector pos;
+  boolean isDead;
+  Bullet(float x, float y) {
+    this.pos = new PVector(x, y);
+    this.isDead = false;
   }
-  b.pos.y -= config.bulletSpeed;
-  checkCollisions(b);
+  void draw() {
+    float frac = pos.y / (float)height;
+    color colour = lerpColor(magenta, cyan, frac);
+    fill(colour);
+    noStroke();
+    rect(b.pos.x, b.pos.y, 5, -10);
+  }
+  void update(float bulletSpeed) {
+    if (isDead) {
+      return;
+    }
+    pos.y -= bulletSpeed;
+    checkCollisions(b);
+  }
+}
+
+void drawBullets() {
+  for (Bullet b : bullets) {
+    b.draw();
+  }
+}
+
+void updateBullets() {
+  for (Bullet b : bullets) {
+    b.update(config.bulletSpeed);
+  }
+  ArrayList<Bullet> newBullets = new ArrayList();
+  for (Bullet b : bullets) {
+    if (b.isDead == false) {
+      newBullets.add(b);
+    }
+  }
+  bullets = newBullets;
 }
 
 function removeAllBullets() {

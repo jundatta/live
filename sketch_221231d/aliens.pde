@@ -4,7 +4,7 @@ let spriteDesigns;
 
 int[][] aliensMoveDirections = { {1, 0}, {0, 1}, {-1, 0}, {0, 1} };
 
-function createAliens() {
+void createAliens() {
   createAlienSpriteDesigns();
   aliens = new ArrayList();
   for (let col = 0; col < 11; col++) {
@@ -37,12 +37,12 @@ class Alien {
 }
 
 void drawAliens() {
-  aliens.forEach(drawAlien);
   for (Alien a : aliens) {
     a.draw(config.alienSpriteSize);
   }
 }
 
+// 後回し＼(^_^)／
 function drawAlienSprite(int alienNumber, float sz) {
   const c = lerpColor(color("magenta"), color("cyan"), alienNumber / 4);
   fill(c);
@@ -64,43 +64,50 @@ function drawAlienSprite(int alienNumber, float sz) {
   pop();
 }
 
-function currentMoveDirection() {
+int[] currentMoveDirection() {
   return aliensMoveDirections[aliensMoveDirectionIx];
 }
 
-function movingRight() {
+boolean movingRight() {
   return currentMoveDirection()[0] > 0;
 }
 
-function movingLeft() {
+boolean movingLeft() {
   return currentMoveDirection()[0] < 0;
 }
 
-function movingDown() {
-  return currentMoveDirection()[1] === 1;
+boolean movingDown() {
+  return currentMoveDirection()[1] == 1;
 }
 
-function isAtScreenEdge(alien) {
+boolean isAtScreenEdge(Alien alien) {
   return (
     (movingRight() && alien.pos.x > width - 50) ||
     (movingLeft() && alien.pos.x < 50));
 }
 
-function advanceMoveDirection() {
+void advanceMoveDirection() {
   aliensMoveDirectionIx = (aliensMoveDirectionIx + 1) % aliensMoveDirections.length;
 }
 
-function updateAliens() {
-  if (frameCount % config.framesBeforeAlienMove === 0) {
+void updateAliens() {
+  if (frameCount % config.framesBeforeAlienMove == 0) {
     aliens.forEach(moveAlien);
     if (movingDown()) {
       advanceMoveDirection();
     }
     if ((movingLeft() || movingRight()) && aliens.some(isAtScreenEdge)) {
-      advanceMoveDirection()
+      advanceMoveDirection();
     }
   }
-  aliens = aliens.filter(a => !a.isDead);
+  //aliens = aliens.filter(a => !a.isDead);
+  ArrayList<Alien> newAliens = new ArrayList();
+  for (Alien a : aliens) {
+    if (a.isDead == false) {
+      newAliens.add(a);
+    }
+  }
+  aliens = newAliens;
 }
 
 function moveAlien(alien) {

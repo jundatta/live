@@ -5,7 +5,10 @@
 
 int score = 0;
 
-class Config{
+final color magenta = color(#e4007f);
+final color cyan = color(#00ffff);
+
+class Config {
   float alienSpriteSize = 30;
   float alienStepSize = 4;
   float framesBeforeAlienMove = 10;
@@ -17,7 +20,7 @@ Config config = new Config();
 void setup() {
   size(600, 600);
   rectMode(CENTER);
-    createAliens();
+  createAliens();
   createPlayer();
   aliensMoveDirectionIx = 0;
 }
@@ -26,7 +29,6 @@ void draw() {
   background(50);
 
   drawAliens();
-  drawBuildings();
   drawBullets();
   drawPlayer();
 
@@ -42,10 +44,8 @@ void newLevel() {
   createAliens();
 }
 
-
-
-function keyPressed() {
-  if (key === " ") {
-    bullets.push(createBullet(player.pos.x, player.pos.y));
+void keyPressed() {
+  if (key == " ") {
+    bullets.add(new Bullet(player.pos.x, player.pos.y));
   }
 }
