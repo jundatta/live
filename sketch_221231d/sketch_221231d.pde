@@ -45,7 +45,7 @@ void newLevel() {
 }
 
 void keyPressed() {
-  if (key == " ") {
+  if (key == ' ') {
     bullets.add(new Bullet(player.pos.x, player.pos.y));
   }
 }

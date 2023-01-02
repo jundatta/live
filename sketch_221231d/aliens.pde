@@ -1,14 +1,14 @@
 ArrayList<Alien> aliens;
 int aliensMoveDirectionIx;
-let spriteDesigns;
+ArrayList<Design[]> spriteDesigns = new ArrayList();
 
-int[][] aliensMoveDirections = { {1, 0}, {0, 1}, {-1, 0}, {0, 1} };
+final int[][] aliensMoveDirections = { {1, 0}, {0, 1}, {-1, 0}, {0, 1} };
 
 void createAliens() {
   createAlienSpriteDesigns();
   aliens = new ArrayList();
-  for (let col = 0; col < 11; col++) {
-    for (let row = 0; row < 5; row++) {
+  for (int col = 0; col < 11; col++) {
+    for (int row = 0; row < 5; row++) {
       aliens.add(new Alien(col, row));
     }
   }
@@ -54,12 +54,17 @@ class Alien {
   }
   void move(float alienStepSize) {
     if (movingDown()) {
-      alien.pos.y += 50;
+      pos.y += 50;
     } else {
       //const [xOffset, yOffset] = currentMoveDirection().map(v => v * config.alienStepSize);
       int[] offset = currentMoveDirection();
-      alien.pos.x += alienStepSize * offset.x;
+      pos.x += alienStepSize * offset[0];
     }
+  }
+  boolean isAtScreenEdge() {
+    return (
+      (movingRight() && pos.x > width - 50) ||
+      (movingLeft() && pos.x < 50));
   }
 }
 
@@ -69,25 +74,24 @@ void drawAliens() {
   }
 }
 
-// 後回し＼(^_^)／
 void drawAlienSprite(int alienNumber, float sz) {
   color c = lerpColor(magenta, cyan, alienNumber / 4.0f);
   fill(c);
-  const design = spriteDesigns[alienNumber];
+  Design[] design = spriteDesigns.get(alienNumber);
   push();
-  const pixelSize = sz / 5;
-  translate(-sz / 2, -sz / 2);
-  const designKeyForFrame = frameCount % 60 < 30 ? "main" : "alt";
-  repeat(5, (row) => {
-    repeat(5, col => {
-      const bit = design[designKeyForFrame].rows[row][col < 3 ? col : 4 - col];
+  float pixelSize = sz / 5.0f;
+  translate(-sz / 2.0f, -sz / 2.0f);
+  //const designKeyForFrame = frameCount % 60 < 30 ? "main" : "alt";
+  int designKeyForFrame = frameCount % 60 < 30 ? 0 : 1;
+  Design ddd = design[designKeyForFrame];
+  for (int row = 0; row < 5; row++) {
+    for (int col = 0; col < 5; col++) {
+      boolean bit = ddd.rows[row][col < 3 ? col : 4 - col];
       if (bit) {
         square(col * pixelSize, row * pixelSize, pixelSize);
       }
     }
-    );
   }
-  );
   pop();
 }
 
@@ -107,25 +111,27 @@ boolean movingDown() {
   return currentMoveDirection()[1] == 1;
 }
 
-boolean isAtScreenEdge(Alien alien) {
-  return (
-    (movingRight() && alien.pos.x > width - 50) ||
-    (movingLeft() && alien.pos.x < 50));
-}
-
 void advanceMoveDirection() {
   aliensMoveDirectionIx = (aliensMoveDirectionIx + 1) % aliensMoveDirections.length;
 }
 
+boolean isAllAtScreenEdge() {
+  for (Alien a : aliens) {
+    if (a.isAtScreenEdge()) {
+      return true;
+    }
+  }
+  return false;
+}
 void updateAliens() {
   if (frameCount % config.framesBeforeAlienMove == 0) {
-    for (Alian a : aliens) {
+    for (Alien a : aliens) {
       a.move(config.alienStepSize);
     }
     if (movingDown()) {
       advanceMoveDirection();
     }
-    if ((movingLeft() || movingRight()) && aliens.some(isAtScreenEdge)) {
+    if ((movingLeft() || movingRight()) && isAllAtScreenEdge()) {
       advanceMoveDirection();
     }
   }
@@ -141,26 +147,29 @@ void updateAliens() {
 
 
 void createAlienSpriteDesigns() {
-  spriteDesigns = collect(5, () => createRandomAlienSpriteDesign());
+  //spriteDesigns = collect(5, () => createRandomAlienSpriteDesign());
+  for (int i = 0; i < 5; i++) {
+    spriteDesigns.add(createRandomAlienSpriteDesign());
+  }
 }
 
 class Design {
-  boolean[][] pixelOn = new boolean[5][3];
+  boolean[][] rows = new boolean[5][3];
   Design() {
-    for (row = 0; row < pixelOn.length; row++) {
-      for (col = 0; col < pixelOn[row].length; col++) {
+    for (int row = 0; row < rows.length; row++) {
+      for (int col = 0; col < rows[row].length; col++) {
         if (random(1) < 0.5f) {
-          pixelOn[row][col] = true;
+          rows[row][col] = true;
         } else {
-          pixelOn[row][col] = false;
+          rows[row][col] = false;
         }
       }
     }
   }
   Design(Design src) {
-    for (row = 0; row < pixelOn.length; row++) {
-      for (col = 0; col < pixelOn[row].length; col++) {
-        pixelOn[row][col] = src.pixelOn[row][col];
+    for (int row = 0; row < rows.length; row++) {
+      for (int col = 0; col < rows[row].length; col++) {
+        rows[row][col] = src.rows[row][col];
       }
     }
   }
@@ -174,6 +183,22 @@ class IX {
     this.y = y;
   }
 }
+
+void swapIX(IX[] arr, int i, int j) {
+  IX tmp = arr[i];
+  arr[i] = arr[j];
+  arr[j] = tmp;
+}
+IX[] shuffleIX(IX[] args) {
+  IX[] arr = new IX[args.length];
+  for (int i = 0; i < args.length; i++) {
+    arr[i] = new IX(args[i].x, args[i].y);
+  }
+  for (int i = arr.length; 1 < i; i--) {
+    swapIX(arr, i-1, (int)random(i));
+  }
+  return arr;
+}
 Design[] createRandomAlienSpriteDesign() {
   Design[] dsn = new Design[2];
   dsn[0] = new Design();  // "main"
@@ -181,12 +206,17 @@ Design[] createRandomAlienSpriteDesign() {
 
   //generate the [x,y] values of the possible positions
   IX[] positions = new IX[15];
-  for (ix = 0; ix < positions.length; ix++) {
-    IX p = new IX(ix % 3, floor(ix / 3));
+  for (int ix = 0; ix < positions.length; ix++) {
+    positions[ix] = new IX(ix % 3, floor(ix / 3));
   }
 
   //choose which to mutate
-  IX[] positionsToToggle = shuffle(positions).slice(0, 3);
+  //IX[] positionsToToggle = shuffle(positions).slice(0, 3);
+  IX[] shufflePositions = shuffleIX(positions);
+  IX[] positionsToToggle = new IX[3];
+  for (int i = 0; i < positionsToToggle.length; i++) {
+    positionsToToggle[i] = shufflePositions[i];
+  }
   for (IX ix : positionsToToggle) {
     dsn[1].rows[ix.y][ix.x] = !dsn[1].rows[ix.y][ix.x];
   }

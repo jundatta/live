@@ -12,14 +12,14 @@ class Bullet {
     color colour = lerpColor(magenta, cyan, frac);
     fill(colour);
     noStroke();
-    rect(b.pos.x, b.pos.y, 5, -10);
+    rect(pos.x, pos.y, 5, -10);
   }
   void update(float bulletSpeed) {
     if (isDead) {
       return;
     }
     pos.y -= bulletSpeed;
-    checkCollisions(b);
+    checkCollisions(this);
   }
   void remove() {
     isDead = true;

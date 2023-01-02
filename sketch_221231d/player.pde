@@ -14,10 +14,10 @@ class Player {
     pop();
   }
   void update(float playerMoveSpeed) {
-    if (keyDown(LEFT)) {
+    if (keyPressed && keyCode == LEFT) {
       pos.x = constrain(pos.x - playerMoveSpeed, 0, width);
     }
-    if (keyDown(RIGHT)) {
+    if (keyPressed && keyCode == RIGHT) {
       pos.x = constrain(pos.x + playerMoveSpeed, 0, width);
     }
   }
