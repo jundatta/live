@@ -61,8 +61,8 @@ void drawAliens() {
 }
 
 // 後回し＼(^_^)／
-function drawAlienSprite(int alienNumber, float sz) {
-  const c = lerpColor(color("magenta"), color("cyan"), alienNumber / 4);
+void drawAlienSprite(int alienNumber, float sz) {
+  color c = lerpColor(magenta, cyan, alienNumber / 4.0f);
   fill(c);
   const design = spriteDesigns[alienNumber];
   push();
@@ -142,24 +142,34 @@ void createAlienSpriteDesigns() {
   spriteDesigns = collect(5, () => createRandomAlienSpriteDesign());
 }
 
-
-void createRandomAlienSpriteDesign() {
-  const design = {
-  main:
-  {
-  rows:
-    collect(5, () => collect(3, () => random([true, false])))
+class Design {
+  boolean[][] pixelOn = new boolean[5][3];
+  Design() {
+    for (row = 0; row < pixelOn.length; row++) {
+      for (col = 0; col < pixelOn[row].length; col++) {
+        if (random(1) < 0.5f) {
+          pixelOn[row][col] = true;
+        } else {
+          pixelOn[row][col] = false;
+        }
+      }
+    }
   }
-  ,
-};
-//that's the main design done, but let's create also an alt design for animation,
-// where 3 random bits have been toggled
+  Design(Design src) {
+    for (row = 0; row < pixelOn.length; row++) {
+      for (col = 0; col < pixelOn[row].length; col++) {
+        pixelOn[row][col] = src.pixelOn[row][col];
+      }
+    }
+  }
+}
 
-//first make a copy of main
-design.alt = {
-  rows:
-JSON.parse(JSON.stringify(design.main.rows))
-  };
+// "main" ⇒ Design[0]、"alt" ⇒ Design[1]と決めた！
+Design[] createRandomAlienSpriteDesign() {
+  Design[] dsn = new Design[2];
+  dsn[0] = new Design();  // "main"
+  dsn[1] = new Design(dsn[0]);  // "alt"
+
 
 //generate the [x,y] values of the possible positions
 const positions = collect(15, (ix) => [ix % 3, floor(ix / 3)]);
