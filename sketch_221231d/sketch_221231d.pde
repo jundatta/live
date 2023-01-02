@@ -5,8 +5,8 @@
 
 int score = 0;
 
-final color magenta = color(#e4007f);
-final color cyan = color(#00ffff);
+final color magenta = #e4007f;
+final color cyan = #00ffff;
 
 class Config {
   float alienSpriteSize = 30;
