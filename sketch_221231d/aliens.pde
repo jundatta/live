@@ -165,22 +165,29 @@ class Design {
 }
 
 // "main" ⇒ Design[0]、"alt" ⇒ Design[1]と決めた！
+class IX {
+  int x, y;
+  IX(int x, int y) {
+    this.x = x;
+    this.y = y;
+  }
+}
 Design[] createRandomAlienSpriteDesign() {
   Design[] dsn = new Design[2];
   dsn[0] = new Design();  // "main"
   dsn[1] = new Design(dsn[0]);  // "alt"
 
+  //generate the [x,y] values of the possible positions
+  IX[] positions = new IX[15];
+  for (ix = 0; ix < positions.length; ix++) {
+    IX p = new IX(ix % 3, floor(ix / 3));
+  }
 
-//generate the [x,y] values of the possible positions
-const positions = collect(15, (ix) => [ix % 3, floor(ix / 3)]);
+  //choose which to mutate
+  IX[] positionsToToggle = shuffle(positions).slice(0, 3);
+  for (IX ix : positionsToToggle) {
+    dsn[1].rows[ix.y][ix.x] = !dsn[1].rows[ix.y][ix.x];
+  }
 
-//choose which to mutate
-const positionsToToggle = shuffle(positions).slice(0, 3);
-
-function flipBit([x, y]) {
-  design.alt.rows[y][x] = !design.alt.rows[y][x];
-}
-positionsToToggle.forEach(flipBit);
-
-return design;
+  return dsn;
 }
