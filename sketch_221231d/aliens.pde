@@ -52,6 +52,15 @@ class Alien {
       newLevel();
     }
   }
+  void move(float alienStepSize) {
+    if (movingDown()) {
+      alien.pos.y += 50;
+    } else {
+      //const [xOffset, yOffset] = currentMoveDirection().map(v => v * config.alienStepSize);
+      int[] offset = currentMoveDirection();
+      alien.pos.x += alienStepSize * offset.x;
+    }
+  }
 }
 
 void drawAliens() {
@@ -110,7 +119,9 @@ void advanceMoveDirection() {
 
 void updateAliens() {
   if (frameCount % config.framesBeforeAlienMove == 0) {
-    aliens.forEach(moveAlien);
+    for (Alian a : aliens) {
+      a.move(config.alienStepSize);
+    }
     if (movingDown()) {
       advanceMoveDirection();
     }
@@ -126,15 +137,6 @@ void updateAliens() {
     }
   }
   aliens = newAliens;
-}
-
-void moveAlien(Alien alien) {
-  if (movingDown()) {
-    alien.pos.y += 50;
-  } else {
-    const [xOffset, yOffset] = currentMoveDirection().map(v => v * config.alienStepSize);
-    alien.pos.x += xOffset;
-  }
 }
 
 
