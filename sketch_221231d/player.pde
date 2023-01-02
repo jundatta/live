@@ -1,32 +1,24 @@
-let player;
+Player player;
 
-function createPlayer() {
-  player = {
-  pos:
-  {
-  x:
-    width / 2,
-    y:
-    height - 50
+class Player {
+  PVector pos;
+  Player() {
+    this.pos = new PVector(width / 2, height - 50);
   }
-};
-}
-
-function drawPlayer() {
-  fill(255);
-  push();
-  translate(player.pos.x, player.pos.y);
-  rect(0, 0, 30, 12);
-  rect(0, -8, 8, 12);
-  pop();
-}
-
-function updatePlayer() {
-
-  if (keyIsDown(LEFT_ARROW)) {
-    player.pos.x = constrain(player.pos.x - config.playerMoveSpeed, 0, width);
+  void draw() {
+    fill(255);
+    push();
+    translate(pos.x, pos.y);
+    rect(0, 0, 30, 12);
+    rect(0, -8, 8, 12);
+    pop();
   }
-  if (keyIsDown(RIGHT_ARROW)) {
-    player.pos.x = constrain(player.pos.x + config.playerMoveSpeed, 0, width);
+  void update(float playerMoveSpeed) {
+    if (keyDown(LEFT)) {
+      pos.x = constrain(pos.x - playerMoveSpeed, 0, width);
+    }
+    if (keyDown(RIGHT)) {
+      pos.x = constrain(pos.x + playerMoveSpeed, 0, width);
+    }
   }
 }

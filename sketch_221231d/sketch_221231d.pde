@@ -21,7 +21,7 @@ void setup() {
   size(600, 600);
   rectMode(CENTER);
   createAliens();
-  createPlayer();
+  player = new Player();
   aliensMoveDirectionIx = 0;
 }
 
@@ -30,11 +30,11 @@ void draw() {
 
   drawAliens();
   drawBullets();
-  drawPlayer();
+  player.draw();
 
   updateAliens();
   updateBullets();
-  updatePlayer();
+  player.update(config.playerMoveSpeed);
   textSize(20);
   text(str(score), 100, 50);
 }
