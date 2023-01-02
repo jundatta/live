@@ -21,6 +21,12 @@ class Bullet {
     pos.y -= bulletSpeed;
     checkCollisions(b);
   }
+  void remove() {
+    isDead = true;
+  }
+  boolean areColliding(Alien alien) {
+    return dist(pos.x, pos.y, alien.pos.x, alien.pos.y) < 20;
+  }
 }
 
 void drawBullets() {
@@ -42,23 +48,15 @@ void updateBullets() {
   bullets = newBullets;
 }
 
-function removeAllBullets() {
-  bullets = [];
+void removeAllBullets() {
+  bullets = new ArrayList();
 }
 
-function removeBullet(b) {
-  b.isDead = true;
-}
-
-function checkCollisions(b) {
-  for (let alien of aliens) {
-    if (areColliding(b, alien)) {
-      removeBullet(b);
-      killAlien(alien);
+void checkCollisions(Bullet b) {
+  for (Alien alien : aliens) {
+    if (b.areColliding(alien)) {
+      b.remove();
+      alien.kill();
     }
   }
-}
-
-function areColliding(bullet, alien) {
-  return dist(bullet.pos.x, bullet.pos.y, alien.pos.x, alien.pos.y) < 20;
 }

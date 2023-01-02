@@ -34,6 +34,24 @@ class Alien {
     drawAlienSprite(row, sz);
     pop();
   }
+  void kill() {
+    isDead = true;
+    score += 20;
+    // すべて死んでいたらnewLevel()する
+    //if (!aliens.some(a => !a.isDead)) {
+    //  newLevel();
+    //}
+    boolean bAllDead = true;
+    for (Alien a : aliens) {
+      if (!a.isDead) {
+        bAllDead = false;
+        break;
+      }
+    }
+    if (bAllDead) {
+      newLevel();
+    }
+  }
 }
 
 void drawAliens() {
@@ -110,32 +128,22 @@ void updateAliens() {
   aliens = newAliens;
 }
 
-function moveAlien(alien) {
+void moveAlien(Alien alien) {
   if (movingDown()) {
     alien.pos.y += 50;
   } else {
-
     const [xOffset, yOffset] = currentMoveDirection().map(v => v * config.alienStepSize);
     alien.pos.x += xOffset;
   }
 }
 
 
-function killAlien(alien) {
-  alien.isDead = true;
-  score += 20;
-  if (!aliens.some(a => !a.isDead)) {
-    newLevel();
-  }
-}
-
-function createAlienSpriteDesigns() {
+void createAlienSpriteDesigns() {
   spriteDesigns = collect(5, () => createRandomAlienSpriteDesign());
 }
 
 
-function createRandomAlienSpriteDesign() {
-
+void createRandomAlienSpriteDesign() {
   const design = {
   main:
   {
