@@ -156,9 +156,14 @@ JSON.parse(JSON.stringify(design.main.rows))
 
 //generate the [x,y] values of the possible positions
 const positions = collect(15, (ix) => [ix % 3, floor(ix / 3)]);
+console.log("[ps]");
+console.log(positions);
 
 //choose which to mutate
 const positionsToToggle = shuffle(positions).slice(0, 3);
+console.log("[pt]");
+console.log(positionsToToggle);
+console.log();
 
 function flipBit([x, y]) {
   design.alt.rows[y][x] = !design.alt.rows[y][x];
