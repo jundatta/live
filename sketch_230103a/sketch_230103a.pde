@@ -3,100 +3,90 @@
 // 【作品名】Last day of 2022. Draw by openFrameworks
 // https://junkiyoshi.com/openframeworks20221231
 
-ofMesh mesh;
+ofMesh mesh = new ofMesh();
 
 //--------------------------------------------------------------
-void ofApp::setup() {
-
-  ofSetFrameRate(30);
-  ofSetWindowTitle("openFrameworks");
-
-  ofBackground(255);
-  ofEnableDepthTest();
+void setup() {
+  size(720, 720, P3D);
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
-
+void update() {
   ofSeedRandom(39);
 
-  this->mesh.clear();
+  mesh.clear();
 
   int span = 1;
-  ofColor color;
   int len = 150;
 
   float angle;
-  glm::highp_mat4 rotation;
+  PMatrix3D rotation = new PMatrix3D();
   for (int i = 0; i <= 6; i++) {
-
-    for (int x = len * -0.5; x < len * 0.5; x += span) {
-
-      for (int y = len * -0.5; y < len * 0.5; y += span) {
-
+    for (int x = (int)(len * -0.5); x < len * 0.5; x += span) {
+      for (int y = (int)(len * -0.5); y < len * 0.5; y += span) {
         if (i <= 4) {
-
           angle = PI * 0.5 * i;
-          rotation = glm::rotate(glm::mat4(), angle, glm::vec3(0, 1, 0));
+          //rotation = glm::rotate(glm::mat4(), angle, glm::vec3(0, 1, 0));
+          rotation.rotateY(angle);
         }
 
         if (i == 5) {
-
           angle = PI * 0.5;
-          rotation = glm::rotate(glm::mat4(), angle, glm::vec3(1, 0, 0));
+          //rotation = glm::rotate(glm::mat4(), angle, glm::vec3(1, 0, 0));
+          rotation.rotateX(angle);
         }
 
         if (i == 6) {
-
           angle = PI * 0.5 * 3;
-          rotation = glm::rotate(glm::mat4(), angle, glm::vec3(1, 0, 0));
+          //rotation = glm::rotate(glm::mat4(), angle, glm::vec3(1, 0, 0));
+          rotation.rotateX(angle);
         }
 
-        glm::vec3 noise_location = glm::vec4(x, y, len * 0.5, 0) * rotation;
-        int noise_value = ofMap(ofNoise(noise_location.x * 0.025, noise_location.y * 0.025, noise_location.z * 0.025, ofGetFrameNum() * 0.03), 0, 1, 0, 10);
-
+        //glm::vec3 noise_location = glm::vec4(x, y, len * 0.5, 0) * rotation;
+        PVector noise_location = rotation.mult(new PVector(x, y, len * 0.5), null);
+        int noise_value = (int)map(openFrameworks.ofNoise(noise_location.x * 0.025, noise_location.y * 0.025, noise_location.z * 0.025, ofGetFrameNum() * 0.03), 0, 1, 0, 10);
         if (noise_value % 2 == 0) {
-
           continue;
         }
 
-        vector<glm::vec3> vertices;
-        vertices.push_back(glm::vec4(x, y, len * 0.5, 0) * rotation);
-        vertices.push_back(glm::vec4(x + span, y, len * 0.5, 0) * rotation);
-        vertices.push_back(glm::vec4(x + span, y + span, len * 0.5, 0) * rotation);
-        vertices.push_back(glm::vec4(x, y + span, len * 0.5, 0) * rotation);
-        this->mesh.addVertices(vertices);
+        ArrayList<PVector> vertices = new ArrayList();
+        //vertices.push_back(glm::vec4(x, y, len * 0.5, 0) * rotation);
+        //vertices.push_back(glm::vec4(x + span, y, len * 0.5, 0) * rotation);
+        //vertices.push_back(glm::vec4(x + span, y + span, len * 0.5, 0) * rotation);
+        //vertices.push_back(glm::vec4(x, y + span, len * 0.5, 0) * rotation);
+        vertices.add(rotation.mult(new PVector(x, y, len * 0.5), null));
+        vertices.add(rotation.mult(new PVector(x + span, y, len * 0.5), null));
+        vertices.add(rotation.mult(new PVector(x + span, y + span, len * 0.5), null));
+        vertices.add(rotation.mult(new PVector(x, y + span, len * 0.5), null));
+        mesh.addVertices(vertices);
 
-        this->mesh.addIndex(this->mesh.getNumVertices() - 1);
-        this->mesh.addIndex(this->mesh.getNumVertices() - 4);
-        this->mesh.addIndex(this->mesh.getNumVertices() - 3);
-        this->mesh.addIndex(this->mesh.getNumVertices() - 1);
-        this->mesh.addIndex(this->mesh.getNumVertices() - 2);
-        this->mesh.addIndex(this->mesh.getNumVertices() - 3);
+        mesh.addIndex(mesh.getNumVertices() - 1);
+        mesh.addIndex(mesh.getNumVertices() - 4);
+        mesh.addIndex(mesh.getNumVertices() - 3);
+        mesh.addIndex(mesh.getNumVertices() - 1);
+        mesh.addIndex(mesh.getNumVertices() - 2);
+        mesh.addIndex(mesh.getNumVertices() - 3);
       }
     }
   }
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+// なんか違う＼(^_^)／。。。まぁいいよん♪
+// （妥協も大事ｗ深追いはせんｗ正月だしｗ（誰かわかったら教えてくれｗ））
+void draw() {
+  update();
+  // z軸は適当ないい感じ？に感じた値。「「特に意味はない」」
+  translate(width/2, height/2, +400);
 
-  this->cam.begin();
+  background(255);
+
   ofRotateY(ofGetFrameNum());
   ofRotateX(ofGetFrameNum() * 1.5);
 
-  ofSetColor(0);
-  this->mesh.draw();
+  mesh.draw(color(0));
 
-  ofSetColor(255);
-  ofDrawBox(120);
-
-  this->cam.end();
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
+  noStroke();
+  fill(255);
+  box(120);
 }
