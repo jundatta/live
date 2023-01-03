@@ -77,6 +77,7 @@ void update() {
 void draw() {
   update();
   // z軸は適当ないい感じ？に感じた値。「「特に意味はない」」
+  //camera(width/2.0, height/2.0, (height/2.0) / tan(PI*30.0 / 180.0) -800, 0, 0, 0, 0, 1, 0);
   translate(width/2, height/2, +400);
 
   background(255);
