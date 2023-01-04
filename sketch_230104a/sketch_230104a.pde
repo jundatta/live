@@ -14,7 +14,7 @@ PGraphics partsGra, holerGra;
 
 void setup() {
   P5JS.setup(this);
-  size(1112, 834);
+  size(1112, 834, P3D);
   holerGra = createGraphics(width, height);
   partsGra = createGraphics(width, height);
   noLoop();
