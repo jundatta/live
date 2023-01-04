@@ -3,44 +3,38 @@
 // 【作品名】Noisy crown. openFrameworks
 // https://junkiyoshi.com/openframeworks20191204/
 
-vector<ofMesh> face_list, frame_list;
+ArrayList<ofMesh> face_list = new ArrayList();
+ArrayList<ofMesh> frame_list = new ArrayList();
 
 //--------------------------------------------------------------
-void ofApp::setup() {
-
-  ofSetFrameRate(60);
-  ofSetWindowTitle("openframeworks");
-
-  ofBackground(239);
-  ofEnableDepthTest();
+void setup() {
+  size(720, 720, P3D);
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
-
-  this->face_list.clear();
-  this->frame_list.clear();
+void update() {
+  face_list.clear();
+  frame_list.clear();
 
   for (int radius = 50; radius < 350; radius += 30) {
-
-    ofMesh face, frame;
-    frame.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
+    ofMesh face = new ofMesh();
+    ofMesh frame = new ofMesh();
 
     for (int deg = 0; deg <= 360; deg += 1) {
-
       int index = face.getNumVertices() - 2;
 
-      auto location = glm::vec2(radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD));
-      int z = ofMap(ofNoise(glm::vec3(location * 0.005, ofGetFrameNum() * 0.005)), 0, 1, 0, radius);
+      PVector location = new PVector(radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD));
+      //int z = ofMap(ofNoise(glm::vec3(location * 0.005, ofGetFrameNum() * 0.005)), 0, 1, 0, radius);
+      PVector noiseSource = new PVector(location.x * 0.005, location.y * 0.005, ofGetFrameNum() * 0.005);
+      int z = (int)map(openFrameworks.ofNoise(noiseSource.x, noiseSource.y, noiseSource.z), 0, 1, 0, radius);
 
-      face.addVertex(glm::vec3(location, 0));
-      face.addVertex(glm::vec3(location, z));
+      face.addVertex(new PVector(location.x, location.y, 0));
+      face.addVertex(new PVector(location.x, location.y, z));
 
-      frame.addVertex(glm::vec3(location, 0));
-      frame.addVertex(glm::vec3(location, z));
+      frame.addVertex(new PVector(location.x, location.y, 0));
+      frame.addVertex(new PVector(location.x, location.y, z));
 
       if (index > -1) {
-
         face.addIndex(index);
         face.addIndex(index + 1);
         face.addIndex(index + 3);
@@ -55,31 +49,23 @@ void ofApp::update() {
       }
     }
 
-    this->face_list.push_back(face);
-    this->frame_list.push_back(frame);
+    face_list.add(face);
+    frame_list.add(frame);
   }
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
+  translate(width/2, height/2);
 
-  this->cam.begin();
+  // いい感じに感じる適当な（カメラじゃなくてゴメン）
+  translate(0, (height/2) * 0.1, 0);
+  ofRotateX(60);
 
-  for (int i = 0; i < this->face_list.size(); i++) {
-
-    ofSetColor(39);
-    this->face_list[i].drawFaces();
-
-    ofSetColor(239);
-    this->frame_list[i].drawWireframe();
+  background(255, 0, 0);
+  for (int i = 0; i < face_list.size(); i++) {
+    face_list.get(i).draw(color(39));
+    frame_list.get(i).drawWireframe(color(239));
   }
-
-  this->cam.end();
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
