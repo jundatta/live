@@ -10,44 +10,49 @@ color[][] palette = {
 };
 int UNIT = 10;
 color bgCol, lineCol, holeCol;
-PGraphics partsGra, holerGra;
+
+PGraphics pg;
 
 void setup() {
   P5JS.setup(this);
   size(1112, 834, P3D);
-  holerGra = createGraphics(width, height);
-  partsGra = createGraphics(width, height);
-  noLoop();
-  //let cols = random(palette);
-  //bgCol = cols[0];
-  //lineCol = cols[1];
-  //holeCol = cols[2];
+  //noLoop();
   bgCol = P5JS.random(palette[0]);
   lineCol = P5JS.random(palette[1]);
   holeCol = P5JS.random(palette[2]);
+
+  background(bgCol);
+  
+  pg = createGraphics(width, height);
+  pg.beginDraw();
+  drawOffscreen(pg);
+  pg.endDraw();
 }
 
-void draw() {
-  background(bgCol);
+void drawOffscreen(PGraphics pg) {
+  pg.background(bgCol);
   float noff = random(100);
   float sw = UNIT/5.0f;
   float miconSpan = UNIT*20;
 
+  PGraphics holerGra = createGraphics(width, height);
+  PGraphics partsGra = createGraphics(width, height);
+
   holerGra.beginDraw();
   partsGra.beginDraw();
-  
+
   //line
-  for (float i = 0; i < 30; i++) drawLine(unitNum(random(width)), unitNum(random(height)), noff, sw*2);
+  for (float i = 0; i < 30; i++) drawLine(pg, unitNum(random(width)), unitNum(random(height)), noff, sw*2, holerGra);
 
   //parts
   for (float y = 0; y < height; y += miconSpan) {
     for (float x = 0; x < width; x += miconSpan) {
       int cx = unitNum(x + random(miconSpan*0.3));
       int cy = unitNum(y + random(miconSpan*0.3));
-      if (random(1) > 0.2)micon(cx, cy, int(random(1, 15)), noff, sw);
+      if (random(1) > 0.2)micon(pg, partsGra, cx, cy, int(random(1, 15)), noff, sw, holerGra);
       else {
-        drawLine(cx, cy, noff, sw);
-        drawLine(cx, cy + UNIT, noff, sw);
+        drawLine(pg, cx, cy, noff, sw, holerGra);
+        drawLine(pg, cx, cy + UNIT, noff, sw, holerGra);
         partsGra.noStroke();
         partsGra.fill(holeCol);
         int wh = int(random(1, 5))*UNIT;
@@ -57,24 +62,29 @@ void draw() {
   }
 
   //line
-  for (int i = 0; i < 1000; i++) drawLine(unitNum(random(width)), unitNum(random(height)), noff, sw);
+  //  for (int i = 0; i < 1000; i++) drawLine(pg, unitNum(random(width)), unitNum(random(height)), noff, sw, holerGra);
+  for (int i = 0; i < (int)(1000 * 0.1f); i++) drawLine(pg, unitNum(random(width)), unitNum(random(height)), noff, sw, holerGra);
 
   holerGra.endDraw();
   partsGra.endDraw();
-  
+
   //layer
-  image(holerGra, 0, 0);
-  image(partsGra, 0, 0);
+  pg.image(holerGra, 0, 0);
+  pg.image(partsGra, 0, 0);
 
   //noise
-  noStroke();
-  fill(255, 20);
-  for (float i = 0; i < width*height; i++) {
+  pg.noStroke();
+  pg.fill(255, 20);
+  //for (float i = 0; i < width*height; i++) {
+  for (float i = 0; i < width*height * 0.1f; i++) {
     float x = random(width);
     float y = random(height);
     float s = noise(x*0.01, y*0.01)*1 + 0.5;
-    rect(x, y, s, s);
+    pg.rect(x, y, s, s);
   }
+}
+void draw() {
+  image(pg, 0, 0);
 }
 
 /////////////
@@ -85,7 +95,7 @@ int unitNum(float num) {
 
 /////////////
 
-void drawLine(int x, int y, float noiseoff, float w) {
+void drawLine(PGraphics pg, int x, int y, float noiseoff, float w, PGraphics holerGra) {
   color col = this.get(x, y);
   if (abs(brightness(col) - brightness(lineCol)) < 5)return;
   //setting
@@ -95,16 +105,16 @@ void drawLine(int x, int y, float noiseoff, float w) {
   float t = random(1);
   boolean reverse = random(1) > 0.5 ? true : false;
   float scl = 0.01;
-  stroke(lineCol);
-  strokeWeight(w);
-  noFill();
+  pg.stroke(lineCol);
+  pg.strokeWeight(w);
+  pg.noFill();
   //draw
-  hole(x, y, UNIT*0.8);
+  hole(holerGra, x, y, UNIT*0.8);
   for (float i = 0; i < c; i++)
   {
     float angle = P5JS.map(int(noise(x* scl +noiseoff, y * scl + noiseoff, t)*9), 0, 8, 0, TAU, true);
     if (reverse)angle  = PI-angle;
-    line(x, y, px, py);
+    pg.line(x, y, px, py);
     px = x;
     py = y;
     x += round(cos(angle)) * UNIT;
@@ -112,16 +122,17 @@ void drawLine(int x, int y, float noiseoff, float w) {
     //線に当たったら終了
     col = this.get(x, y);
     if (abs(brightness(col) - brightness(lineCol)) < 5) {
-      line(x, y, px, py);
-      circle(x, y, UNIT*0.2);
+      pg.line(x, y, px, py);
+      pg.circle(x, y, UNIT*0.2);
       break;
     }
     //最後までいったら
-    if (i == c-1)hole(px, py, UNIT*0.8);
+    if (i == c-1)hole(holerGra, px, py, UNIT*0.8);
   }
 }
 
-void micon(float cox, float coy, int pinNum, float noff, float sw)
+void micon(PGraphics pg, PGraphics partsGra, float cox, float coy, int pinNum, float noff, float sw,
+  PGraphics holerGra)
 {
   boolean rot = random(1) > 0.5 ? true : false;
   int x = unitNum(cox);
@@ -129,23 +140,22 @@ void micon(float cox, float coy, int pinNum, float noff, float sw)
   int h = pinNum * UNIT;
   int w = max(UNIT, unitNum(h * random(0.2, 0.6)));
 
-  //きたねえ分岐
   if (rot ==false) {
     for (int p = y; p <= y + h; p += UNIT) {
-      drawLine(x, p, noff, sw);
-      hole(x, p, UNIT*0.8);
-      drawLine(x + w, p, noff, sw);
-      hole(x + w, p, UNIT*0.8);
+      drawLine(pg, x, p, noff, sw, holerGra);
+      hole(holerGra, x, p, UNIT*0.8);
+      drawLine(pg, x + w, p, noff, sw, holerGra);
+      hole(holerGra, x + w, p, UNIT*0.8);
     }
     partsGra.noStroke();
     partsGra.fill(holeCol);
     partsGra.rect(x + UNIT*0.1, y, w-UNIT*0.2, h);
   } else {
     for (int p = x; p <= x + h; p += UNIT) {
-      drawLine(p, y, noff, sw);
-      hole(p, y, UNIT*0.8);
-      drawLine(p, y+w, noff, sw);
-      hole(p, y+w, UNIT*0.8);
+      drawLine(pg, p, y, noff, sw, holerGra);
+      hole(holerGra, p, y, UNIT*0.8);
+      drawLine(pg, p, y+w, noff, sw, holerGra);
+      hole(holerGra, p, y+w, UNIT*0.8);
     }
     partsGra.noStroke();
     partsGra.fill(holeCol);
@@ -154,7 +164,7 @@ void micon(float cox, float coy, int pinNum, float noff, float sw)
 }
 
 
-void hole(float x, float y, float dia) {
+void hole(PGraphics holerGra, float x, float y, float dia) {
   holerGra.noStroke();
   holerGra.fill(lineCol);
   holerGra.circle(x, y, dia);
