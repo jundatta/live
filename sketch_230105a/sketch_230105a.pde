@@ -1,28 +1,71 @@
 // こちらがオリジナルです。
-// 【作者】はぅ君さん
-// 【作品名】SpiritFlow
-// https://twitter.com/Hau_kun/status/1401187413808979968
+// 【作者】Sayamaさん
+// 【作品名】Rough Clock2
+// https://openprocessing.org/sketch/809934
 
-float t=0;
-void setup() {
-  size(720, 720, P3D);
+let img;
+let font;
+let ratio;
+let psec;
+let strArray;
+
+function preload() {
+  img = loadImage('./img_base.png');
+  font = loadFont('./segfont.otf');
 }
-void draw() {
-  t+=.001;
-  colorMode(HSB, 360, 100, 100, 1.0f);
-  blendMode(BLEND);
-  noStroke();
-  //background(0, .1);
-  push();
-  fill(0, .1);
-  rect(0, 0, width, height);
-  pop();
-  blendMode(ADD);
-  for (float r=0; r<6; r+=.005) {
-    float T=tan(r*4+t*9)/2.0f;
-    fill(r*60, 80, 99, T);
-    float R=r*r-t;
-    float A=r+t*3+sin(R+t);
-    circle(cos(R)*360*sin(A)+360, sin(R)*360*cos(A)+360, 4/T);
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  ratio = width/img.width*0.7;
+  imageMode(CENTER);
+  textFont(font);
+  strArray = getTimeArray();
+}
+
+function draw() {
+  background(68, 132, 204);
+  fill(0);
+  rectMode(CENTER);
+  rect(width*0.48, height/2, width * 0.31, width*0.25);
+
+  if (Math.floor(psec/5) != Math.floor(second()/5)) {
+    strArray = getTimeArray();
   }
+
+  //pre
+
+  textSize(width*0.035);
+  textAlign(LEFT);
+  fill(255, 60);
+  noStroke();
+  text('前前前前前前前', width/2-width*0.14, height/2-width*0.052);
+  fill(155, 255, 171);
+  stroke(155, 255, 171, 100);
+  text(strArray[0], width/2-width*0.14, height/2-width*0.052);
+  textAlign(RIGHT);
+  fill(255, 60);
+  noStroke();
+  text('前前前前前前前前前前前', width/2+width*0.089, height/2+width*0.07);
+  fill(155, 255, 171);
+  stroke(155, 255, 171, 100);
+  text(strArray[3], width/2+width*0.089, height/2+width*0.07);
+
+  //time
+
+  textSize(width*0.078);
+  textAlign(LEFT);
+  fill(255, 60);
+  noStroke();
+  text('前前前前前', width/2-width*0.14, height/2+width*0.028);
+  fill(155, 255, 171);
+  stroke(155, 255, 171, 100);
+  text(strArray[1], width/2-width*0.14, height/2+width*0.028);
+  let s = '  :';
+  if (second()%2 == 0)s = '  ；';
+  text(s, width/2-width*0.14, height/2+width*0.028);
+  text('   '+strArray[2], width/2-width*0.14, height/2+width*0.028);
+
+  image(img, width/2, height/2, img.width*ratio, img.height * ratio);
+
+  psec  = second();
 }
