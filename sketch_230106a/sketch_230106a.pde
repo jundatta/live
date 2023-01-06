@@ -15,13 +15,53 @@ ArrayList<ShereUnit> sphere_list = new ArrayList();
 ArrayList<PVector> deg_list = new ArrayList();
 int number_of_sphere;
 
-String word;
-
 //--------------------------------------------------------------
+class ofPolyline {
+  PVector[] v;
+}
+ArrayList<ofPolyline[]> word;
+
+final int source[] = {
+  // openFrameworks側で取ったフォント0～9のアウトラインのxy座標をファイルにしたので
+  // それをProcessing側で読み込む。
+  // フォント：J  u  n  K  i  y  o  s  h  iのそれぞれのアウトラインの数を定義する。
+  1, 1, 1, 1, 2, 1, 2, 1, 1, 2,
+};
+ofPolyline loadOutline(String path) {
+  ofPolyline vertices = new ofPolyline();
+  String[] lines = loadStrings(path);
+  PVector[] v = new PVector[lines.length];
+  for (int i = 0; i < v.length; i++) {
+    String s = lines[i];
+    String[] units = splitTokens(s, ", ");
+    PVector p = new PVector(float(units[0]), float(units[1]));
+    v[i] = p;
+  }
+  vertices.v = v;
+  return vertices;
+}
+
+void preload() {
+  // アウトラインのxy座標を定義した0_x.txt～9_x.txtを読み込む。
+  word = new ArrayList();
+  for (int i = 0; i < source.length; i++) {
+    int outlineNum = source[i];
+    ofPolyline[] outline = new ofPolyline[outlineNum];
+    for (int outline_index = 0; outline_index < outlineNum; outline_index++) {
+      String path = "data/";
+      path += i + "_" + outline_index + ".txt";
+      ofPolyline vertices = loadOutline(path);
+      outline[outline_index] = vertices;
+    }
+    word.add(outline);
+  }
+}
+
 void setup() {
   size(720, 720, P3D);
 
-  number_of_sphere = 3600;
+  preload();
+  number_of_sphere = (int)(3600 * 0.5f);
   while (sphere_list.size() < number_of_sphere) {
     PVector tmp_location = make_point(280, random(0, 50), random(360), random(360));
     float radius = sphere_list.size() < 100 ? random(10, 50) : random(3, 20);
@@ -41,10 +81,6 @@ void setup() {
       deg_list.add(new PVector(random(360), random(360), random(360)));
     }
   }
-
-  PFont font = createFont("HuiFont29.ttf", 100, true);
-  textFont(font);
-  word = "JunKiyoshi";
 }
 
 //--------------------------------------------------------------
@@ -73,74 +109,61 @@ void draw() {
 
   ofRotateX(270);
 
-  ofTranslate(280, -560, 0);
+  translate(280, -560, 0);
   ofRotateZ(ofGetFrameNum() * 0.5);
 
   for (int i = 0; i < sphere_list.size(); i++) {
     ShereUnit su = sphere_list.get(i);
     PVector location = su.location;
-    auto size = su.size * 1.2;
+    float size = su.size * 1.2;
 
     pushMatrix();
-    translate(location);
+    translate(location.x, location.y, location.z);
 
     PVector deg = deg_list.get(i);
     ofRotateZ(deg.z);
     ofRotateY(deg.y);
     ofRotateX(deg.x);
 
-    ofPath chara_path = font.getCharacterAsPoints(word[ofRandom(word.size())], true, false);
-    vector<ofPolyline> outline = chara_path.getOutline();
+    //ofPath chara_path = font.getCharacterAsPoints(word[ofRandom(word.size())], true, false);
+    //vector<ofPolyline> outline = chara_path.getOutline();
+    ofPolyline[] outline = word.get((int)random(word.size()));
 
-    ofFill();
-    ofSetColor(0);
-    ofBeginShape();
-    for (int outline_index = 0; outline_index < outline.size(); outline_index++) {
-
-      ofNextContour(true);
-
-      auto vertices = outline[outline_index].getVertices();
-      for (auto& vertex : vertices) {
-
-        glm::vec2 location = vertex / 100 * size;
-        location -= glm::vec2(size * 0.5, -size * 0.5);
-        ofVertex(location);
+    fill(0);
+    stroke(255);
+    //beginShape();
+    for (int outline_index = 0; outline_index < outline.length; outline_index++) {
+      //ofNextContour(true);
+      beginShape();
+      PVector[] vertices = outline[outline_index].v;
+      for (PVector vertex : vertices) {
+        //glm::vec2 location = vertex / 100 * size;
+        //location -= glm::vec2(size * 0.5, -size * 0.5);
+        //ofVertex(location);
+        PVector loc = PVector.div(vertex, 100.0f);
+        loc.mult(size);
+        loc.x -= (size * 0.5);
+        loc.y -= (-size * 0.5);
+        vertex(loc.x, loc.y);
       }
+      endShape(CLOSE);
     }
-    ofEndShape(true);
-
-    ofNoFill();
-    ofSetColor(255);
-    ofBeginShape();
-    for (int outline_index = 0; outline_index < outline.size(); outline_index++) {
-
-      ofNextContour(true);
-
-      auto vertices = outline[outline_index].getVertices();
-      for (auto& vertex : vertices) {
-
-        glm::vec2 location = vertex / 100 * size;
-        location -= glm::vec2(size * 0.5, -size * 0.5);
-        ofVertex(location);
-      }
-    }
-    ofEndShape(true);
-
-    ofPopMatrix();
+    //endShape(CLOSE);
+    popMatrix();
   }
 }
 
 //--------------------------------------------------------------
-glm::vec3 ofApp::make_point(float R, float r, float u, float v) {
+PVector make_point(float R, float r, float u, float v) {
 
   // 数学デッサン教室 描いて楽しむ数学たち　P.31
 
   u *= DEG_TO_RAD;
   v *= DEG_TO_RAD;
 
-  auto x = (R + r * cos(u)) * cos(v);
-  auto y = (R + r * cos(u)) * sin(v);
-  auto z = r * sin(u);
+  float x = (R + r * cos(u)) * cos(v);
+  float y = (R + r * cos(u)) * sin(v);
+  float z = r * sin(u);
 
-  return glm::vec3(x, y, z);
+  return new PVector(x, y, z);
 }
