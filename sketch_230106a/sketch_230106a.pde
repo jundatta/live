@@ -3,95 +3,93 @@
 // 【作品名】flowing character. Draw by openFrameworks
 // https://junkiyoshi.com/openframeworks20221208/
 
-vector<tuple<ofColor, glm::vec3, float>> sphere_list; // BodyColor, Location, size
-vector<glm::vec3> deg_list;
+class ShereUnit {
+  PVector location;
+  float size;
+  ShereUnit(PVector location, float size) {
+    this.location = location;
+    this.size = size;
+  }
+}
+ArrayList<ShereUnit> sphere_list = new ArrayList();
+ArrayList<PVector> deg_list = new ArrayList();
 int number_of_sphere;
 
-ofTrueTypeFont font;
-string word;
+String word;
 
 //--------------------------------------------------------------
-void ofApp::setup() {
+void setup() {
+  size(720, 720, P3D);
 
-  ofSetFrameRate(30);
-  ofSetWindowTitle("openFrameworks");
+  number_of_sphere = 3600;
+  while (sphere_list.size() < number_of_sphere) {
+    PVector tmp_location = make_point(280, random(0, 50), random(360), random(360));
+    float radius = sphere_list.size() < 100 ? random(10, 50) : random(3, 20);
 
-  ofBackground(0);
-  ofSetLineWidth(1);
-  ofEnableDepthTest();
-
-  auto ico_sphere = ofIcoSpherePrimitive(1, 5);
-
-  this->number_of_sphere = 3600;
-  while (this->sphere_list.size() < this->number_of_sphere) {
-
-    auto tmp_location = this->make_point(280, ofRandom(0, 50), ofRandom(360), ofRandom(360));
-    auto radius = this->sphere_list.size() < 100 ? ofRandom(10, 50) : ofRandom(3, 20);
-
-    bool flag = true;
-    for (int i = 0; i < this->sphere_list.size(); i++) {
-
-      if (glm::distance(tmp_location, get<1>(this->sphere_list[i])) < get<2>(this->sphere_list[i]) + radius) {
-
+    boolean flag = true;
+    for (int i = 0; i < sphere_list.size(); i++) {
+      ShereUnit su = sphere_list.get(i);
+      if (PVector.dist(tmp_location, su.location) < su.size + radius) {
         flag = false;
         break;
       }
     }
-
     if (flag) {
-
-      ofColor color;
-      color.setHsb(ofRandom(255), 200, 255);
-
-      auto size = (radius * 2) / sqrt(3);
-
-      this->sphere_list.push_back(make_tuple(color, tmp_location, size));
-      this->deg_list.push_back(glm::vec3(ofRandom(360), ofRandom(360), ofRandom(360)));
+      float size = (radius * 2) / sqrt(3);
+      ShereUnit su = new ShereUnit(tmp_location, size);
+      sphere_list.add(su);
+      deg_list.add(new PVector(random(360), random(360), random(360)));
     }
   }
 
-  this->font.loadFont("fonts/Kazesawa-Bold.ttf", 100, true, true, true);
-  this->word = "JunKiyoshi";
+  PFont font = createFont("HuiFont29.ttf", 100, true);
+  textFont(font);
+  word = "JunKiyoshi";
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
-
+void update() {
   ofSeedRandom(39);
 
-  for (int i = 0; i < this->sphere_list.size(); i++) {
-
-    auto step = glm::vec3(ofRandom(1, 3), ofRandom(1, 3), ofRandom(-3, 3));
-
+  for (int i = 0; i < sphere_list.size(); i++) {
+    PVector step = new PVector(random(1, 3), random(1, 3), random(-3, 3));
     if (ofGetFrameNum() % 60 < 30) {
-
-      this->deg_list[i] += step * ofMap(ofGetFrameNum() % 60, 0, 30, 15, 0);
+      //deg_list[i] += step * ofMap(ofGetFrameNum() % 60, 0, 30, 15, 0);
+      step.mult(map(ofGetFrameNum() % 60, 0, 30, 15, 0));
+      PVector deg = deg_list.get(i);
+      deg.add(step);
+      deg_list.set(i, deg);
     }
   }
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
+  translate(width/2, height/2);
 
-  this->cam.begin();
+  background(0);
+  //ofSetLineWidth(1);
+
   ofRotateX(270);
 
   ofTranslate(280, -560, 0);
   ofRotateZ(ofGetFrameNum() * 0.5);
 
-  for (int i = 0; i < this->sphere_list.size(); i++) {
+  for (int i = 0; i < sphere_list.size(); i++) {
+    ShereUnit su = sphere_list.get(i);
+    PVector location = su.location;
+    auto size = su.size * 1.2;
 
-    auto location = get<1>(this->sphere_list[i]);
-    auto size = get<2>(this->sphere_list[i]) * 1.2;
+    pushMatrix();
+    translate(location);
 
-    ofPushMatrix();
-    ofTranslate(location);
+    PVector deg = deg_list.get(i);
+    ofRotateZ(deg.z);
+    ofRotateY(deg.y);
+    ofRotateX(deg.x);
 
-    ofRotateZ(this->deg_list[i].z);
-    ofRotateY(this->deg_list[i].y);
-    ofRotateX(this->deg_list[i].x);
-
-    ofPath chara_path = this->font.getCharacterAsPoints(this->word[ofRandom(this->word.size())], true, false);
+    ofPath chara_path = font.getCharacterAsPoints(word[ofRandom(word.size())], true, false);
     vector<ofPolyline> outline = chara_path.getOutline();
 
     ofFill();
@@ -130,8 +128,6 @@ void ofApp::draw() {
 
     ofPopMatrix();
   }
-
-  this->cam.end();
 }
 
 //--------------------------------------------------------------
@@ -147,11 +143,4 @@ glm::vec3 ofApp::make_point(float R, float r, float u, float v) {
   auto z = r * sin(u);
 
   return glm::vec3(x, y, z);
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
