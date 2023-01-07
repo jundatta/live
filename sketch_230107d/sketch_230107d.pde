@@ -24,6 +24,12 @@ PShape cy15;
 PShape tr18;
 PShape cy15_20_9_1;
 PShape box;
+PShape sphere;
+
+PGraphics silver;
+PGraphics black;
+PGraphics white;
+PGraphics red;
 
 void preload() {
   //soundFormats('mp3', 'wav');
@@ -76,17 +82,37 @@ void setup() {
   preload();
 
   unit = height / 50.0f;
-  cy3_13 = createCan(3 * unit, 13 * unit);
+  cy3_13 = createCan(3 * unit, 13 * unit, 24, true, false);
   cy5_100 = createCan(5, 100 * unit);
   cy15_8 = createCan(15, 8);
   cy_20 = createCan(unit, 20 * unit);
   cy_5 = createCan(unit, 5 * unit);
-  cy15 = createCan(1.5 * unit, unit);
+  cy15 = createCan(1.5 * unit, unit, 24, false, true);
   tr18 = createTorus(1.8 * unit, unit / 2.0f);
   //cylinder(1.5 * unit, 20 * unit, 9, 1);
-  cy15_20_9_1 = createCan(1.5 * unit, 20 * unit, 9);
+  cy15_20_9_1 = createCan(1.5 * unit, 20 * unit, 9, false, true);
+
   box = createShape(BOX, 1.0f, 1.0f, 1.0f);
-  box.setStrokeWeight(0);
+  box.setStroke(false);
+  sphere = createShape(SPHERE, 1);
+  sphere.setStroke(false);
+
+  silver = createGraphics(1, 1);
+  silver.beginDraw();
+  silver.background(#c0c0c0);
+  silver.endDraw();
+  black = createGraphics(1, 1);
+  black.beginDraw();
+  black.background(#202020);
+  black.endDraw();
+  white = createGraphics(1, 1);
+  white.beginDraw();
+  white.background(#ffffff);
+  white.endDraw();
+  red = createGraphics(1, 1);
+  red.beginDraw();
+  red.background(#ff0000);
+  red.endDraw();
 
   cg = createGraphics((int)(80 * unit), (int)(60 * unit));
   logo.resize((int)(3.5 * unit), 0);
@@ -117,11 +143,13 @@ void draw() {
   rotateX(orient.x);
   rotateY(orient.y);
   ambientLight(100, 100, 100);
-  pointLight(100, 100, 100, width, -height, 0);
+  pointLight(255, 255, 255, width, -height, 0);
+  pointLight(255, 255, 255, width, -height, 0);
+  //pointLight(255, 255, 255, width, -height, 0);
   float lamp = 120*noise(frameCount/20.0f);
   if (gameStarted) pointLight(lamp/2.0f, 0, lamp, 0, 0, 0);
 
-  specular(0);
+  //specular(0);
   noStroke();
   translate(0, 10 * unit, 20 * unit);
   rotateX(-PI / 12.0f);
@@ -162,12 +190,18 @@ void drawTV() {
   shape(box);
   pop();
   translate(-48 * unit, 0, 0);
-  specular(20);
-  box(12 * unit, 60 * unit, 2 * unit);
+  //specular(20);
+  box.setTexture(silver);
+  //box(12 * unit, 60 * unit, 2 * unit);
+  push();
+  scale(12 * unit, 60 * unit, 2 * unit);
+  shape(box);
+  pop();
   translate(0, 12 * unit, unit);
   rotateX(HALF_PI);
+  cy3_13.setTexture(white);
   for (int i = 0; i < 3; i++) {
-    specular(#c0c0c0);  // 'silver'
+    //specular(#c0c0c0);  // 'silver'
     //cylinder(3 * unit, 13 * unit);
     shape(cy3_13);
     translate(0, 0, 12 * unit);
@@ -188,8 +222,13 @@ void drawTV() {
 void drawAntenna() {
   push();
   translate(0, -35 * unit, -200 * unit);
-  specular(#000000);  // 'black'
-  sphere(15 * unit);
+  //specular(#000000);  // 'black'
+  //sphere(15 * unit);
+  sphere.setTexture(black);
+  push();
+  scale(15 * unit);
+  shape(sphere);
+  pop();
   push();
   rotateZ(PI / 12.0f);
   translate(0, -50 * unit, 0);
@@ -215,10 +254,24 @@ void drawAntenna() {
 }
 
 void drawBase() {
-  specular(0);
-  box(22 * unit, 5 * unit, 20 * unit);
-  box(20 * unit, 5 * unit, 22 * unit);
-  box(20 * unit, 7 * unit, 20 * unit);
+  //specular(0);
+  box.setTexture(black);
+  //box(22 * unit, 5 * unit, 20 * unit);
+  push();
+  scale(22 * unit, 5 * unit, 20 * unit);
+  shape(box);
+  pop();
+  //box(20 * unit, 5 * unit, 22 * unit);
+  push();
+  scale(20 * unit, 5 * unit, 22 * unit);
+  shape(box);
+  pop();
+  //box(20 * unit, 7 * unit, 20 * unit);
+  push();
+  scale(20 * unit, 7 * unit, 20 * unit);
+  shape(box);
+  pop();
+  cy_20.setTexture(black);
   for (float x = -10 * unit; x <= 10 * unit; x += 20 * unit) {
     push();
     rotateY(HALF_PI);
@@ -239,15 +292,25 @@ void drawBase() {
     //cylinder(unit, 20 * unit);
     shape(cy_20);
     pop();
+    cy_5.setTexture(black);
+    sphere.setTexture(black);
     for (float z = -10 * unit; z <= 10 * unit; z += 20 * unit) {
       push();
       translate(x, 0, z);
       //cylinder(unit, 5 * unit);
       shape(cy_5);
       translate(0, -2.5 * unit, 0);
-      sphere(unit);
+      //sphere(unit);
+      push();
+      scale(unit);
+      shape(sphere);
+      pop();
       translate(0, 5 * unit, 0);
-      sphere(unit);
+      //sphere(unit);
+      push();
+      scale(unit);
+      shape(sphere);
+      pop();
       pop();
     }
   }
@@ -263,6 +326,7 @@ void drawBaffles() {
     rotateY(za / 5.0f);
     //torus(r, unit);
     PShape torus = createTorus(r, unit);
+    torus.setTexture(black);
     shape(torus);
   }
   pop();
@@ -277,6 +341,7 @@ void drawStick() {
   rotateZ(za);
   translate(0, -10 * unit, 0);
   //cylinder(1.5 * unit, 20 * unit, 9, 1);
+  cy15_20_9_1.setTexture(black);
   shape(cy15_20_9_1);
   pop();
 }
@@ -284,15 +349,17 @@ void drawStick() {
 void drawButton() {
   push();
   translate(-7.5 * unit, -3.5 * unit - buttony, -7.5 * unit);
-  specular(#ff0000);  // 'red'
+  //specular(#ff0000);  // 'red'
+  cy15.setTexture(red);
   //cylinder(1.5 * unit, unit);
   shape(cy15);
   pop();
   push();
   translate(-7.5 * unit, -3.5 * unit, -7.5 * unit);
   rotateX(HALF_PI);
-  specular(#000000);  // 'black'
+  //specular(#000000);  // 'black'
   //torus(1.8 * unit, unit / 2.0f);
+  tr18.setTexture(black);
   shape(tr18);
   translate(15 * unit, 0, 1);
   image(logo, 0, 0);
