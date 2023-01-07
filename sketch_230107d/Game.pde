@@ -2,7 +2,7 @@ ArrayList<Alien> aliens = new ArrayList();
 ArrayList<Missile> missiles = new ArrayList();
 Ship ship;
 boolean gameStarted = false;
-float hitCount = 0;
+int hitCount = 0;
 float alienXpos = 0;
 float alienYpos = 0;
 float alienMove;
@@ -29,7 +29,7 @@ void setupGame() {
 void createAliens() {
   float xw = cg.width/20.0f;
   float yh = cg.height/20.0f;
-  float pv = 20;
+  int pv = 20;
   for (float y = 4*yh; y < 9*yh; y += 1.5*yh) {
     for (float x = xw; x < cg.width - 6*xw; x += 1.5*xw) {
       aliens.add(new Alien(x, y, xw, yh, pv));
@@ -135,8 +135,8 @@ class Alien {
   float startx, starty;
   float w, h;
   color col;
-  float pv;
-  Alien(float x, float y, float w, float h, float pv) {
+  int pv;
+  Alien(float x, float y, float w, float h, int pv) {
     this.x = x;
     this.y = y;
     this.startx = x;

@@ -33,6 +33,8 @@ PGraphics black;
 PGraphics white;
 PGraphics red;
 
+PShape plane;
+
 void preload() {
   //soundFormats('mp3', 'wav');
   ma = new MinimAssistance(this);
@@ -122,6 +124,16 @@ void setup() {
   red.background(#ff0000);
   red.endDraw();
 
+  // テレビ画面が左右逆になるのでboxから自前の板ポリゴンを作って貼るように変えた＼(^_^)／
+  plane = createShape();
+  plane.beginShape();
+  plane.vertex(-0.5f, -0.5f, 0.0f, 0.0f, 0.0f);
+  plane.vertex(+0.5f, -0.5f, 0.0f, 1.0f, 0.0f);
+  plane.vertex(+0.5f, +0.5f, 0.0f, 1.0f, 1.0f);
+  plane.vertex(-0.5f, +0.5f, 0.0f, 0.0f, 1.0f);
+  plane.endShape(CLOSE);
+  plane.setStroke(false);
+
   cg = createGraphics((int)(80 * unit), (int)(60 * unit));
   logo.resize((int)(3.5 * unit), 0);
   setupGame();
@@ -192,10 +204,12 @@ void drawTV() {
   //texture(cg);
   translate(7 * unit, 0, 35.5 * unit);
   //box(80 * unit, 60 * unit, 2 * unit);
-  box.setTexture(cg);
+  //box.setTexture(cg);
+  plane.setTexture(cg);
   push();
   scale(80 * unit, 60 * unit, 2 * unit);
-  shape(box);
+  //shape(box);
+  shape(plane);
   pop();
   translate(-48 * unit, 0, 0);
   //specular(20);
