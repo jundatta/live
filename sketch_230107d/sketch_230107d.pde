@@ -66,13 +66,11 @@ void setup() {
   preload();
 
   unit = height / 50.0f;
-  cg = createGraphics(80 * unit, 60 * unit);
-  logo.resize(3.5 * unit, 0);
-  cg.textFont(font);
+  cg = createGraphics((int)(80 * unit), (int)(60 * unit));
+  logo.resize((int)(3.5 * unit), 0);
   setupGame();
-  camera(0, -height / 4.0f, (height / 2.0) / tan(PI * 20.0 / 180.0), 0, 0, 0, 0, 1, 0);
-  orient = createVector(0, 0, 0);
-  otarget = createVector(0, -PI / 12.0f, 0);
+  orient = new PVector(0, 0, 0);
+  otarget = new PVector(0, -PI / 12.0f, 0);
   imageMode(CENTER);
   at.add(new PlayBlomp());
 }
@@ -86,6 +84,8 @@ void draw() {
   }
   at = newAt;
 
+  camera(0, -height / 4.0f, (height / 2.0) / tan(PI * 20.0 / 180.0), 0, 0, 0, 0, 1, 0);
+  
   background(0);
   if (!stabilize) {
     otarget.x = map(mouseY, 0, height, PI / 6.0f, -PI / 6.0f);
@@ -94,12 +94,12 @@ void draw() {
   orient.lerp(otarget, 0.1);
   rotateX(orient.x);
   rotateY(orient.y);
-  ambientLight(100);
+  ambientLight(100,100,100);
   pointLight(100, 100, 100, width, -height, 0);
   float lamp = 120*noise(frameCount/20.0f);
   if (gameStarted) pointLight(lamp/2.0f, 0, lamp, 0, 0, 0);
 
-  specularMaterial(0);
+  specular(0);
   noStroke();
   translate(0, 10 * unit, 20 * unit);
   rotateX(-PI / 12.0f);
@@ -126,12 +126,12 @@ void drawTV() {
   translate(7 * unit, 0, 35.5 * unit);
   box(80 * unit, 60 * unit, 2 * unit);
   translate(-48 * unit, 0, 0);
-  specularMaterial(20);
+  specular(20);
   box(12 * unit, 60 * unit, 2 * unit);
   translate(0, 12 * unit, unit);
   rotateX(HALF_PI);
-  for (let i = 0; i < 3; i++) {
-    specularMaterial(#c0c0c0);  // 'silver'
+  for (int i = 0; i < 3; i++) {
+    specular(#c0c0c0);  // 'silver'
     cylinder(3 * unit, 13 * unit);
     translate(0, 0, 12 * unit);
   }
@@ -148,12 +148,12 @@ void drawTV() {
 void drawAntenna() {
   push();
   translate(0, -35 * unit, -200 * unit);
-  specularMaterial(#000000);  // 'black'
+  specular(#000000);  // 'black'
   sphere(15 * unit);
   push();
   rotateZ(PI / 12.0f);
   translate(0, -50 * unit, 0);
-  specularMaterial(#c0c0c0);  // 'silver'
+  specular(#c0c0c0);  // 'silver'
   cylinder(5, 100 * unit);
   translate(0, -50*unit, 0);
   cylinder(15, 8);
@@ -161,7 +161,7 @@ void drawAntenna() {
   push();
   rotateZ(-PI / 12.0f);
   translate(0, -50 * unit, 0);
-  specularMaterial(#c0c0c0);  // 'silver'
+  specular(#c0c0c0);  // 'silver'
   cylinder(5, 100 * unit);
   translate(0, -50*unit, 0);
   cylinder(15, 8);
@@ -171,7 +171,7 @@ void drawAntenna() {
 }
 
 void drawBase() {
-  specularMaterial(0);
+  specular(0);
   box(22 * unit, 5 * unit, 20 * unit);
   box(20 * unit, 5 * unit, 22 * unit);
   box(20 * unit, 7 * unit, 20 * unit);
@@ -208,7 +208,7 @@ void drawBaffles() {
   push();
   translate(0, -3 * unit, 0);
   rotateX(HALF_PI);
-  for (let r = 7 * unit; r > 2 * unit; r -= unit) {
+  for (float r = 7 * unit; r > 2 * unit; r -= unit) {
     translate(0, 0, unit / 5.0f);
     rotateX(xa / 5.0f);
     rotateY(za / 5.0f);
@@ -232,13 +232,13 @@ void drawStick() {
 void drawButton() {
   push();
   translate(-7.5 * unit, -3.5 * unit - buttony, -7.5 * unit);
-  specularMaterial(#ff0000);  // 'red'
+  specular(#ff0000);  // 'red'
   cylinder(1.5 * unit, unit);
   pop();
   push();
   translate(-7.5 * unit, -3.5 * unit, -7.5 * unit);
   rotateX(HALF_PI);
-  specularMaterial(#000000);  // 'black'
+  specular(#000000);  // 'black'
   torus(1.8 * unit, unit / 2.0f);
   translate(15 * unit, 0, 1);
   image(logo, 0, 0);
@@ -251,7 +251,7 @@ void mousePressed() {
   buttony = -unit / 4.0f;
   if (gameStarted) {
     //fire.play();
-    missiles.push(new Missile(ship.x, ship.y-cg.height/12.0f));
+    missiles.add(new Missile(ship.x, ship.y-cg.height/12.0f));
   } else {
     //clicky.play();
     at.add(new LaunchGame());
