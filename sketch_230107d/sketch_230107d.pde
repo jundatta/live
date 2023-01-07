@@ -40,7 +40,7 @@ ArrayList<Timer> at;
 class PlayBlomp extends Timer {
   boolean kick() {
     int nowT = millis();
-    if (lastT + 1000 < nowT) {
+    if (nowT < lastT + 1000) {
       return true;  // 継続する
     }
     lastT = nowT;
@@ -49,14 +49,10 @@ class PlayBlomp extends Timer {
     return true;  // ひきつづき監視する
   }
 }
-
-function launchGame() {
-  gameStarted = true;
-}
 class LaunchGame extends Timer {
   boolean kick() {
     int nowT = millis();
-    if (lastT + 500 < nowT) {
+    if (nowT < lastT + 500) {
       return true;  // 継続する
     }
     lastT = nowT;
@@ -64,6 +60,7 @@ class LaunchGame extends Timer {
     return false;  // ワンショットで終わる
   }
 }
+
 void setup() {
   size(1112, 834, P3D);
   preload();
