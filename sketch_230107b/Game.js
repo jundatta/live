@@ -83,7 +83,7 @@ function drawGame() {
           hitCount += aliens[i].pv;
           aliens.splice(i, 1);
           missiles.splice(j, 1);
-          blop.play();
+          //blop.play();
           if (aliens.length < 1) {
             restartGame();
           }

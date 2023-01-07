@@ -11,14 +11,14 @@ let font;
 let stabilize = false;
 
 function preload() {
-  soundFormats('mp3', 'wav');
-  clicky = loadSound('myclick2.wav');
-  fire = loadSound('fire.wav');
-  blop = loadSound('death.wav');
+  //soundFormats('mp3', 'wav');
+  //clicky = loadSound('myclick2.wav');
+  //fire = loadSound('fire.wav');
+  //blop = loadSound('death.wav');
   wood = loadImage('walnut.jpg');
   logo = loadImage('atari.png');
   font = loadFont('Minecraft.ttf');
-  blomp = loadSound('fastinvader1.wav');
+  //blomp = loadSound('fastinvader1.wav');
 }
 
 
@@ -198,13 +198,13 @@ function drawButton() {
 }
 
 function mousePressed() {
-  userStartAudio();
+  //userStartAudio();
   buttony = -unit / 4;
   if (gameStarted) {
-    fire.play();
+    //fire.play();
     missiles.push(new Missile(ship.x, ship.y-cg.height/12));
   } else {
-    clicky.play();
+    //clicky.play();
     setTimeout(launchGame, 500);
   }
 }
@@ -216,14 +216,14 @@ function mouseReleased() {
 function keyPressed() {
   if (keyCode == 32) stabilize = !stabilize;
   if (keyCode == 13) {
-    clicky.play();
+    //clicky.play();
     gameStarted = !gameStarted;
   }
 }
 
 function playBlomp() {
   if (!gameStarted) return;
-  blomp.play();
+  //blomp.play();
 }
 
 function launchGame() {
