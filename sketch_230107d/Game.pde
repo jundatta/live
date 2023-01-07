@@ -88,6 +88,7 @@ void drawGame() {
           aliens.remove(i);
           missiles.remove(j);
           //blop.play();
+          ma.playAndRewind("blop");
           if (aliens.size() < 1) {
             restartGame();
           }

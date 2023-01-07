@@ -3,6 +3,8 @@
 // 【作品名】Atari Joystick
 // https://openprocessing.org/sketch/1548176
 
+MinimAssistance ma;
+
 float unit;
 float xa = 0;
 float za = 0;
@@ -33,13 +35,19 @@ PGraphics red;
 
 void preload() {
   //soundFormats('mp3', 'wav');
+  ma = new MinimAssistance(this);
   //clicky = loadSound('myclick2.wav');
   //fire = loadSound('fire.wav');
   //blop = loadSound('death.wav');
+  //blomp = loadSound('fastinvader1.wav');
+  ma.entry("clicky", "myclick2.wav");
+  ma.entry("fire", "fire.wav");
+  ma.entry("blop", "death.wav");
+  ma.entry("blomp", "fastinvader1.wav");
+
   wood = loadImage("walnut.jpg");
   logo = loadImage("atari.png");
   font = createFont("Minecraft.ttf", 50, true);
-  //blomp = loadSound('fastinvader1.wav');
 }
 
 class Timer {
@@ -62,6 +70,7 @@ class PlayBlomp extends Timer {
     lastT = nowT;
     if (!gameStarted) return true;  // ひきつづき監視する
     //blomp.play();
+    ma.playAndRewind("blomp");
     return true;  // ひきつづき監視する
   }
 }
@@ -88,9 +97,8 @@ void setup() {
   cy_20 = createCan(unit, 20 * unit);
   cy_5 = createCan(unit, 5 * unit);
   cy15 = createCan(1.5 * unit, unit, 24, false, true);
-  tr18 = createTorus(1.8 * unit, unit / 2.0f);
-  //cylinder(1.5 * unit, 20 * unit, 9, 1);
   cy15_20_9_1 = createCan(1.5 * unit, 20 * unit, 9, false, true);
+  tr18 = createTorus(1.8 * unit, unit / 2.0f);
 
   box = createShape(BOX, 1.0f, 1.0f, 1.0f);
   box.setStroke(false);
@@ -372,9 +380,11 @@ void mousePressed() {
   buttony = -unit / 4.0f;
   if (gameStarted) {
     //fire.play();
+    ma.playAndRewind("fire");
     missiles.add(new Missile(ship.x, ship.y-cg.height/12.0f));
   } else {
     //clicky.play();
+    ma.playAndRewind("clicky");
     at.add(new LaunchGame());
   }
 }
@@ -385,8 +395,9 @@ void mouseReleased() {
 
 void keyPressed() {
   if (keyCode == 32) stabilize = !stabilize;
-  if (keyCode == 13) {
+  if (key == ENTER) {
     //clicky.play();
+    ma.playAndRewind("clicky");
     gameStarted = !gameStarted;
   }
 }
