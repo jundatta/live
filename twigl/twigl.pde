@@ -1,7 +1,12 @@
 // こちらがオリジナルです。
 // 【作者】Kamoshikaさん
-// 【作品名】Reflecting Crystals
-// https://neort.io/art/c78680k3p9f3hsjeaodg
+// 【作品名】午前5:38 2022年2月5日のツイート
+// https://twitter.com/kamoshika_vrc/status/1489699798210859009
+//
+// ※つぶやきGLSLの詳細はこちら
+// 「GLSL最短チャレンジ #つぶやきGLSL」
+// https://zenn.dev/yuji_ap/articles/7f7f0cfd589bad
+
 
 PShader s;
 int startMillis;
@@ -10,7 +15,7 @@ void setup() {
   size(787, 442, P3D);
   //size(500, 800, P3D);
   noStroke();
-  s = loadShader("neort.glsl");
+  s = loadShader("twigl.glsl");
   s.set("resolution", width, height);
   // 最初のミリ秒を取り込んでおく
   startMillis = millis();
