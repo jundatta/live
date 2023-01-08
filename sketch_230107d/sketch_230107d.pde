@@ -83,6 +83,9 @@ class LaunchGame extends Timer {
       return true;  // 継続する
     }
     lastT = nowT;
+    // 再ゲームのために初期化する
+    hitCount = 0;
+    restartGame();
     gameStarted = true;
     return false;  // ワンショットで終わる
   }
@@ -102,14 +105,18 @@ void setup() {
   cy15_20_9_1 = createCan(1.5 * unit, 20 * unit, 9, false, true);
   tr18 = createTorus(1.8 * unit, unit / 2.0f);
 
+  // fill()ではp5.jsの発色に負けるのであえてPShapeに変える
   box = createShape(BOX, 1.0f, 1.0f, 1.0f);
   box.setStroke(false);
   sphere = createShape(SPHERE, 1);
   sphere.setStroke(false);
 
+  // setFill()は色がくすぶるのであえて1x1のテクスチャで色を貼る
+  // ※speculer()が効かない？分pointLight()をきつめに当てているので
+  // 　色味を色見本の値からいい感じ？に変えている
   silver = createGraphics(1, 1);
   silver.beginDraw();
-  silver.background(#c0c0c0);
+  silver.background(#606060);
   silver.endDraw();
   black = createGraphics(1, 1);
   black.beginDraw();
@@ -409,9 +416,11 @@ void mouseReleased() {
 
 void keyPressed() {
   if (keyCode == 32) stabilize = !stabilize;
-  if (key == ENTER) {
-    //clicky.play();
-    ma.playAndRewind("clicky");
-    gameStarted = !gameStarted;
-  }
+  // ゲームオーバー後の再ゲーム（初期化）をgameStatedで判別できるようにしたいので
+  // ここのENTERキーでgameStartedをトグルする機能はやめる
+  //if (key == ENTER) {
+  //  //clicky.play();
+  //  ma.playAndRewind("clicky");
+  //  gameStarted = !gameStarted;
+  //}
 }

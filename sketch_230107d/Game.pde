@@ -18,7 +18,8 @@ void setupGame() {
   cg.noStroke();
   alienMove = cg.width/600.0f;
   ship = new Ship(cg.width / 2.0f, cg.height - 20);
-  createAliens();
+  // createAliens()はLaunchGame.kick()のタイミングでまとめる
+  //createAliens();
   for (Alien a : aliens) {
     a.show();
   }
@@ -27,6 +28,9 @@ void setupGame() {
 }
 
 void createAliens() {
+  // ゲームオーバー後の再ゲームで初期化できるようにaliansを空にする
+  aliens.clear();
+
   float xw = cg.width/20.0f;
   float yh = cg.height/20.0f;
   int pv = 20;
@@ -45,17 +49,9 @@ void checkStick() {
 void restartGame() {
   alienXpos = 0;
   alienYpos = 0;
-  alienMove = 1;
-  aliens.clear();
+  //alienMove = 1;
+  hitCount = 0;
   createAliens();
-}
-
-void gameOver() {
-  gameStarted = false;
-  background(0);
-  fill(255);
-  textSize(50);
-  text("GAME OVER", 200, 200);
 }
 
 void drawGame() {
@@ -79,7 +75,7 @@ void drawGame() {
       a.show();
       a.move();
       if (a.intersects(ship)) {
-        gameOver();
+        gameStarted = false;
       }
       for (int j = missiles.size() - 1; j >= 0; j--) {
         Missile m = missiles.get(j);
@@ -143,7 +139,11 @@ class Alien {
     this.starty = y;
     this.w = w;
     this.h = h;
-    this.col = color(this.y, 255-this.y, 255);
+    // オリジナルのテレビ画面（cg）の高さで色（.col）をマップする
+    final int OrgCgH = 442;
+    //this.col = color(this.y, 255-this.y, 255);
+    int cgY = (int)map(this.y, 0, height, 0, OrgCgH);
+    this.col = color(cgY, 255-cgY, 255);
     this.pv = pv;
   }
   void show() {
@@ -153,11 +153,11 @@ class Alien {
     cg.rect(this.x - this.w/4.0f, alienYpos + this.y, this.w/5.0f, this.h/5.0f);
     cg.rect(this.x + this.w/4.0f, alienYpos + this.y, this.w/5.0f, this.h/5.0f);
   }
-  boolean intersects(Ship other) {
-    return (abs(this.x - other.x) < this.w / 2.0f && abs(alienYpos + this.y - other.y) < this.h);
+  boolean intersects(Ship s) {
+    return (abs(this.x - s.x) < this.w / 2.0f && abs(alienYpos + this.y - (s.y - s.h)) < this.h);
   }
-  boolean intersects(Missile other) {
-    return (abs(this.x - other.x) < this.w / 2.0f && abs(alienYpos + this.y - other.y) < this.h);
+  boolean intersects(Missile m) {
+    return (abs(this.x - m.x) < this.w / 2.0f && abs(alienYpos + this.y - m.y) < this.h);
   }
   void move() {
     this.x += alienMove;
@@ -166,9 +166,11 @@ class Alien {
 
 class Ship {
   float x, y;
+  float h;
   Ship(float x, float y) {
     this.x = x;
     this.y = y;
+    this.h = cg.height/20.0f + cg.height/12.0f;
   }
   void show() {
     cg.fill(255);
