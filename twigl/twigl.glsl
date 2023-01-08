@@ -1,7 +1,7 @@
 // こちらがオリジナルです。
 // 【作者】Kamoshikaさん
-// 【作品名】午前5:38 2022年2月5日のツイート
-// https://twitter.com/kamoshika_vrc/status/1489699798210859009
+// 【作品名】午後11:31 2022年5月31日のツイート
+// https://twitter.com/kamoshika_vrc/status/1531644620261969921
 //
 // ※つぶやきGLSLの詳細はこちら
 // 「GLSL最短チャレンジ #つぶやきGLSL」
@@ -15,7 +15,7 @@ uniform vec2 mouse;
 uniform sampler2D backbuffer;
 
 #define t time
-#define r resolution
+// #define r resolution
 #define FC gl_FragCoord
 #define o gl_FragColor
 
@@ -25,23 +25,20 @@ vec3 hsv(float h, float s, float v){
     return v * mix(vec3(t.x), clamp(p - vec3(t.x), 0.0, 1.0), s);
 }
 
-#define X(s)d=(s*sqrt(D)-b)/a;P=d*R;if(d<m&&sin((atan(P.z+1.,P.x)+P.y*3.-t)*9.)>.9)m=d,ooo.rgb=hsv(i*9.,.7,i/m);
+#define S smoothstep
 
 void main(void) {
-	vec3 P,R=vec3((FC.xy-r*.5)/r.y,-1);
-	P = vec3(0);
-	vec4 ooo = vec4(0);
-	for(float i=0.,m=9.;i<.7;i+=.07){
-		float c=cos(i);
-		float e=c*c;
-		float a=R.y*R.y-dot(R,R)*e;
-		float b=R.y-e*(R.y+R.z);
-		float D=b*b-a+2.*a*e,d;
-		X(1.)
-		ooo.a = 1.0;
-		o = ooo;
-		X(-1.)
-		ooo.a = 1.0;
-		o = ooo;
+	vec2 p=(FC.xy*2.-resolution)/resolution.y*(5e-4+pow(cos(t*.15),8.)*1.5);
+	vec2 q = vec2(0);
+	p.x-=1.4185;
+	float d=9.;
+	for(float i=0.0;i++<300.&&dot(q,q)<4.;d=min(d,length(q-sin(vec2(9,7)*t*.1)))){
+		q=vec2(q.x*q.x-q.y*q.y,2.*q.x*q.y)+p;
 	}
+	vec4 ooo = vec4(0);
+	ooo.r=S(.5,.45,d);
+	ooo.gb+=S(.25,.23,d);
+	ooo.rg-=S(.13,.12,d);
+	ooo.a = 1.0;
+	o = ooo;
 }
