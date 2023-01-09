@@ -1,7 +1,7 @@
 // こちらがオリジナルです。
 // 【作者】Kamoshikaさん
-// 【作品名】午後3:58 2022年10月1日のツイート
-// https://twitter.com/kamoshika_vrc/status/1576104344683880448
+// 【作品名】午前5:18 2023年1月8日のツイート
+// https://twitter.com/kamoshika_vrc/status/1611819657652207617
 //
 // ※つぶやきGLSLの詳細はこちら
 // 「GLSL最短チャレンジ #つぶやきGLSL」
@@ -37,22 +37,5 @@ float fsnoise(vec2 c){
 #define F fsnoise(I+=I)
 
 void main(void) {
-	float d = 0;
-	for(float i = 0.0;i++<5.;)
-	{
-		vec2 p=(FC.xy-r*.4)/r.y,I;
-		I = vec2(0);
-		d=i/length(p)*.1;
-		p=vec2(mod(atan(p.y,p.x)+i+t*.2,PI2),d+t)/PI*2.;
-		for(int j = 0;j++<5&&F<.5;){
-			I=ceil(p+=p)+i;
-		}
-		vec4 ooo = vec4(0);
-		if(F<.5&&length(max(abs(fract(p)-.5)-.3,0.))<.15){
-			ooo.rgb+=hsv(F,.6,exp(-d*d*.2)*.5);
-		}
-	    ooo+=texture(b,FC.xy/r)*.75;
-		ooo.a = 1.0;
-		o = ooo;
-	}
+	o+=.8;for(float i,h;i++<5.;){vec2 p=FC.xy/r.y*(6.-i)+.7;h=fract(sin(ceil(p.x)+i/5.)*3e3);p.y-=t*.5+h;h+=p.y*.4;p=fract(p)-.5;vec4 q=vec4(p,p-.1);q.yw-=(.4-abs(q.xz))*abs(q.xz)*4.-q.yw*.6;o*=smoothstep(.1,.4,length(q.xy))*.5+.5;if(length(q.wz)<.25)o.rgb=hsv(h,.5,1.);}
 }
