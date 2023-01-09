@@ -1,7 +1,7 @@
 // こちらがオリジナルです。
 // 【作者】Kamoshikaさん
-// 【作品名】午前0:19 2022年4月20日のツイート
-// https://twitter.com/kamoshika_vrc/status/1516436446579609601
+// 【作品名】午前11:14 2022年9月18日のツイート
+// https://twitter.com/kamoshika_vrc/status/1571321833043152905
 //
 // ※つぶやきGLSLの詳細はこちら
 // 「GLSL最短チャレンジ #つぶやきGLSL」
@@ -123,18 +123,8 @@ float snoise2D(vec2 v)
 }
 //--------------- snoise2D ---------------------------------------------------------------------------
 
+#define F(x)fsnoise(vec2(ceil(x)))*PI2
+
 void main(void) {
-	vec3 P,R=normalize(vec3((FC.xy*2.-r)/r.y,2))*rotate3D(t*.2,vec3(1,9,1));
-	P = vec3(0);
-	P.z=.1;
-	float i = 0.0;
-	vec4 ooo = vec4(0);
-	for(float d=1.;i++<2e2&&d>1e-4;P+=R*d){
-		vec2 v=R.xz,c=ceil(P.xz+v*1e-3)-.5;
-		v=(c-P.xz+.5*sign(v))/v;
-		d=min(min(v.x,v.y),P.y-snoise2D((c+t)*.1)*abs(c.x)+9.);
-	}
-	ooo+=1.-25./i;
-	ooo.a = 1.0;
-	o = ooo;
+vec2 p=FC.xy/r.y,n,q,a;for(float i,R;i<9.;i++)a=1.+vec2(0,R=i*.5),q=p*(8.-R)+F(i),q.y+=R*t+sin(R*t+F(q.x)),R=.02+sin(t+F(q/a+i))*.02-dot(q=mod(q,a)-a*.5,q),n=R>0.?q/sqrt(R):n;o+=snoise2D(p-n*.3-t)*.3+.8;p-=.5;o*=1.-p.y*p.y*4.;
 }
