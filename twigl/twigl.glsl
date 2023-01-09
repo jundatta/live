@@ -1,7 +1,7 @@
 // こちらがオリジナルです。
 // 【作者】Kamoshikaさん
-// 【作品名】午後2:56 2021年5月16日のツイート
-// https://twitter.com/kamoshika_vrc/status/1393807644037578754
+// 【作品名】午前0:29 2021年7月24日のツイート
+// https://twitter.com/kamoshika_vrc/status/1418594024475136002
 //
 // ※つぶやきGLSLの詳細はこちら
 // 「GLSL最短チャレンジ #つぶやきGLSL」
@@ -123,22 +123,8 @@ float snoise2D(vec2 v)
 }
 //--------------- snoise2D ---------------------------------------------------------------------------
 
-#define F(x)fsnoise(vec2(ceil(x)))*PI2
+#define X Q*=10.,d=max(d,(abs(dot(sin(Q),cos(Q.yzx)))
 
 void main(void) {
-	vec3 R = vec3(0);
-	R.xz-=t;
-	R.z+=.5;
-	float i = 0.0;
-	for(float d=1.;i++<99.&&d>1e-4;) {
-		d=min(.3-abs(R.y),length(fract(R.zx)-.5)-.15);
-		R+=normalize(vec3((FC.xy*2.-r)/r.y,1))*d;
-	}
-	R*=9.;
-	vec4 ooo = vec4(0);
-	ooo.rgb=hsv(fsnoise(ceil(R.y)-ceil(R.zx)+ceil(t*9.)),.7,1.);
-	R=.5-abs(fract(R)-.5);
-	ooo*=min(min(R.x,R.z),R.y)/i*70.;
-	ooo.a = 1.0;
-	o = ooo;
+vec3 P,Q;P.z=2.;float i,d=1.;for(;i++<99.&&d>1e-4;)Q=P,d=length(Q)-.8,Q*=rotate3D(t,vec3(1)),X-.03)/10.),X-.3)/100.),P+=normalize(vec3((FC.xy*2.-r)/r.y,-2.))*d*.6;o.rgb+=hsv(-length(P)+.3,.7,20./i);
 }
