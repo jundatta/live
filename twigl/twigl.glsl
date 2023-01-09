@@ -1,7 +1,7 @@
 // こちらがオリジナルです。
 // 【作者】Kamoshikaさん
-// 【作品名】午後11:04 2022年9月22日のツイート
-// https://twitter.com/kamoshika_vrc/status/1572949940371800064
+// 【作品名】午後2:56 2021年5月16日のツイート
+// https://twitter.com/kamoshika_vrc/status/1393807644037578754
 //
 // ※つぶやきGLSLの詳細はこちら
 // 「GLSL最短チャレンジ #つぶやきGLSL」
@@ -126,16 +126,5 @@ float snoise2D(vec2 v)
 #define F(x)fsnoise(vec2(ceil(x)))*PI2
 
 void main(void) {
-	vec3 P,R=normalize(vec3(FC.xy-r*.5,r.y));
-	R.y=abs(R.y+.3);
-	P = vec3(0);
-	float T = 0.0;
-	float I = 0.0;
-	vec4 ooo = vec4(0);
-	for(float i = 0.0;i++<50.;ooo.rgb+=hsv(fract(I*1e4),.7,smoothstep(.03+T,.03-T,length(cross(R,P)))*exp(-dot(P,P)*3.)*.3)){
-		P=vec3(I=sin(floor(T=i/50.-t*.1)+i)*.1,.03,fract(T));
-		T=abs(length(P)-.2)*.1;
-	}
-	ooo.a = 1.0;
-	o = ooo;
+vec3 R;R.xz-=t;R.z+=.5;float i,d=1.;for(;i++<99.&&d>1e-4;)d=min(.3-abs(R.y),length(fract(R.zx)-.5)-.15),R+=normalize(vec3((FC.xy*2.-r)/r.y,1))*d;R*=9.;o.rgb=hsv(fsnoise(ceil(R.y)-ceil(R.zx)+ceil(t*9.)),.7,1.);R=.5-abs(fract(R)-.5);o*=min(min(R.x,R.z),R.y)/i*70.;
 }
