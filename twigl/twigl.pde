@@ -1,7 +1,7 @@
 // こちらがオリジナルです。
 // 【作者】Kamoshikaさん
-// 【作品名】午前0:29 2021年7月24日のツイート
-// https://twitter.com/kamoshika_vrc/status/1418594024475136002
+// 【作品名】午後11:39 2022年4月24日のツイート
+// https://twitter.com/kamoshika_vrc/status/1518238221645205504
 //
 // ※つぶやきGLSLの詳細はこちら
 // 「GLSL最短チャレンジ #つぶやきGLSL」
