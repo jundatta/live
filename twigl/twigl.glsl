@@ -126,5 +126,19 @@ float snoise2D(vec2 v)
 #define F(x)fsnoise(vec2(ceil(x)))*PI2
 
 void main(void) {
-vec3 R;R.xz-=t;R.z+=.5;float i,d=1.;for(;i++<99.&&d>1e-4;)d=min(.3-abs(R.y),length(fract(R.zx)-.5)-.15),R+=normalize(vec3((FC.xy*2.-r)/r.y,1))*d;R*=9.;o.rgb=hsv(fsnoise(ceil(R.y)-ceil(R.zx)+ceil(t*9.)),.7,1.);R=.5-abs(fract(R)-.5);o*=min(min(R.x,R.z),R.y)/i*70.;
+	vec3 R = vec3(0);
+	R.xz-=t;
+	R.z+=.5;
+	float i = 0.0;
+	for(float d=1.;i++<99.&&d>1e-4;) {
+		d=min(.3-abs(R.y),length(fract(R.zx)-.5)-.15);
+		R+=normalize(vec3((FC.xy*2.-r)/r.y,1))*d;
+	}
+	R*=9.;
+	vec4 ooo = vec4(0);
+	ooo.rgb=hsv(fsnoise(ceil(R.y)-ceil(R.zx)+ceil(t*9.)),.7,1.);
+	R=.5-abs(fract(R)-.5);
+	ooo*=min(min(R.x,R.z),R.y)/i*70.;
+	ooo.a = 1.0;
+	o = ooo;
 }
