@@ -1,12 +1,11 @@
 // こちらがオリジナルです。
 // 【作者】Kamoshikaさん
-// 【作品名】午後11:31 2022年5月31日のツイート
-// https://twitter.com/kamoshika_vrc/status/1531644620261969921
+// 【作品名】午後3:58 2022年10月1日のツイート
+// https://twitter.com/kamoshika_vrc/status/1576104344683880448
 //
 // ※つぶやきGLSLの詳細はこちら
 // 「GLSL最短チャレンジ #つぶやきGLSL」
 // https://zenn.dev/yuji_ap/articles/7f7f0cfd589bad
-
 
 PShader s;
 int startMillis;
