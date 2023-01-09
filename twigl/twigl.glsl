@@ -37,5 +37,22 @@ float fsnoise(vec2 c){
 #define F fsnoise(I+=I)
 
 void main(void) {
-	o+=.8;for(float i,h;i++<5.;){vec2 p=FC.xy/r.y*(6.-i)+.7;h=fract(sin(ceil(p.x)+i/5.)*3e3);p.y-=t*.5+h;h+=p.y*.4;p=fract(p)-.5;vec4 q=vec4(p,p-.1);q.yw-=(.4-abs(q.xz))*abs(q.xz)*4.-q.yw*.6;o*=smoothstep(.1,.4,length(q.xy))*.5+.5;if(length(q.wz)<.25)o.rgb=hsv(h,.5,1.);}
+	vec4 ooo = vec4(0);
+	ooo+=.8;
+	float h = 0.0;
+	for(float i = 0.0;i++<5.;){
+		vec2 p=FC.xy/r.y*(6.-i)+.7;
+		h=fract(sin(ceil(p.x)+i/5.)*3e3);
+		p.y-=t*.5+h;
+		h+=p.y*.4;
+		p=fract(p)-.5;
+		vec4 q=vec4(p,p-.1);
+		q.yw-=(.4-abs(q.xz))*abs(q.xz)*4.-q.yw*.6;
+		ooo*=smoothstep(.1,.4,length(q.xy))*.5+.5;
+		if(length(q.wz)<.25) {
+			ooo.rgb=hsv(h,.5,1.);
+		}
+	}
+	ooo.a = 1.0;
+	o = ooo;
 }
