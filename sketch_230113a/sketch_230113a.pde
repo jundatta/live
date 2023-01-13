@@ -87,9 +87,10 @@ void update() {
 void draw() {
   update();
   translate(width/2, height/2);
+  scale(1, -1, 1);
 
   background(0);
-  ofSetLineWidth(2);
+  ofSetLineWidth(1);
 
   ofRotateX(-35);
 
