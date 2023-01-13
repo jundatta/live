@@ -1,51 +1,44 @@
-ofMesh face, line;
+// こちらがオリジナルです。
+// 【作者】中内　純(ハンドルネーム：JunKiyoshi)さん
+// 【作品名】whirlpool. draw by openFrameworks
+// https://junkiyoshi.com/openframeworks20230109/
 
-vector<float> radius_list;
-vector<float> deg_list;
+ofMesh face = new ofMesh();
+ofMesh line = new ofMesh();
+
+FloatList radius_list = new FloatList();
+FloatList deg_list = new FloatList();
 
 //--------------------------------------------------------------
-void ofApp::setup() {
-
-  ofSetFrameRate(30);
-  ofSetWindowTitle("openFrameworks");
-
-  ofBackground(0);
-  ofSetLineWidth(2);
-
-  ofEnableDepthTest();
-
-  this->line.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
+void setup() {
+  size(720, 720, P3D);
 
   for (int i = 0; i < 2000; i++) {
-
-    this->radius_list.push_back(ofRandom(500));
-    this->deg_list.push_back(ofRandom(360));
+    radius_list.append(random(500));
+    deg_list.append(random(360));
   }
 }
 //--------------------------------------------------------------
-void ofApp::update() {
-
+void update() {
   ofSeedRandom(39);
 
-  this->face.clear();
+  face.clear();
   int threshold_radius = 300;
 
   for (int radius = 0; radius <= 500; radius += 10) {
-
-    int start_index = this->line.getNumVertices();
+    int start_index = line.getNumVertices();
     int index = start_index;
     int deg_start = radius;
     for (int deg = deg_start; deg < deg_start + 360; deg += 1) {
-
-      auto z = radius > threshold_radius ? 0 : ofMap(radius, 0, threshold_radius, -1 * pow(threshold_radius - radius, 1.1), 0);
+      int z = radius > threshold_radius ? 0 : (int)map(radius, 0, threshold_radius, -1 * pow(threshold_radius - radius, 1.1), 0);
       int next_radius = radius + 10;
-      int next_z = next_radius > threshold_radius ? 0 : ofMap(next_radius, 0, threshold_radius, -1 * pow(threshold_radius - next_radius, 1.1), 0);
+      int next_z = next_radius > threshold_radius ? 0 : (int)map(next_radius, 0, threshold_radius, -1 * pow(threshold_radius - next_radius, 1.1), 0);
 
-      vector<glm::vec3> vertices;
-      vertices.push_back(glm::vec3(radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD), z));
-      vertices.push_back(glm::vec3(radius * cos((deg + 1) * DEG_TO_RAD), radius * sin((deg + 1) * DEG_TO_RAD), z));
-      vertices.push_back(glm::vec3(next_radius * cos((deg + 1) * DEG_TO_RAD), next_radius * sin((deg + 1) * DEG_TO_RAD), next_z));
-      vertices.push_back(glm::vec3(next_radius * cos(deg * DEG_TO_RAD), next_radius * sin(deg * DEG_TO_RAD), next_z));
+      ArrayList<PVector> vertices = new ArrayList();
+      vertices.add(new PVector(radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD), z));
+      vertices.add(new PVector(radius * cos((deg + 1) * DEG_TO_RAD), radius * sin((deg + 1) * DEG_TO_RAD), z));
+      vertices.add(new PVector(next_radius * cos((deg + 1) * DEG_TO_RAD), next_radius * sin((deg + 1) * DEG_TO_RAD), next_z));
+      vertices.add(new PVector(next_radius * cos(deg * DEG_TO_RAD), next_radius * sin(deg * DEG_TO_RAD), next_z));
 
       face.addVertices(vertices);
 
@@ -58,58 +51,48 @@ void ofApp::update() {
     }
   }
 
-  this->line.clear();
+  line.clear();
 
-  for (int i = 0; i < this->radius_list.size(); i++) {
-
+  for (int i = 0; i < radius_list.size(); i++) {
     int speed = 5;
-    int radius_start = ((int)(this->radius_list[i] + speed) % 500);
+    int radius_start = ((int)(radius_list.get(i) + speed) % 500);
     int radius = 500 - radius_start;
-    float deg_start = this->deg_list[i] + (radius > threshold_radius ? 1 : ofMap(radius, 0, threshold_radius, pow(speed, ofMap(radius, 0, threshold_radius, 2, 1)), 1));
+    float deg_start = deg_list.get(i) + (radius > threshold_radius ? 1 : map(radius, 0, threshold_radius, pow(speed, map(radius, 0, threshold_radius, 2, 1)), 1));
     float deg = deg_start;
-    int color_value = ofRandom(64, 255);
+    int color_value = (int)random(64, 255);
 
     for (int k = 0; k < 5; k++) {
-
-      radius = ((int)(this->radius_list[i] + speed * k) % 500);
+      radius = ((int)(radius_list.get(i) + speed * k) % 500);
       radius = 500 - radius;
 
-      deg += (radius > threshold_radius ? 1 : ofMap(radius, 1, threshold_radius, pow(speed, ofMap(radius, 0, threshold_radius, 2, 1)), 1));
+      deg += (radius > threshold_radius ? 1 : map(radius, 1, threshold_radius, pow(speed, map(radius, 0, threshold_radius, 2, 1)), 1));
 
-      auto z = radius > threshold_radius ? 0 : ofMap(radius, 0, threshold_radius, -1 * pow(threshold_radius - radius, 1.1), 0);
-      auto vertex = glm::vec3(radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD), z + 2);
-      this->line.addVertex(vertex);
-      this->line.addColor(ofColor(color_value));
+      int z = radius > threshold_radius ? 0 : (int)map(radius, 0, threshold_radius, -1 * pow(threshold_radius - radius, 1.1), 0);
+      PVector vertex = new PVector(radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD), z + 2);
+      line.addVertex(vertex);
+      line.addColor(color(color_value));
 
       if (k > 0) {
-
-        this->line.addIndex(this->line.getNumVertices() - 1);
-        this->line.addIndex(this->line.getNumVertices() - 2);
+        line.addIndex(line.getNumVertices() - 1);
+        line.addIndex(line.getNumVertices() - 2);
       }
     }
 
-    this->radius_list[i] = radius_start;
-    this->deg_list[i] = deg_start;
+    radius_list.set(i, radius_start);
+    deg_list.set(i, deg_start);
   }
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
+  translate(width/2, height/2);
 
-  this->cam.begin();
+  background(0);
+  ofSetLineWidth(2);
+
   ofRotateX(-35);
 
-  ofSetColor(0);
-  this->face.draw();
-  ofSetColor(255);
-  this->line.drawWireframe();
-
-  this->cam.end();
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
+  face.draw(color(0));
+  line.drawWireframe(color(255));
 }
