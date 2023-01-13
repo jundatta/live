@@ -15,7 +15,7 @@ uniform vec2 mouse;
 uniform sampler2D backbuffer;
 
 #define t time
-#define r resolution
+//#define r resolution
 #define FC gl_FragCoord
 #define o gl_FragColor
 #define b backbuffer
@@ -127,5 +127,13 @@ float snoise2D(vec2 v)
 //--------------- snoise2D ---------------------------------------------------------------------------
 
 void main(void) {
-vec2 p=(FC.xy*2.-r)/r.y,q=vec2(log(length(p))-t*.5,atan(p.y,p.x))*20./PI;float T=t+fsnoise(ceil(q))*9.;q=(fract(q)-.5)*rotate2D((floor(T)+smoothstep(.4,.6,fract(T))-.5)*PI/2.);o+=smoothstep(.1,0.,abs(q.y));o.r*=pow(sin((T-.25)*PI2)*.5+.5,8.)*8.;
+	vec2 p=(FC.xy*2.-resolution)/resolution.y;
+	vec2 q=vec2(log(length(p))-t*.5,atan(p.y,p.x))*20./PI;
+	float T=t+fsnoise(ceil(q))*9.;
+	q=(fract(q)-.5)*rotate2D((floor(T)+smoothstep(.4,.6,fract(T))-.5)*PI/2.);
+	vec4 ooo = vec4(0);
+	ooo+=smoothstep(.1,0.,abs(q.y));
+	ooo.r*=pow(sin((T-.25)*PI2)*.5+.5,8.)*8.;
+	ooo.a = 1.0;
+	o = ooo;
 }
