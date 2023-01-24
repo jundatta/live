@@ -3,14 +3,14 @@
 // 【作品名】Illuminated trees #2
 // https://openprocessing.org/sketch/1348215
 
-let step;
-let range;
-let c1, c2;
-let treeNum, treeHue, treesWidth, treesHeight;
-let isCoolColor;
-let roadWidth, roadHeight;
-let illumiImg;
-let particles = [];
+float range;
+float treeNum;
+int treeHue;
+float treesWidth, treesHeight;
+int isCoolColor;
+float roadWidth, roadHeight;
+PImage illumiImg;
+Particle[] particles = new Particle[200];
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
