@@ -1,6 +1,6 @@
 class Particle {
 
-  constructor(_x, _y, _w, _h, _hue, _alphaSpeed) {
+  constructor(float _x, float _y, float _w, float _h, float _hue, float _alphaSpeed) {
     this.x = _x;
     this.y = _y;
     this.w = _w;

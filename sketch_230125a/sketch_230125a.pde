@@ -12,13 +12,13 @@ float roadWidth, roadHeight;
 PImage illumiImg;
 Particle[] particles = new Particle[200];
 
-function setup() {
-  createCanvas(windowWidth, windowHeight);
+void setup() {
+  size(1112, 834);
   illumiImg = createImage(width, height);
   strokeWeight(10);
   range = 8;
-  roadWidth = width / 10;
-  roadHeight = height / 1.2;
+  roadWidth = width / 10.0f;
+  roadHeight = height / 1.2f;
   treeNum = 30;
   treesWidth = (width / 2 - roadWidth) / treeNum;
   treesHeight = (height - roadHeight) / treeNum;
@@ -26,48 +26,48 @@ function setup() {
   particleInit();
 }
 
-function draw() {
+void draw() {
   background(0);
   image(illumiImg, 0, 0);
-  for (let i = 0; i < particles.length; i++) {
+  for (int i = 0; i < particles.length; i++) {
     particles[i].update();
     particles[i].display();
   }
 }
 
-function particleInit() {
-  let y = 0;
-  let count = 0;
-  let parHeight = 40;
-  let blinkSeppd = 0.05;
-  for (let i = 0; i < width; i += 100) {
+void particleInit() {
+  int y = 0;
+  int count = 0;
+  int parHeight = 40;
+  float blinkSeppd = 0.05;
+  for (int i = 0; i < width; i += 100) {
     if (i < width / 2) y += parHeight;
     else y -= parHeight;
 
-    for (let l = 0; l < 200; l++) {
-      let lx = random(i, i + 100);
-      let ly = random(y, height);
-      let lr = random(10);
-      let rand = setRandomColor();
+    for (int l = 0; l < particles.length; l++) {
+      float lx = random(i, i + 100);
+      float ly = random(y, height);
+      float lr = random(10);
+      float rand = setRandomColor();
       particles[count] = new Particle(lx, ly, lr, lr, rand, blinkSeppd);
       count++;
     }
   }
 }
 
-function kirakira() {
+void kirakira() {
   push();
   noStroke();
-  let y = 0;
-  for (let i = 0; i < width; i += 100) {
+  int y = 0;
+  for (int i = 0; i < width; i += 100) {
     if (i < width / 2) y += 70;
     else y -= 70;
-    for (let l = 0; l < 300; l++) {
-      let lx = random(i, i + 100);
-      let ly = random(y, height);
-      let lr = random(7);
-      let rand = setRandomColor();
-      let lightness = int(random(50, 100));
+    for (int l = 0; l < 300; l++) {
+      float lx = random(i, i + 100);
+      float ly = random(y, height);
+      float lr = random(7);
+      float rand = setRandomColor();
+      float lightness = int(random(50, 100));
 
       fill('hsla(' + rand + ', 100%,' + lightness + '%, 1)');
       ellipse(lx, ly, lr, lr);
