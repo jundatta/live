@@ -38,7 +38,7 @@ void draw() {
 
 void particleInit() {
   particles.clear();
-  
+
   int y = 0;
   int parHeight = 40;
   float blinkSeppd = 0.05;
@@ -46,7 +46,10 @@ void particleInit() {
     if (i < width / 2) y += parHeight;
     else y -= parHeight;
 
-    for (int l = 0; l < particles.size(); l++) {
+// 犯人は私でした＼(^_^)／
+// 一生懺悔します
+    for (int l = 0; l < 200; l++) {
+    //for (int l = 0; l < particles.size(); l++) {
       float lx = random(i, i + 100);
       float ly = random(y, height);
       float lr = random(10);
