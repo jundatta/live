@@ -10,9 +10,10 @@ float treesWidth, treesHeight;
 int isCoolColor;
 float roadWidth, roadHeight;
 PImage illumiImg;
-Particle[] particles = new Particle[200];
+ArrayList<Particle> particles = new ArrayList();
 
 void setup() {
+  P5JS.setup(this);
   size(1112, 834);
   illumiImg = createImage(width, height, ARGB);
   strokeWeight(10);
@@ -29,28 +30,29 @@ void setup() {
 void draw() {
   background(0);
   image(illumiImg, 0, 0);
-  for (int i = 0; i < particles.length; i++) {
-    particles[i].update();
-    particles[i].display();
+  for (Particle p : particles) {
+    p.update();
+    p.display();
   }
 }
 
 void particleInit() {
+  particles.clear();
+  
   int y = 0;
-  int count = 0;
   int parHeight = 40;
   float blinkSeppd = 0.05;
   for (int i = 0; i < width; i += 100) {
     if (i < width / 2) y += parHeight;
     else y -= parHeight;
 
-    for (int l = 0; l < particles.length; l++) {
+    for (int l = 0; l < particles.size(); l++) {
       float lx = random(i, i + 100);
       float ly = random(y, height);
       float lr = random(10);
-      float rand = setRandomColor();
-      particles[count] = new Particle(lx, ly, lr, lr, rand, blinkSeppd);
-      count++;
+      int rand = setRandomColor();
+      Particle p = new Particle(lx, ly, lr, lr, rand, blinkSeppd);
+      particles.add(p);
     }
   }
 }

@@ -1,6 +1,10 @@
 class Particle {
+  float x, y, w, h;
+  int parHue, parLightness;
+  float parAlpha;
+  float alphaSpeed;
 
-  constructor(float _x, float _y, float _w, float _h, float _hue, float _alphaSpeed) {
+  Particle(float _x, float _y, float _w, float _h, int _hue, float _alphaSpeed) {
     this.x = _x;
     this.y = _y;
     this.w = _w;
@@ -12,7 +16,7 @@ class Particle {
     this.alphaSpeed = _alphaSpeed;
   }
 
-  update() {
+  void update() {
     //------pattern1 (Lightness) ------
     // if (this.parLightness <= 50 || 100 <= this.parLightness) {
     //     this.lightPower *= -1;
@@ -26,10 +30,11 @@ class Particle {
     this.parAlpha += this.alphaSpeed;
   }
 
-  display() {
+  void display() {
     push();
     noStroke();
-    fill('hsla(' + this.parHue + ', 100%, ' + int(this.parLightness) + '%, ' + this.parAlpha + ')');
+    //fill('hsla(' + this.parHue + ', 100%, ' + int(this.parLightness) + '%, ' + this.parAlpha + ')');
+    fill(P5JS.hsla2rgba(this.parHue, 100, int(this.parLightness), this.parAlpha));
     ellipse(this.x, this.y, this.w, this.h);
     pop();
   }
