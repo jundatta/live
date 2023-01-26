@@ -1,7 +1,7 @@
 // こちらがオリジナルです。
-// 【作者】?????さん
-// 【作品名】?????
-// https://glslsandbox.com/e#99214.0
+// 【作者】（オリジナルと思われるShadertoyでの作者様は「yasuo」さん）
+// 【作品名】（オリジナルと思われるShadertoyでの作品名は「UI Test 4」）
+// https://glslsandbox.com/e#99216.0
 
 PShader s;
 int startMillis;
