@@ -1,286 +1,861 @@
 // こちらがオリジナルです。
-// 【作者】?????さん
-// 【作品名】?????
-// https://glslsandbox.com/e#99214.0
+// 【作者】（オリジナルと思われるShadertoyでの作者様は「yasuo」さん）
+// 【作品名】（オリジナルと思われるShadertoyでの作品名は「UI Test 4」）
+// https://glslsandbox.com/e#99216.0
 
-#extension GL_OES_standard_derivatives : enable
+/*
+ * Original shader from: https://www.shadertoy.com/view/7t3fzs
+ */
+#ifdef GL_ES
+precision mediump float;
+#endif
 
-precision highp float;
-
+// glslsandbox uniforms
 uniform float time;
-uniform vec2 mouse;
 uniform vec2 resolution;
+uniform vec2 mouse;
 
-#define PI 3.14159265
-#define saturate(x) clamp(x,0.,1.)
+// shadertoy emulation
+#define iTime time
+#define iResolution resolution
 
+// --------[ Original ShaderToy begins here ]---------- //
+#define Rot(a) mat2(cos(a),-sin(a),sin(a),cos(a))
+#define antialiasing(n) n/min(iResolution.y,iResolution.x)
+#define S(d,b) smoothstep(antialiasing(1.0),b,d)
+#define B(p,s) max(abs(p).x-s.x,abs(p).y-s.y)
+#define Tri(p,s,a) max(-dot(p,vec2(cos(-a),sin(-a))),max(dot(p,vec2(cos(a),sin(a))),max(abs(p).x-s.x,abs(p).y-s.y)))
+#define DF(a,b) length(a) * cos( mod( atan(a.y,a.x)+6.28/(b*8.0), 6.28/((b*8.0)*0.5))+(b-1.)*6.28/(b*8.0) + vec2(0,11) )
+#define seg_0 0
+#define seg_1 1
+#define seg_2 2
+#define seg_3 3
+#define seg_4 4
+#define seg_5 5
+#define seg_6 6
+#define seg_7 7
+#define seg_8 8
+#define seg_9 9
 
-float line( in vec2 p, in vec2 a, in vec2 b )
-{
-    vec2 pa = p-a, ba = b-a;
-    float h = clamp( dot(pa,ba)/dot(ba,ba), 0.0, 1.0 );
-    return length( pa - ba*h );
+float Hash21(vec2 p) {
+    p = fract(p*vec2(234.56,789.34));
+    p+=dot(p,p+34.56);
+    return fract(p.x+p.y);
 }
 
-float hash1( vec2 p )
-{
-    p  = 50.0*fract( p*0.3183099 );
-    return fract( p.x*p.y*(p.x+p.y) );
-}
-float noise( in vec2 x )
-{
-    vec2 p = floor(x);
-    vec2 w = fract(x);
-    #if 1
-    vec2 u = w*w*w*(w*(w*6.0-15.0)+10.0);
-    #else
-    vec2 u = w*w*(3.0-2.0*w);
-    #endif
+float segBase(vec2 p){
+    vec2 prevP = p;
+    
+    float size = 0.02;
+    float padding = 0.05;
 
-    float a = hash1(p+vec2(0,0));
-    float b = hash1(p+vec2(1,0));
-    float c = hash1(p+vec2(0,1));
-    float d = hash1(p+vec2(1,1));
-    
-    return -1.0+2.0*(a + (b-a)*u.x + (c-a)*u.y + (a - b - c + d)*u.x*u.y);
-}
+    float w = padding*3.0;
+    float h = padding*5.0;
 
-const mat2 m2 = mat2(  0.80,  0.60,
-                      -0.60,  0.80 );
-float fbm(vec2 p) {
-    float f = 1.9;
-    float s = 0.55;
-    float a = 0.0;
-    float b = 0.5;
-    for( int i=0; i<4; i++ )
-    {
-        float n = noise(p);
-        a += b*n;
-        b *= s;
-        p = f*m2*p;
-    }
-	return a;
-}
-
-float hash1( float n )
-{
-    return fract( n*17.0*fract( n*0.3183099 ) );
-}
-
-float noise( in vec3 x )
-{
-    vec3 p = floor(x);
-    vec3 w = fract(x);
+    p = mod(p,0.05)-0.025;
+    float thickness = 0.005;
+    float gridMask = min(abs(p.x)-thickness,abs(p.y)-thickness);
     
-    #if 1
-    vec3 u = w*w*w*(w*(w*6.0-15.0)+10.0);
-    #else
-    vec3 u = w*w*(3.0-2.0*w);
-    #endif
-    
-
-
-    float n = p.x + 317.0*p.y + 157.0*p.z;
-    
-    float a = hash1(n+0.0);
-    float b = hash1(n+1.0);
-    float c = hash1(n+317.0);
-    float d = hash1(n+318.0);
-    float e = hash1(n+157.0);
-	float f = hash1(n+158.0);
-    float g = hash1(n+474.0);
-    float h = hash1(n+475.0);
-
-    float k0 =   a;
-    float k1 =   b - a;
-    float k2 =   c - a;
-    float k3 =   e - a;
-    float k4 =   a - b - c + d;
-    float k5 =   a - c - e + g;
-    float k6 =   a - b - e + f;
-    float k7 = - a + b + c - d + e - f - g + h;
-
-    return -1.0+2.0*(k0 + k1*u.x + k2*u.y + k3*u.z + k4*u.x*u.y + k5*u.y*u.z + k6*u.z*u.x + k7*u.x*u.y*u.z);
-}
-
-const mat3 m3  = mat3( 0.00,  0.80,  0.60,
-                      -0.80,  0.36, -0.48,
-                      -0.60, -0.48,  0.64 );
-                      
-float fbm(vec3 p) {
-    float f = 1.9;
-    float s = 0.55;
-    float a = 0.0;
-    float b = 0.5;
-    for( int i=0; i<4; i++ )
-    {
-        float n = noise(p);
-        a += b*n;
-        b *= s;
-        p = f*m3*p;
-    }
-	return a;
-}
-#define sunpos vec2(.5,.25)
-
-float clouds(vec2 uv) {
-    uv.x += time*.001;
-    float d = fbm( vec3(uv*vec2(4.,10.)*1.1+50., time*.01) );
-    d += abs(cos(uv.x*70.)*.5 + cos(uv.x*160.)*.25)*0.07;
-    d += uv.y-1.;
-    return d+.2;
-}
-
-vec4 background(vec2 uv, vec2 p) {
-    vec4 col = vec4(0., 0., 0., 1.);
-    
-    // greenish sky
-    col.rgb = pow( vec3(.5), vec3(5., 2.5*uv.y, 2.*(uv.y*-.1+1.)) );
-    
-    // clouds
-    float c = smoothstep(0.3,.32,clouds(uv));
-    float cs = smoothstep(0.3,.32, clouds(uv - normalize(p-sunpos)*.015));
-    col.rgb += vec3(.5,.4,.3) * c * (1.-cs);
-    col.rgb += vec3(.5,.4,.3)*.75 * c * (cs);
-    
-    // stars
-    col.rgb += vec3(1.) * smoothstep(0.8,1., noise(vec3(uv*300., time*.1))) * (1.-c);
-    
-    
-    // sun
-    float d = distance(p, sunpos);
-    col.rgb += vec3(1.) * smoothstep(0.16,.15,d);
-    col.rgb += vec3(1.,1.,.5) * pow(1./(1.+d), 8.)*1.;
-    
-    return col;
-}
-
-vec4 pyramids(vec2 p, float freq, float proba) {
-    vec4 col = vec4(0., 0., 0., 0.);
-
-    float seed = floor(p.x*freq-.5);
-    float h = fract(p.x*freq);
-    float d = -p.y + abs(h-.5)/freq * step(proba,hash1(seed));
-    float m = smoothstep(0.,0.01,d) ;
-    
-    float ds = -p.y + saturate(h-.5)/freq * step(proba,hash1(seed));
-    float ms = smoothstep(0.,0.01,ds) ;
-    
-    col.rgb = vec3(1.,.5,.0) * smoothstep(0.6,.5, fbm(p*vec2(10.,100.)*freq));
-    col.rgb = mix(col.rgb, vec3(1.,.5,.0)*.3, ms);
-    
-    col.rgb *= smoothstep(0.,0.015, abs(d-0.005)); // outline
-    
-    col.rgb = saturate(col.rgb);
-    
-    col.a = max(m, ms);
-    
-    return col * col.a;
-}
-
-float moutainsHeight(vec2 p, float amp, float power) {
-    float d = - pow(abs(sin(p.x*5.)*.5+ sin(p.x*2.+2.5)*.25 + sin(p.x*4.+2.)*.125), power) * amp;
+    p = prevP;
+    float d = B(p,vec2(w*0.5,h*0.5));
+    float a = radians(45.0);
+    p.x = abs(p.x)-0.1;
+    p.y = abs(p.y)-0.05;
+    float d2 = dot(p,vec2(cos(a),sin(a)));
+    d = max(d2,d);
+    d = max(-gridMask,d);
     return d;
 }
 
-vec4 mountains(vec2 p, float amp, float power) {
-    vec4 col = vec4(0., 0., 0., 0.);
-    
-    float h = -p.y + moutainsHeight(p,amp,power);
-    float hs = -p.y +moutainsHeight(p + normalize(p-(sunpos*2.-1.))*.05,amp,power);
-    float d = smoothstep(0.,0.01,h);
-    float ds = smoothstep(0.,0.01,hs);
-    
-    col = vec4(1.,1., 1., 1.) * d;
-    col.rgb *= vec3(1.,.4,.2)*(smoothstep(0.,-1.,ds-d)*.75+.25);
-    col.rgb *= smoothstep(0.,0.02,abs(h-.01)); // outline
-    //col.rgb *= (sin(d*50.+fbm(p*vec2(5.,50.)))*.5+.5)*.5+.5;
-    col.rgb = saturate(col.rgb);
-    return col * col.a;
+float seg0(vec2 p){
+    vec2 prevP = p;
+    float d = segBase(p);
+    float size = 0.03;
+    float mask = B(p,vec2(size,size*2.7));
+    d = max(-mask,d);
+    return d;
 }
 
-vec4 cactus(vec2 p, float freq) {
+float seg1(vec2 p){
+    vec2 prevP = p;
+    float d = segBase(p);
+    float size = 0.03;
+    p.x+=size;
+    p.y+=size;
+    float mask = B(p,vec2(size*2.,size*3.7));
+    d = max(-mask,d);
+    
+    p = prevP;
+    
+    p.x+=size*1.8;
+    p.y-=size*3.5;
+    mask = B(p,vec2(size));
+    d = max(-mask,d);
+    
+    return d;
+}
 
-    vec4 col = vec4(0., 0., 0., 0.);
+float seg2(vec2 p){
+    vec2 prevP = p;
+    float d = segBase(p);
+    float size = 0.03;
+    p.x+=size;
+    p.y-=0.05;
+    float mask = B(p,vec2(size*2.,size));
+    d = max(-mask,d);
+
+    p = prevP;
+    p.x-=size;
+    p.y+=0.05;
+    mask = B(p,vec2(size*2.,size));
+    d = max(-mask,d);
     
+    return d;
+}
+
+float seg3(vec2 p){
+    vec2 prevP = p;
+    float d = segBase(p);
+    float size = 0.03;
+    p.y = abs(p.y);
+    p.x+=size;
+    p.y-=0.05;
+    float mask = B(p,vec2(size*2.,size));
+    d = max(-mask,d);
+
+    p = prevP;
+    p.x+=0.05;
+    mask = B(p,vec2(size,size));
+    d = max(-mask,d);
     
-    vec2 ip = floor(p*freq);
-    vec2 fp = fract(p*freq)-.5;
-    float seed = hash1(ip.x);
-    fp.y = p.y*2. + (seed)*.4;
+    return d;
+}
+
+float seg4(vec2 p){
+    vec2 prevP = p;
+    float d = segBase(p);
+    float size = 0.03;
     
-    if (hash1(ip.x+1000.) > .3) {
-        return vec4(0.);
+    p.x+=size;
+    p.y+=0.08;
+    float mask = B(p,vec2(size*2.,size*2.0));
+    d = max(-mask,d);
+
+    p = prevP;
+    
+    p.y-=0.08;
+    mask = B(p,vec2(size,size*2.0));
+    d = max(-mask,d);
+    
+    return d;
+}
+
+float seg5(vec2 p){
+    vec2 prevP = p;
+    float d = segBase(p);
+    float size = 0.03;
+    p.x-=size;
+    p.y-=0.05;
+    float mask = B(p,vec2(size*2.,size));
+    d = max(-mask,d);
+
+    p = prevP;
+    p.x+=size;
+    p.y+=0.05;
+    mask = B(p,vec2(size*2.,size));
+    d = max(-mask,d);
+    
+    return d;
+}
+
+float seg6(vec2 p){
+    vec2 prevP = p;
+    float d = segBase(p);
+    float size = 0.03;
+    p.x-=size;
+    p.y-=0.05;
+    float mask = B(p,vec2(size*2.,size));
+    d = max(-mask,d);
+
+    p = prevP;
+    p.y+=0.05;
+    mask = B(p,vec2(size,size));
+    d = max(-mask,d);
+    
+    return d;
+}
+
+float seg7(vec2 p){
+    vec2 prevP = p;
+    float d = segBase(p);
+    float size = 0.03;
+    p.x+=size;
+    p.y+=size;
+    float mask = B(p,vec2(size*2.,size*3.7));
+    d = max(-mask,d);
+    return d;
+}
+
+
+float seg8(vec2 p){
+    vec2 prevP = p;
+    float d = segBase(p);
+    float size = 0.03;
+    p.y = abs(p.y);
+    p.y-=0.05;
+    float mask = B(p,vec2(size,size));
+    d = max(-mask,d);
+    
+    return d;
+}
+
+float seg9(vec2 p){
+    vec2 prevP = p;
+    float d = segBase(p);
+    float size = 0.03;
+    p.y-=0.05;
+    float mask = B(p,vec2(size,size));
+    d = max(-mask,d);
+
+    p = prevP;
+    p.x+=size;
+    p.y+=0.05;
+    mask = B(p,vec2(size*2.,size));
+    d = max(-mask,d);
+    
+    return d;
+}
+
+float drawFont(vec2 p, int char){
+    p*=2.0;
+    float d = 10.;
+    if(char == seg_0) {
+        d = seg0(p);
+    } else if(char == seg_1) {
+        d = seg1(p);
+    } else if(char == seg_2) {
+        d = seg2(p);
+    } else if(char == seg_3) {
+        d = seg3(p);
+    } else if(char == seg_4) {
+        d = seg4(p);
+    } else if(char == seg_5) {
+        d = seg5(p);
+    } else if(char == seg_6) {
+        d = seg6(p);
+    } else if(char == seg_7) {
+        d = seg7(p);
+    } else if(char == seg_8) {
+        d = seg8(p);
+    } else if(char == seg_9) {
+        d = seg9(p);
     }
     
-    float d = line(fp, vec2(0.,-.3), vec2(0.,.3));
+    return d;
+}
+float barCode(vec2 p){
+    p*=1.1;
+    vec2 prevP = p;
+    p.x+=iTime*0.5;
+    p*=15.0;
+    vec2 gv = fract(p)-0.5;
+    vec2 id = floor(p);
+
+    float n = Hash21(vec2(id.x))*5.;
+    
+    p.x = mod(p.x,0.2)-0.1;
+    float d = abs(p.x)-((0.01*n)+0.01);
+    
+    p = prevP;
+    d = max(abs(p.x)-0.15,d);
+    d = max(abs(p.y)-0.1,d);
+
+    float d2 = abs(B(p,vec2(0.16,0.11)))-0.001;
+    d2 = max(-(abs(p.x)-0.14),d2);
+    d2 = max(-(abs(p.y)-0.09),d2);
+
+    return min(d,d2);
+}
+
+float circleUI(vec2 p){
+    vec2 prevP = p;
+    float speed = 3.;
+    mat2 animRot = Rot(radians(iTime*speed)*30.0);
+    p*=animRot;
+    
+    p = DF(p,32.0);
+    p -= vec2(0.28);
+    
+    float d = B(p*Rot(radians(45.0)), vec2(0.002,0.02));
+    
+    p = prevP;
+    p*=animRot;
+    
+    float a = radians(130.);
+    d = max(dot(p,vec2(cos(a),sin(a))),d);
+    a = radians(-130.);
+    d = max(dot(p,vec2(cos(a),sin(a))),d);
+    
+    p = prevP;
+    animRot = Rot(radians(iTime)*20.0);
+    p*=animRot;
+    
+    p = DF(p,24.0);
+    p -= vec2(0.19);
+    
+    float d2 = B(p*Rot(radians(45.0)), vec2(0.003,0.015));
+    
+    p = prevP;
+    p*=animRot;
+    
+    a = radians(137.5);
+    d2 = max(dot(p,vec2(cos(a),sin(a))),d2);
+    a = radians(-137.5);
+    d2 = max(dot(p,vec2(cos(a),sin(a))),d2);
+    
+    d = min(d,d2);
+    
+
+    p = prevP;
+    animRot = Rot(-radians(iTime*speed)*25.0);
+    p*=animRot;
+    
+    p = DF(p,16.0);
+    p -= vec2(0.16);
+    
+    d2 = B(p*Rot(radians(45.0)), vec2(0.003,0.01));
+    
+    p = prevP;
+    p*=animRot;
+    
+    a = radians(25.5);
+    d2 = max(dot(p,vec2(cos(a),sin(a))),d2);
+    a = radians(-25.5);
+    d2 = max(dot(p,vec2(cos(a),sin(a))),d2);
+    
+    d = min(d,d2);
+    
+    
+    p = prevP;
+    animRot = Rot(radians(iTime*speed)*35.0);
+    p*=animRot;
+    
+    p = DF(p,8.0);
+    p -= vec2(0.23);
+    
+    d2 = B(p*Rot(radians(45.0)), vec2(0.02,0.02));
+    
+    p = prevP;
+    p*=animRot;
+    
+    a = radians(40.0);
+    d2 = max(dot(p,vec2(cos(a),sin(a))),d2);
+    a = radians(-40.0);
+    d2 = max(dot(p,vec2(cos(a),sin(a))),d2);
+    
+    d = min(d,d2);    
+    
+    
+    p = prevP;
+    
+    animRot = Rot(radians(iTime*speed)*15.0);
+    p*=animRot;
+    
+    d2 = abs(length(p)-0.36)-0.002;
+    d2 = max(abs(p.x)-0.2,d2);
+    d = min(d,d2);    
+    
+    p = prevP;
+    
+    animRot = Rot(radians(90.)+radians(iTime*speed)*38.0);
+    p*=animRot;
+    
+    d2 = abs(length(p)-0.245)-0.002;
+    d2 = max(abs(p.x)-0.1,d2);
+    d = min(d,d2);    
+    
+    p = prevP;
+    d2 = abs(length(p)-0.18)-0.001;
+    d = min(d,d2);       
+    
+    p = prevP;
+    animRot = Rot(radians(145.)+radians(iTime*speed)*32.0);
+    p*=animRot;
+    d2 = abs(length(p)-0.18)-0.008;
+    
+    a = radians(30.0);
+    d2 = max(dot(p,vec2(cos(a),sin(a))),d2);
+    a = radians(-30.0);
+    d2 = max(dot(p,vec2(cos(a),sin(a))),d2);    
+    
+    d = min(d,d2);  
+    
+    p = prevP;
+    
+    a = radians(iTime*speed)*30.0;
+    p.x+=cos(a)*0.45;
+    p.y+=sin(a)*0.45;
+    
+    d2 = Tri(p*Rot(-a)*Rot(radians(90.0)),vec2(0.02),radians(45.));
+    d = min(d,d2);  
+    
+    p = prevP;
+    
+    a = radians(-sin(iTime*speed*0.5))*120.0;
+    a+=radians(-70.);
+    p.x+=cos(a)*0.45;
+    p.y+=sin(a)*0.45;
+    
+    d2 = abs(Tri(p*Rot(-a)*Rot(radians(90.0)),vec2(0.02),radians(45.)))-0.001;
+    d = min(d,d2);      
+    
+    p = prevP;
+    animRot = Rot(-radians(iTime*speed)*27.0);
+    p*=animRot;
+    
+    d2 = abs(length(p)-0.43)-0.0001;
+    d2 = max(abs(p.x)-0.3,d2);
+    d = min(d,d2);    
+    
+    p = prevP;
+    animRot = Rot(-radians(iTime*speed)*12.0);
+    p*=animRot;
+    
+    p = DF(p,8.0);
+    p -= vec2(0.103);
+    
+    d2 = B(p*Rot(radians(45.0)), vec2(0.001,0.007));    
+    d = min(d,d2);  
+    
+    p = prevP;
+    animRot = Rot(radians(16.8)-radians(iTime*speed)*12.0);
+    p*=animRot;    
+    
+    p = DF(p,8.0);
+    p -= vec2(0.098);
+    
+    d2 = B(p*Rot(radians(45.0)), vec2(0.001,0.013));    
+    d = min(d,d2);      
+    
+    
+    p = prevP;
+    animRot = Rot(radians(iTime*speed)*30.0);
+    p*=animRot;    
+    
+    p = DF(p,10.0);
+    p -= vec2(0.28);
+    
+    d2 = abs(B(p*Rot(radians(45.0)), vec2(0.02,0.02)))-0.001;
+    
+    p = prevP;
+    p*=animRot;
+    
+    a = radians(50.);
+    d2 = max(dot(p,vec2(cos(a),sin(a))),d2);
+    a = radians(-50.);
+    d2 = max(dot(p,vec2(cos(a),sin(a))),d2);    
+    d = min(d,d2);   
+    
+    p = prevP;
+    int num = int(mod(iTime*10.0,10.0));
+    d2 = drawFont(p-vec2(0.038,0.),num);
+    d = min(d,abs(d2)-0.001); 
+    num = int(mod(iTime*3.0,10.0));
+    d2 = drawFont(p-vec2(-0.038,0.),num);
+    d = min(d,d2); 
+    
+    return d;
+}
+
+float smallCircleUI(vec2 p){
+    p*=1.3;
+    vec2 prevP = p;
+    float speed = 3.;
+    
+    mat2 animRot = Rot(radians(iTime*speed)*35.0);
+    p*=animRot;  
+    
+    float d = abs(length(p)-0.2)-0.005;
+    
+    float a = radians(50.);
+    d = max(dot(p,vec2(cos(a),sin(a))),d);
+    a = radians(-50.);
+    d = max(dot(p,vec2(cos(a),sin(a))),d);   
+    
+    p*=Rot(radians(10.));
+    float d2 = abs(length(p)-0.19)-0.006;
+    
+    a = radians(60.);
+    d2 = max(dot(p,vec2(cos(a),sin(a))),d2);
+    a = radians(-60.);
+    d2 = max(dot(p,vec2(cos(a),sin(a))),d2);   
+    
+    d = min(d,d2);
+    
+    p = prevP;
+    
+    d2 = abs(length(p)-0.195)-0.0001;
+    d = min(d,d2);
+    
+    
+    p = prevP;
+    animRot = Rot(-radians(iTime*speed)*30.0);
+    p*=animRot;      
+    
+    p = DF(p,12.0);
+    p -= vec2(0.11);
+    
+    d2 = B(p*Rot(radians(45.0)), vec2(0.003,0.015));      
+    
+
+    
+    d = min(d,d2);  
+    
+    p = prevP;
+    animRot = Rot(radians(iTime*speed)*23.0);
+    p*=animRot;  
+    p = DF(p,2.5);
+    p -= vec2(0.05);
+    
+    d2 = B(p*Rot(radians(45.0)), vec2(0.01));      
+    d = min(d,d2); 
+    
+    p = prevP;
+    animRot = Rot(-radians(iTime*speed)*26.0);
+    p*=animRot;  
+    d2 = abs(length(p)-0.11)-0.005;
+    
+    d2 = max(abs(p.x)-0.05,d2);
+    
+    d = min(d,d2);
+    
+    return d;
+}
+
+float smallCircleUI2(vec2 p){
+    p.x = abs(p.x)-0.4;
+    p.y = abs(p.y)-0.34;
+    vec2 prevP = p;
+    float speed = 3.;
+    mat2 animRot = Rot(radians(iTime*speed)*28.0);
+    p*=animRot;  
+    
+    float d = abs(length(p)-0.028)-0.0005;
+    d = max(B(p,vec2(0.015,0.1)),d);
+    
+    p = prevP;
+    animRot = Rot(-radians(iTime*speed)*31.0);
+    p*=animRot;  
+    float d2 = abs(length(p)-0.027)-0.004;
+    
+    float a = radians(50.);
+    d2 = max(dot(p,vec2(cos(a),sin(a))),d2);
+    a = radians(-50.);
+    d2 = max(dot(p,vec2(cos(a),sin(a))),d2);    
+    
+    d = min(max(-d2,d),abs(d2)-0.001);
+    
+    p = prevP;
+    animRot = Rot(-radians(iTime*speed)*30.0);
+    p*=animRot;      
+    
+    p = DF(p,2.0);
+    p -= vec2(0.008);
+    
+    d2 = B(p*Rot(radians(45.0)), vec2(0.0005,0.002));       
+    d = min(d,d2);
+    
+    return d;
+}
+
+float mainWave(vec2 p){
+    p*=1.5;
+    
+    float thickness = 0.003;
+    
+    vec2 prevP = p;
+
+    float t = fract(sin(iTime*100.0))*0.5;
+
+    p.x+=iTime*1.0;
+    p.y+=sin(p.x*8.)*(0.05+abs(sin(t*10.0)*0.12));
+    float d = abs(p.y)-thickness;
+
+    p = prevP;
+    
+    p.x-=iTime*0.5;
+    p.y+=sin(p.x*3.)*(0.1+abs(sin(t*9.0)*0.13));
+    float d2 = abs(p.y)-thickness;
+
+    d = min(d,d2);
+
+    p = prevP;
+    
+    p.x+=iTime*0.7;
+    p.y+=sin(p.x*5.)*(0.1+abs(sin(t*9.3)*0.15));
+    d2 = abs(p.y)-thickness;
+
+    d = min(d,d2);
+    
+    p = prevP;
+    
+    p.x-=iTime*0.6;
+    p.y+=sin(p.x*10.)*(0.1+abs(sin(t*9.5)*0.08));
+    d2 = abs(p.y)-thickness;
+
+    d = min(d,d2);
         
-    if (hash1(ip.x+100.) > .5) {
-        fp.x = -fp.x;
-    }
+    p = prevP;
     
-    if (seed > .25) {
-        d = min(d, line(fp, vec2(0.,0.), vec2(0.3,.0))*1.8);
-        d = min(d, line(fp, vec2(0.3,0.015), vec2(0.3,.2))*1.3);
-    }
+    p.x+=iTime*1.2;
+    p.y+=cos(-p.x*15.)*(0.1+abs(sin(t*10.0)*0.1));
+    d2 = abs(p.y)-thickness;
+
+    d = min(d,d2);
     
-    d = min(d, line(fp, vec2(0.,-.15), vec2(-0.3,-.15))*1.8);
-    d = min(d, line(fp, vec2(-0.3,-.14), vec2(-0.3,.05))*1.3);
-    d = d-p.y*.3 - fbm(p*300.+5.)*.005;
-    
-    
-    col = vec4(vec3(0.4,1.,0.)*.5 * (smoothstep(0.5,.6, fbm(p*vec2(300.,5.)+5.)*.5+.5)*.25+.75), smoothstep(0.1,0.09,d));
-    
-    col.rgb *= vec3(1.) * smoothstep(0.007,0.012, abs(d-.098)); // outline
-    
-    return col * col.a;
+    return d;
 }
 
-
-void main()
-{
-    vec2 invRes = vec2(1.) / resolution.xy;
-    vec2 uv = gl_FragCoord.xy * invRes;
-    vec2 p = (2.*gl_FragCoord.xy - resolution.xy) / resolution.y;
-    vec2 pp = p;
-    
-    
-    // background
-    vec4 col = background(uv, pp);
-    
-    
-    // layers
-    #define LAYER_SPEED 0.05
-    #define LAYER_COUNT 8
-    vec4 layer[LAYER_COUNT];
-    p.x += time*LAYER_SPEED;    layer[0] = mountains(p*vec2(.5,3.)-vec2(0.,.3), .75, 1.2) * vec4(vec3(.25),1.);
-    p.x += time*LAYER_SPEED;    layer[1] = pyramids(p-vec2(0.,-.4), 1., .6);
-    p.x += time*LAYER_SPEED;    layer[2] = pyramids(p-vec2(0.,-.39), .5, .6);
-    p.x += time*LAYER_SPEED;    layer[3] = mountains(p*vec2(.25,2.25)-vec2(10.,-0.5), 1., 1.2);
-    p.x += time*LAYER_SPEED;    layer[4] = cactus(p*1.5-vec2(0.,-.7),3.)*1.;
-    p.x += time*LAYER_SPEED;    layer[5] = mountains(p*vec2(.25,2.)-vec2(0.,-0.6), 1., 1.2);
-    p.x += time*LAYER_SPEED;    layer[6] = mountains(p*vec2(.15,2.)-vec2(1000.,-0.7), 1., 1.2);
-    p.x += time*LAYER_SPEED;    layer[7] = cactus(p*.2-vec2(0.,-.0),3.);
-    
-    // merge layers with alpha premultiplied
-    for(int i=0; i<LAYER_COUNT; i++) {
-        col.rgb = col.rgb * (1.-layer[i].a) + layer[i].rgb * (2./(pow(float(i),2.5)+1.));
+float graph(vec2 p){
+    vec2 prevP = p;
+    float d = 10.;
+    float t = iTime+Hash21(vec2(floor(p.y-0.5),0.0));
+    p.y = abs(p.y);
+    p.y+=0.127;
+    for(float i = 1.0; i<=20.0; i+=1.0) {
+        float x = 0.0;
+        float y = i*-0.015;
+        float w = abs(sin(Hash21(vec2(i,0.0))*t*3.0)*0.1);
+        float d2 = B(p+vec2(0.1-w,y),vec2(w,0.003));
+        d = min(d,d2);
     }
+    p = prevP;
     
-    // flare
-    float d = distance(pp, sunpos);
-    col.rgb += vec3(1.,1.,.5) * pow(1./(1.+d), 3.)*.1;
-    
-    
-    // color grading
-    col.rgb = pow(col.rgb, vec3(1.0,1.5,1.3));
-    
-    // vignetting
-    col.rgb *= pow( uv.x*uv.y*(1.-uv.x)*(1.-uv.y)*100., .1);
+    return max(abs(p.y)-0.2,d);
+}
 
-    // gamma correction
-    col.rgb = pow(col.rgb, vec3(1./2.2));
+float scifiUI(vec2 p){
+    p*=1.1;
+    vec2 prevP = p;
+    float d = B(p,vec2(0.15,0.06));
+    float a = radians(45.);
+    p.x = abs(p.x)-0.195;
+    p.y = abs(p.y);
+    float m = dot(p,vec2(cos(a),sin(a)));
+    d = max(m,d);
     
-    // output to the screen
-    gl_FragColor = vec4(col.rgb * smoothstep(0.,3., time),1.0);
+    p = prevP;
+    
+    p.x+=0.16;
+    p.y+=0.008;
+    float d2 = B(p,vec2(0.06,0.052));
+    a = radians(45.);
+    p.x = abs(p.x)-0.095;
+    p.y = abs(p.y);
+    m = dot(p,vec2(cos(a),sin(a)));
+    d2 = max(m,d2);
+    
+    p = prevP;
+    d2 = min(d,d2);
+    d2 = max(-B(p-vec2(-0.03,-0.05),vec2(0.2,0.05)),abs(d2)-0.003);
+    
+    return abs(d2)-0.001;
+}
+
+float triAnimatin(vec2 p){
+    p.x = abs(p.x)-0.458;
+    p.y = abs(p.y)-0.45;
+    vec2 prevP = p;
+    p.x+=iTime*0.1;
+    p.x=mod(p.x,0.04)-0.02;
+    p.x+=0.01;
+    float d = abs(Tri(p*Rot(radians(-90.)),vec2(0.012),radians(45.)))-0.0001;
+    p = prevP;
+    return max(abs(p.x)-0.125,d);
+}
+
+float randomDotLine(vec2 p){
+    vec2 prevP = p;
+    p.x+=iTime*0.08;
+    vec2 gv = fract(p*17.0)-0.5;
+    vec2 id = floor(p*17.0);
+    
+    float n = Hash21(id);
+    float d = B(gv,vec2(0.25*(n*2.0),0.2));
+    p = prevP;
+    p.y+= 0.012;
+    d = max(abs(p.y)-0.01,max(abs(p.x)-0.27,d));
+    return d;
+}
+
+float scifiUI2(vec2 p){
+    vec2 prevP = p;
+
+    p*=1.2;
+    p.x= abs(p.x)-0.72;
+    p.y= abs(p.y)-0.53;
+    
+    float d = B(p,vec2(0.03));
+    float a = radians(-45.);
+    
+    float m = -dot(p-vec2(-0.005,0.0),vec2(cos(a),sin(a)));
+    d = max(m,d);
+    m = dot(p-vec2(0.005,0.0),vec2(cos(a),sin(a)));
+    d = max(m,d);
+    
+    float d2 = B(p-vec2(0.175,0.0256),vec2(0.15,0.004));
+    d = min(d,d2);
+    d2 = B(p-vec2(-0.175,-0.0256),vec2(0.15,0.004));
+    d = abs(min(d,d2))-0.0005;
+    
+    p.y-=0.003;
+    p.x+=iTime*0.05;
+    p.x = mod(p.x,0.03)-0.015;
+    p.x-=0.01;
+    d2 = B(p,vec2(0.026));
+    
+    m = -dot(p-vec2(-0.005,0.0),vec2(cos(a),sin(a)));
+    d2 = max(m,d2);
+    m = dot(p-vec2(0.005,0.0),vec2(cos(a),sin(a)));
+    d2 = max(m,d2);
+    
+    p = prevP;
+    p*=1.2;
+    p.x= abs(p.x)-0.72;
+    p.y= abs(p.y)-0.53;
+    m = -dot(p-vec2(0.02,0.0),vec2(cos(a),sin(a)));
+    d2 = max(m,d2);
+    m = dot(p-vec2(0.32,0.0),vec2(cos(a),sin(a)));
+    d2 = max(m,d2);
+    
+    d = min(d,d2);
+    
+    p = prevP;
+    
+    d2 = triAnimatin(p);
+    d = min(d,d2);
+    
+    
+    p = prevP;
+    p.x= abs(p.x)-0.6;
+    p.y= abs(p.y)-0.418;
+    
+    d2 = randomDotLine(p);
+    d = min(d,d2);
+    
+    return d;
+}
+
+float scifiUI3Base(vec2 p){
+    float d = abs(length(p)-0.03)-0.01;
+    p.x=abs(p.x)-0.1;
+    float d2 = abs(length(p)-0.03)-0.01;
+    d = min(d,d2);
+    return d;
+}
+
+float scifiUI3(vec2 p){
+    vec2 prevP = p;
+    float speed = 3.;
+    float d = abs(length(p)-0.03)-0.01;
+    
+    mat2 animRot = Rot(radians(iTime*speed)*40.0);
+    p*=animRot;  
+    
+    float a = radians(50.);
+    d = max(dot(p,vec2(cos(a),sin(a))),d);
+    a = radians(-50.);
+    d = max(dot(p,vec2(cos(a),sin(a))),d);   
+    
+    p = prevP;
+    p.x=abs(p.x)-0.1;
+    animRot = Rot(radians(iTime*speed)*45.0);
+    p*=animRot;  
+    
+    
+    float d2 = abs(length(p)-0.03)-0.01;
+    
+    a = radians(170.);
+    d2 = max(dot(p,vec2(cos(a),sin(a))),d2);
+    a = radians(-170.);
+    d2 = max(dot(p,vec2(cos(a),sin(a))),d2);   
+    
+    return min(d,d2);
+}
+
+float slider(vec2 p){
+    vec2 prevP = p;
+    
+    float d = abs(B(p,vec2(0.15,0.015)))-0.001;
+    float d2 = B(p-vec2(sin(iTime*1.5)*0.13,0),vec2(0.02,0.013));
+    d = min(d,d2);
+    
+    p.y = abs(p.y)-0.045;
+    d2 = abs(B(p,vec2(0.15,0.015)))-0.001;
+    d = min(d,d2);
+    d2 = B(p-vec2(sin(iTime*2.0)*-0.13,0),vec2(0.02,0.013));
+    d = min(d,d2);
+    
+    p = prevP;
+    p.y=abs(p.y);
+    d2 = scifiUI(p-vec2(0.032,0.045));
+    d = min(d,d2);
+    
+    return d;
+}
+
+float bg(vec2 p){
+    p = mod(p,0.3)-0.15;
+    float d = B(p,vec2(0.001,0.01));
+    float d2 = B(p,vec2(0.01,0.001));
+    d = min(d,d2);
+    return d;
+}
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+    vec2 uv = (fragCoord-0.5*iResolution.xy)/iResolution.y;
+
+    vec3 col =vec3(0.0);
+    float d = bg(uv);
+    col = mix(col, vec3(0.3),S(d,0.0));
+    
+    d = mainWave(uv);
+    col = mix(col, vec3(1.),S(d,-0.005));
+    
+    d = scifiUI2(uv);
+    
+    float d2 = circleUI(uv);
+    d = min(d,d2);
+
+    d2 = smallCircleUI(uv-vec2(-0.62,-0.22));
+    d = min(d,d2);
+    
+    d2 = smallCircleUI2(uv);
+    d = min(d,d2);
+    
+    d2 = graph(uv-vec2(-0.67,0.19));
+    d = min(d,d2);
+    
+    d2 = barCode(uv-vec2(0.63,-0.27));
+    d = min(d,d2);
+    
+    d2 = slider(uv-vec2(0.62,0.26));
+    d = min(d,d2);
+    
+    col = mix(col, vec3(1.),S(d,0.0));
+    
+    d = scifiUI3Base(uv-vec2(0.65,0.));
+    col = mix(col, col+vec3(0.5),S(d,0.0));
+    
+    d = scifiUI3(uv-vec2(0.65,0.));
+    col = mix(col, vec3(1.),S(d,0.0));
+    
+    fragColor = vec4(col,1.0);
+}
+// --------[ Original ShaderToy ends here ]---------- //
+
+void main(void)
+{
+    mainImage(gl_FragColor, gl_FragCoord.xy);
 }
