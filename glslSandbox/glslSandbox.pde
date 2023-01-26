@@ -1,7 +1,7 @@
 // こちらがオリジナルです。
-// 【作者】Kamoshikaさん
-// 【作品名】point light practice
-// https://neort.io/art/c78r61c3p9f3hsjeat4g
+// 【作者】?????さん
+// 【作品名】?????
+// https://glslsandbox.com/e#99214.0
 
 PShader s;
 int startMillis;
@@ -10,7 +10,7 @@ void setup() {
   size(787, 442, P3D);
   //size(500, 800, P3D);
   noStroke();
-  s = loadShader("neort.glsl");
+  s = loadShader("glslSandbox.glsl");
   s.set("resolution", width, height);
   // 最初のミリ秒を取り込んでおく
   startMillis = millis();
