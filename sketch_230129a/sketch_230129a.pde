@@ -7,8 +7,8 @@ float Width=600;
 float Height=450;
 float pixel=1;
 
-float Y_AXIS = 1;
-float X_AXIS = 2;
+int Y_AXIS = 1;
+int X_AXIS = 2;
 
 float skyHeight=190;
 float wall_Width=600;
@@ -23,14 +23,12 @@ float cat_scale=111;
 float easing=1;
 float Time;
 
-function setup() {
-  createCanvas(Width, Height);
-  pixelDensity(3);
+void setup() {
+  size(600, 450);
 }
 
-function draw() {
-
-  frameRate(5);
+void draw() {
+  //frameRate(5);
   drawwall();
   drawsky();
   push();
@@ -55,46 +53,46 @@ function draw() {
   pop();
 }
 
-function drawcat(cat_scale, center_x, center_y)
+void drawcat(float cat_scale, float center_x, float center_y)
 {
   stroke(200, 200, 240);
   noStroke();
   //肚子
-  pos1_x=center_x-(cat_scale)/3;
-  pos1_y=center_y+(cat_scale)*2/5-5;
+  float pos1_x=center_x-(cat_scale)/3.0f;
+  float pos1_y=center_y+(cat_scale)*2/5-5;
 
-  pos2_x=center_x+(cat_scale*1/3);
-  pos2_y=center_y+(cat_scale)*2/5;
+  float pos2_x=center_x+(cat_scale*1/3.0f);
+  float pos2_y=center_y+(cat_scale)*2/5.0f;
 
   //前体
-  pos3_x=pos1_x-(cat_scale/5);
-  pos3_y=center_y+(cat_scale)*2/5;
+  float pos3_x=pos1_x-(cat_scale/5.0f);
+  float pos3_y=center_y+(cat_scale)*2/5.0f;
 
-  pos4_x=pos1_x-(cat_scale/8);
-  pos4_y=center_y+(cat_scale)/15;
+  float pos4_x=pos1_x-(cat_scale/8.0f);
+  float pos4_y=center_y+(cat_scale)/15.0f;
 
-  pos5_x=pos4_x-(cat_scale/8);
-  pos5_y=pos4_y-(cat_scale)/20;
+  float pos5_x=pos4_x-(cat_scale/8.0f);
+  float pos5_y=pos4_y-(cat_scale)/20.0f;
 
   //头
-  pos6_x=pos5_x-(cat_scale/4);
-  pos6_y=pos5_y-(cat_scale)/6;
+  float pos6_x=pos5_x-(cat_scale/4.0f);
+  float pos6_y=pos5_y-(cat_scale)/6.0f;
 
-  pos7_x=pos5_x-(cat_scale/6);
-  pos7_y=pos5_y-(cat_scale)/30;
+  float pos7_x=pos5_x-(cat_scale/6.0f);
+  float pos7_y=pos5_y-(cat_scale)/30.0f;
 
-  pos8_x=pos5_x-(cat_scale)*3/8;
-  pos8_y=pos5_y+(cat_scale)/8;
+  float pos8_x=pos5_x-(cat_scale)*3/8.0f;
+  float pos8_y=pos5_y+(cat_scale)/8.0f;
 
-  pos9_x=pos8_x+(cat_scale)/5;
-  pos9_y=pos8_y+(cat_scale)/5;
+  float pos9_x=pos8_x+(cat_scale)/5.0f;
+  float pos9_y=pos8_y+(cat_scale)/5.0f;
 
   //屁股
-  pos10_x=pos2_x-(cat_scale/4)*0;
-  pos10_y=pos2_y-(cat_scale)*1/3;
+  float pos10_x=pos2_x-(cat_scale/4)*0;
+  float pos10_y=pos2_y-(cat_scale)*1/3.0f;
 
-  pos11_x=pos10_x+(cat_scale*1/8);
-  pos11_y=pos10_y+(cat_scale)/10;
+  float pos11_x=pos10_x+(cat_scale*1/8.0f);
+  float pos11_y=pos10_y+(cat_scale)/10.0f;
 
   fill(150, 70, 10);
   triangle(center_x, center_y, pos1_x, pos1_y, pos2_x, pos2_y-6);
@@ -126,80 +124,72 @@ function drawcat(cat_scale, center_x, center_y)
   weiba(pos11_x, pos11_y);
 }
 
-function weiba(x, y)
+void weiba(float x, float y)
 {
   push();
   strokeWeight(10);
   stroke(150, 70, 10);
-  x1=x-20;
-  y1=y;
+  float x1=x-20;
+  float y1=y;
 
-  x2=x+20;
-  y2=y-20;
+  float x2=x+20;
+  float y2=y-20;
 
-  x3=x+25;
-  y3=y+5;
+  float x3=x+25;
+  float y3=y+5;
 
-  x4=x+55;
-  y4=y-20;
+  float x4=x+55;
+  float y4=y-20;
 
   bezier(x1, y1, x2, y2, x3, y3, x4, y4);
   noStroke();
   pop();
 }
 
-function feetControl(x, y)
+void feetControl(float x, float y)
 {
   fill(150, 70, 10);
   if (x%2==0)
   {
-    rect(x-(cat_scale)/10, y-8, (cat_scale)/10, (cat_scale)*1/3+8, 5, 5, 5, 5);
+    rect(x-(cat_scale)/10.0f, y-8, (cat_scale)/10.0f, (cat_scale)*1/3.0f+8, 5, 5, 5, 5);
   } else
   {
     quad(x, y-10,
-      x-(cat_scale)/10, y-10,
-      x-(cat_scale)/10+(cat_scale/10), y+(cat_scale)*1/3,
-      x+(cat_scale/10), y+(cat_scale)*1/3);
+      x-(cat_scale)/10.0f, y-10,
+      x-(cat_scale)/10.0f+(cat_scale/10.0f), y+(cat_scale)*1/3.0f,
+      x+(cat_scale/10.0f), y+(cat_scale)*1/3.0f);
 
     quad(x, y-15,
-      x-(cat_scale)/10, y-15,
-      x-(cat_scale)/10-(cat_scale/5), y+(cat_scale)*1/3,
-      x-(cat_scale/5), y+(cat_scale)*1/3);
+      x-(cat_scale)/10.0f, y-15,
+      x-(cat_scale)/10.0f-(cat_scale/5.0f), y+(cat_scale)*1/3.0f,
+      x-(cat_scale/5.0f), y+(cat_scale)*1/3.0f);
   }
 }
 
-function segment(trans_x, trans_y, a, segLength) {
-  push();
-  translate(trans_x, trans_y);
-  rotate(a);
-  rect();
-  pop();
-}
-
-function draw_wallshadow()
+void draw_wallshadow()
 {
   noStroke();
-  var c1=color(160, 10, 0);
-  var c2=color(80, 10, 80);
+  color c1=color(160, 10, 0);
+  color c2=color(80, 10, 80);
   setGradient(0, 450, Width, 150, c1, c2, 1);
 
   noStroke();
   fill(160, 10, 0);
-  for (var i=0; i<Width; i++)
+  for (float i=0; i<Width; i++)
   {
     arc(i, 600, 50, 15, PI, 0);
     i=i+80;
   }
 }
 
-function drawwall()
+void drawwall()
 {
   noStroke();
   fill(100, 10, 0);
   rect(0, 0, Width, Height);
 
   fill(190, 70, 20);
-  rect(0, Height/2-wall_Height, wall_Width, wall_Height);
+  rect(0, Height/2.0f-wall_Height, wall_Width, wall_Height);
 
   drawWuYan1();
   drawWuYan2();
@@ -207,23 +197,23 @@ function drawwall()
   drawWuYan4();
 }
 
-function drawWuYan1()
+void drawWuYan1()
 {
   stroke(20);
   fill(190, 100, 10);
-  for (var i=0; i<Width; i++)
+  for (float i=0; i<Width; i++)
   {
     rect(i-5, wall_Height+70, wuyan_width, wuyan_height);
     i=i+wuyan_width;
   }
 }
 
-function drawWuYan2()
+void drawWuYan2()
 {
-  var cwu2_1=color(50, 120, 30);
-  var cwu2_2=color(60, 10, 0);
+  color cwu2_1=color(50, 120, 30);
+  color cwu2_2=color(60, 10, 0);
 
-  for (var j=0; j<Width+80; j++)
+  for (float j=0; j<Width+80; j++)
   {
     setGradient(j-65, wall_Height+35,
       wuyan_width, wuyan_height+10,
@@ -241,11 +231,11 @@ function drawWuYan2()
     Width, 50, cwu3_1, cwu3_2, 1);
 }
 
-function drawWuYan3()
+void drawWuYan3()
 {
   noStroke();
   fill(190, 150, 90);
-  for (var k=0; k<Width; k++)
+  for (float k=0; k<Width; k++)
   {
     rect(k, skyHeight, wuyan_width, 10);
     k=k+wuyan_width;
@@ -257,7 +247,7 @@ function drawWuYan3()
   rect(0, skyHeight+35, Width, 35);
 }
 
-function drawPIdwon(x_trans)
+void drawPIdwon(float x_trans)
 {
   stroke(90, 50, 50);
   push();
@@ -268,7 +258,7 @@ function drawPIdwon(x_trans)
   pop();
 }
 
-function drawPIdwon_shadow(x_trans, shadow)
+void drawPIdwon_shadow(float x_trans, float shadow)
 {
   noStroke();
   push();
@@ -279,30 +269,30 @@ function drawPIdwon_shadow(x_trans, shadow)
   pop();
 }
 
-function drawquad(i, j, x_trans)
+void drawquad(float i, float j, float x_trans)
 {
-  var c1=color(90, 50, 50);
-  var c2=color(180, 90, 50);
+  color c1=color(90, 50, 50);
+  color c2=color(180, 90, 50);
   setGradient(x_trans-(quad_width/2)+i,
     skyHeight+93-j,
     quad_width, 5, c1, c2, 2);
 }
 
 
-function drawCicle(x_trans, angle, c1, c2, c3, i)
+void drawCicle(float x_trans, float angle, int c1, int c2, int c3, float i)
 {
   push();
   noStroke();
   fill(c1, c2, c3);
   translate(x_trans-i+7, skyHeight+70+i*3);
   rotate(angle);
-  arc(0, 0, 50, 50, 0, PI/2);
+  arc(0, 0, 50, 50, 0, PI/2.0f);
   pop();
 }
 
-function drawCicle_all(x_trans)
+void drawCicle_all(float x_trans)
 {
-  for (var i=0; i<8; i++)
+  for (float i=0; i<8; i++)
   {
     drawCicle(x_trans+quad_width-8, 24.5, 100, 10, 10, i);
     drawCicle(x_trans+quad_width-8, -2.2, 130, 110, 90, i);
@@ -316,15 +306,15 @@ function drawCicle_all(x_trans)
   ellipse(x_trans+60, skyHeight+95, 35, 35);
 }
 
-function drawWuYan4()
+void drawWuYan4()
 {
-  for (var x_trans=50; x_trans<Width; x_trans++)
+  for (float x_trans=50; x_trans<Width; x_trans++)
   {
     drawPIdwon_shadow(x_trans+10, 10);
     drawPIdwon(x_trans);
-    for (var i=0; i<5; i++)
+    for (float i=0; i<5; i++)
     {
-      yp=i*5;
+      float yp=i*5;
       drawquad(i, yp, x_trans);
     }
     drawCicle_all(x_trans);
@@ -332,7 +322,7 @@ function drawWuYan4()
   }
 }
 
-function YinxingTree()
+void YinxingTree()
 {
   push();
   drawtree(220, 180, 0, -20, 20, random(0.6));
@@ -353,16 +343,16 @@ function YinxingTree()
   pop();
 }
 
-function drawtree(c1, c2, c3, pos_x, pos_y, pos_angle)
+void drawtree(int c1, int c2, int c3, float pos_x, float pos_y, float pos_angle)
 {
   push();
   rotate(pos_angle);
-  var trans_x;
-  var trans_y;
-  var trans_angle;
+  float trans_x;
+  float trans_y;
+  float trans_angle;
 
   fill(c1, c2, c3);
-  for (var i=0; i<20; i++)
+  for (int i=0; i<20; i++)
   {
     trans_x=random(50);
     trans_y=random(20);
@@ -376,7 +366,7 @@ function drawtree(c1, c2, c3, pos_x, pos_y, pos_angle)
   pop();
 }
 
-function drawYinXing(pos_x, pos_y)
+void drawYinXing(float pos_x, float pos_y)
 {
   stroke(200, 150, 60);
   push();
@@ -386,39 +376,30 @@ function drawYinXing(pos_x, pos_y)
   pop();
 }
 
-function drawsky()
+void drawsky()
 {
-  var c1 = color(90, 150, 205);
-  var c2 = color(190, 200, 220);
+  color c1 = color(90, 150, 205);
+  color c2 = color(190, 200, 220);
   noStroke();
   setGradient(0, 0, Width, skyHeight, c1, c2, 1);
 }
 
-function setGradient(x, y, w, h, c1, c2, axis)
+void setGradient(float x, float y, float w, float h, color c1, color c2, int axis)
 {
   noFill();
   if (axis == Y_AXIS) {  // Top to bottom gradient
-    for (var i = y; i <= y+h; i++) {
-      var inter = map(i, y, y+h, 0, 1);
-      var c = lerpColor(c1, c2, inter);
+    for (float i = y; i <= y+h; i++) {
+      float inter = map(i, y, y+h, 0, 1);
+      color c = lerpColor(c1, c2, inter);
       stroke(c);
       line(x, i, x+w, i);
     }
   } else if (axis == X_AXIS) {  // Left to right gradient
-    for (var k = x; k <= x+w; k++) {
-      var interk = map(k, x, x+w, 0, 1);
-      var ck = lerpColor(c1, c2, interk);
+    for (float k = x; k <= x+w; k++) {
+      float interk = map(k, x, x+w, 0, 1);
+      color ck = lerpColor(c1, c2, interk);
       stroke(ck);
       line(k, y, k, y+h);
     }
-  }
-}
-
-// save jpg
-let lapse = 0;    // mouse timer
-function mousePressed() {
-  if (millis() - lapse > 400) {
-    save("img_" + month() + '-' + day() + '_' + hour() + '-' + minute() + '-' + second() + ".jpg");
-    lapse = millis();
   }
 }
