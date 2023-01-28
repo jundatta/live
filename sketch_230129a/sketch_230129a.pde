@@ -4,50 +4,37 @@
 // https://junkiyoshi.com/openframeworks20230128/
 
 //--------------------------------------------------------------
-void ofApp::setup() {
-
-  ofSetFrameRate(60);
-  ofSetWindowTitle("openFrameworks");
-
-  ofBackground(255);
+void setup() {
+  size(720, 720);
+  colorMode(HSB, 255, 255, 255);
+  background(0, 0, 255);
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
-}
+void draw() {
+  translate(width * 0.5f, height * 0.5f);
+  noStroke();
 
-//--------------------------------------------------------------
-void ofApp::draw() {
-
-  ofTranslate(ofGetWindowSize() * 0.5);
-
-  auto numberOfActor = 255;
-  ofColor color;
+  int numberOfActor = 255;
 
   ofSeedRandom(39);
   for (int i = 0; i < numberOfActor; i++) {
+    PVector noise_seed = new PVector(random(1000), random(1000));
 
-    auto noise_seed = glm::vec2(ofRandom(1000), ofRandom(1000));
-
-    ofSetColor(255);
+    fill(0, 0, 255);
     for (int k = 0; k < 35; k++) {
-
-      auto location = glm::vec2(
-        ofMap(ofNoise(noise_seed.x, k * 0.002 + ofGetFrameNum() * 0.001), 0, 1, -350, 350),
-        ofMap(ofNoise(noise_seed.y, k * 0.002 + ofGetFrameNum() * 0.001), 0, 1, -350, 350));
-
-      ofDrawCircle(location, 12);
+      PVector location = new PVector(
+        map(openFrameworks.ofNoise(noise_seed.x, k * 0.002 + ofGetFrameNum() * 0.001), 0, 1, -350, 350),
+        map(openFrameworks.ofNoise(noise_seed.y, k * 0.002 + ofGetFrameNum() * 0.001), 0, 1, -350, 350));
+      circle(location.x, location.y, 12 * 2);
     }
 
-    color.setHsb(ofRandom(255), 100, 255);
-    ofSetColor(color);
+    fill(random(255), 100, 255);
     for (int k = 0; k < 35; k++) {
-
-      auto location = glm::vec2(
-        ofMap(ofNoise(noise_seed.x, k * 0.002 + ofGetFrameNum() * 0.001), 0, 1, -350, 350),
-        ofMap(ofNoise(noise_seed.y, k * 0.002 + ofGetFrameNum() * 0.001), 0, 1, -350, 350));
-
-      ofDrawCircle(location, 8);
+      PVector location = new PVector(
+        map(openFrameworks.ofNoise(noise_seed.x, k * 0.002 + ofGetFrameNum() * 0.001), 0, 1, -350, 350),
+        map(openFrameworks.ofNoise(noise_seed.y, k * 0.002 + ofGetFrameNum() * 0.001), 0, 1, -350, 350));
+      circle(location.x, location.y, 8 * 2);
     }
   }
 }
