@@ -43,7 +43,8 @@ void draw() {
         //outline[outline_index] = outline[outline_index].getResampledByCount(300);
         ArrayList<PVector> vertices = outline.get(outline_index).vertices;
         for (PVector v : vertices) {
-          PVector location = new PVector((v.x + offsetX) - stringWidth * 0.5, y + v.y + stringWidth * 0.5, 0);
+          //PVector location = new PVector((v.x + offsetX) - stringWidth * 0.5, y + v.y + stringWidth * 0.5, 0);
+          PVector location = new PVector((v.x + offsetX) - stringWidth * 0.5, (y-240) + v.y + stringWidth * 0.5, 0);
           float len = location.mag();
           float noise_value = openFrameworksNoise.ofNoise(len * 0.01 - ofGetFrameNum() * 0.05);
           float deg = 0;
