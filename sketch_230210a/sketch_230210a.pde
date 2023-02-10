@@ -10,6 +10,7 @@ void setup() {
 
   ArrayList<ofOutline> outlineWords = openFrameworksOutline.ofOutline();
   String word = "From Code";
+  //String word =   "888888888";
   char[] charArray = word.toCharArray();
   for (char c : charArray) {
     for (ofOutline out : outlineWords) {
@@ -40,6 +41,9 @@ void draw() {
       float offsetX = x * charWidth;
       beginShape();
       for (int outline_index = 0; outline_index < outline.size(); outline_index++) {
+        if (outline_index != 0) {
+          beginContour();
+        }
         //outline[outline_index] = outline[outline_index].getResampledByCount(300);
         ArrayList<PVector> vertices = outline.get(outline_index).vertices;
         for (PVector v : vertices) {
@@ -59,6 +63,9 @@ void draw() {
           //location = glm::vec4(location, 0) * rotation;
           location = rotation.mult(location, null);
           vertex(location.x, location.y, location.z);
+          if (outline_index != 0) {
+            endContour();
+          }
         }
       }
       endShape(CLOSE);
