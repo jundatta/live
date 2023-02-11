@@ -1,130 +1,147 @@
 // こちらがオリジナルです。
 // 【作者】中内　純(ハンドルネーム：JunKiyoshi)さん
-// 【作品名】Fixed distance. Draw by openFrameworks
-// https://junkiyoshi.com/2023/02/03/
-
-ArrayList<PVector> location_list = new ArrayList();
-IntList color_list = new IntList();
-IntList index_list = new IntList();
-
-ArrayList<ArrayList<ofOutlineCoord>> path_list = new ArrayList();
-//--------------------------------------------------------------
-void setup() {
-  size(720, 720, P3D);
-
-  ArrayList<ofOutline> outlineWords = openFrameworksOutline.ofOutline();
-  String word = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  char[] charArray = word.toCharArray();
-  for (char c : charArray) {
-    for (ofOutline out : outlineWords) {
-      if (c == out.code) {
-        path_list.add(out.coord);
-        break;
-      }
-    }
-  }
-
-  // ちょっと字がでかすぎるのでちっちゃくしてやろーじゃねーか＼(^_^)／
-  float s = 0.2f;
-  for (ArrayList<ofOutlineCoord> coord : path_list) {
-    for (ofOutlineCoord ooc : coord) {
-      for (PVector v : ooc.vertices) {
-        v.mult(s);
-      }
-    }
-  }
-
-  colorMode(HSB, 255, 255, 255, 255);
-  for (int x = -400 - 15; x <= 400 - 15; x += 15) {
-    for (int y = -400 + 15; y <= 400 + 15; y += 20) {
-      location_list.add(new PVector(x + 10, y - 10));
-      color_list.append(color(random(255), 255, 255));
-      index_list.append((int)random(word.length()));
-    }
-  }
-}
+// 【作品名】Numbers on the box. Draw by openFrameworks
+// https://junkiyoshi.com/2023/02/07/
 
 //--------------------------------------------------------------
-void update() {
-  randomSeed(39);
-}
+void ofApp::setup() {
 
-//--------------------------------------------------------------
-void draw() {
-  update();
+  ofSetFrameRate(60);
+  ofSetWindowTitle("openFrameworks");
 
-  translate(width * 0.5f, height * 0.5f);
-  scale(1, -1, 1);
-
-  background(255);
+  ofBackground(0);
   ofSetLineWidth(2);
+  ofEnableDepthTest();
 
-  ofRotateX(120);
+  this->font.loadFont("fonts/msgothic.ttc", 50, true, true, true);
+}
 
-  float x = map(openFrameworksNoise.ofNoise(random(1000), ofGetFrameNum() * 0.01), 0, 1, -200, 200);
-  float y = map(openFrameworksNoise.ofNoise(random(1000), ofGetFrameNum() * 0.01), 0, 1, -200, 200);
-  PVector noise_location = new PVector(x, y, 30);
-  noStroke();
-  fill(0);
-  push();
-  //sphere(noise_location - glm::vec3(0, 0, 30), 10);
-  translate(noise_location.x, noise_location.y, noise_location.z - 30);
-  sphere(10);
-  pop();
-  for (int i = 0; i < location_list.size(); i++) {
-    PVector loc = location_list.get(i);
-    float distance = PVector.dist(noise_location, new PVector(loc.x, loc.y, 0));
-    PVector deg = new PVector(0, 0, 0);
-    PVector noise_seed = new PVector(random(1000), random(1000), random(1000));
+//--------------------------------------------------------------
+void ofApp::update() {
 
-    pushMatrix();
-    if (distance < 150) {
-      //auto gap = glm::vec3(location_list[i], 0) - noise_location;
-      PVector gap = new PVector(loc.x - noise_location.x, loc.y - noise_location.y, 0 - noise_location.z);
-      //auto location = noise_location + glm::normalize(gap) * 150;
-      gap.normalize();
-      gap.mult(150);
-      PVector location = PVector.add(noise_location, gap);
+  ofSeedRandom(39);
+}
 
-      deg.x = map(openFrameworksNoise.ofNoise(noise_seed.x, ofGetFrameNum() * 0.02), 0, 1, -180, 180);
-      deg.y = map(openFrameworksNoise.ofNoise(noise_seed.y, ofGetFrameNum() * 0.02), 0, 1, -180, 180);
-      deg.z = map(openFrameworksNoise.ofNoise(noise_seed.z, ofGetFrameNum() * 0.02), 0, 1, -180, 180);
+//--------------------------------------------------------------
+void ofApp::draw() {
 
-      translate(location.x, location.y, location.z);
-      ofRotateZ(deg.z);
-      ofRotateY(deg.y);
-      ofRotateX(deg.x);
+  string word = "0123456789";
+  ofColor color;
 
-      //index_list[i] = (index_list[i] + 1) % word.size();
-      int ind = index_list.get(i);
-      ind = (ind + 1) % path_list.size();
-      index_list.set(i, ind);
+  this->cam.begin();
+  ofRotateY(ofGetFrameNum() * 0.333333333333);
+  ofRotateX(ofGetFrameNum() * 0.666666666666);
+
+  ofNoFill();
+  auto len = 200;
+  for (int i = 0; i < 8; i++) {
+
+    if (i < 4) {
+
+      ofRotateX(90);
+    } else if (i < 5) {
+
+      ofRotateY(90);
     } else {
-      translate(loc.x, loc.y, loc.z);
-      ofRotateZ(deg.z);
-      ofRotateY(deg.y);
-      ofRotateX(deg.x);
+
+      ofRotateY(180);
     }
 
-    ArrayList<ofOutlineCoord> outline = path_list.get(index_list.get(i));
+    for (int k = 0; k < 30; k++) {
 
-    color c = color_list.get(i);
-    stroke(c);
-    fill(red(c), green(c), blue(c), 128);
-    beginShape();
-    for (int outline_index = 0; outline_index < outline.size(); outline_index++) {
-      beginContour();
-      ArrayList<PVector> vertices = outline.get(outline_index).vertices;
-      for (PVector v : vertices) {
-        //ofVertex(vertex + glm::vec2(-6, 8));
-        float vx = v.x + (-6);
-        float vy = v.y + 8;
-        float vz = v.z;
-        vertex(vx, vy, vz);
+      auto location = glm::vec3(ofRandom(-len * 0.5, len * 0.5), ofRandom(-len * 0.5, len * 0.5), len * 0.5);
+      auto radius = (int)(ofRandom(1000) + ofGetFrameNum()) % 150 - 100;
+      color.setHsb(ofRandom(255), 180, 255);
+
+      auto angle = ofRandom(-PI * 2, PI * 2);
+      auto rotation = glm::rotate(glm::mat4(), angle, glm::vec3(0, 0, 1));
+
+      if (radius > 0) {
+
+        ofSetColor(color, radius > 25 ? ofMap(radius, 25, 50, 255, 0) : 255);
+
+        ofPath chara_path = this->font.getCharacterAsPoints(word[k % word.size()], true, false);
+        vector<ofPolyline> outline = chara_path.getOutline();
+
+        ofFill();
+        ofBeginShape();
+        for (int outline_index = 0; outline_index < outline.size(); outline_index++) {
+
+          ofNextContour(true);
+
+          outline[outline_index] = outline[outline_index].getResampledByCount(60);
+          vector<glm::vec3> vertices = outline[outline_index].getVertices();
+
+          for (int vertices_index = 0; vertices_index < vertices.size(); vertices_index++) {
+
+            glm::vec3 vertex = location + glm::vec4(((vertices[vertices_index] - glm::vec2(25, -25)) / 50) * radius * 2, 0) * rotation;
+            vertex.z += k;
+
+            if (vertex.y > len * 0.5) {
+              vertex.y = len * 0.5;
+            }
+            if (vertex.y < -len * 0.5) {
+              vertex.y = -len * 0.5;
+            }
+            if (vertex.x > len * 0.5) {
+              vertex.x = len * 0.5;
+            }
+            if (vertex.x < -len * 0.5) {
+              vertex.x = -len * 0.5;
+            }
+
+            ofVertex(vertex);
+          }
+        }
+        ofEndShape(true);
+
+        ofSetColor(color, radius > 25 ? ofMap(radius, 25, 80, 32, 0) : 32);
+
+        ofNoFill();
+        ofBeginShape();
+        for (int outline_index = 0; outline_index < outline.size(); outline_index++) {
+
+          ofNextContour(true);
+
+          outline[outline_index] = outline[outline_index].getResampledByCount(60);
+          vector<glm::vec3> vertices = outline[outline_index].getVertices();
+
+          for (int vertices_index = 0; vertices_index < vertices.size(); vertices_index++) {
+
+            glm::vec3 vertex = location + glm::vec4(((vertices[vertices_index] - glm::vec2(25, -25)) / 50) * radius * 2, 0) * rotation;
+            vertex.z += k;
+
+            if (vertex.y > len * 0.5) {
+              vertex.y = len * 0.5;
+            }
+            if (vertex.y < -len * 0.5) {
+              vertex.y = -len * 0.5;
+            }
+            if (vertex.x > len * 0.5) {
+              vertex.x = len * 0.5;
+            }
+            if (vertex.x < -len * 0.5) {
+              vertex.x = -len * 0.5;
+            }
+
+            ofVertex(vertex);
+          }
+        }
+        ofEndShape(true);
       }
-      endContour();
     }
-    endShape(CLOSE);
-    popMatrix();
+
+    ofSetColor(0);
+    ofFill();
+    ofDrawBox(len * 0.95);
   }
+
+  this->cam.end();
+}
+
+//--------------------------------------------------------------
+int main() {
+
+  ofSetupOpenGL(720, 720, OF_WINDOW);
+  ofRunApp(new ofApp());
 }
