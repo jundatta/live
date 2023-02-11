@@ -8,9 +8,9 @@ ArrayList<ArrayList<ofOutlineCoord>> path_list = new ArrayList();
 void setup() {
   size(720, 720, P3D);
 
-  string word = "0123456789";
   ArrayList<ofOutline> outlineWords = openFrameworksOutline.ofOutline();
-  String word = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+  String word = "0123456789";
   char[] charArray = word.toCharArray();
   for (char c : charArray) {
     for (ofOutline out : outlineWords) {
@@ -32,6 +32,7 @@ void draw() {
   update();
 
   translate(width * 0.5f, height * 0.5f);
+  scale(1.5);
 
   background(0);
   ofSetLineWidth(2);
@@ -64,18 +65,21 @@ void draw() {
       rotation.rotateZ(angle);
 
       if (radius > 0) {
-        fill(color, radius > 25 ? (int)map(radius, 25, 50, 255, 0) : 255);
+        fill(ccc, radius > 25 ? (int)map(radius, 25, 50, 255, 0) : 255);
+        stroke(ccc, radius > 25 ? (int)map(radius, 25, 80, 32, 0) : 32);
         beginShape();
         for (int outline_index = 0; outline_index < outline.size(); outline_index++) {
+          ArrayList<PVector> vertices = outline.get(outline_index).vertices;
           beginContour();
-
-          //outline[outline_index] = outline[outline_index].getResampledByCount(60);
-          ArrayList<PVector> vertices = outline.get(i).vertices;
-
           for (int vertices_index = 0; vertices_index < vertices.size(); vertices_index++) {
-            glm::vec3 vertex = location + glm::vec4(((vertices[vertices_index] - glm::vec2(25, -25)) / 50) * radius * 2, 0) * rotation;
+            //glm::vec3 vertex = location + glm::vec4(((vertices[vertices_index] - glm::vec2(25, -25)) / 50) * radius * 2, 0) * rotation;
+            PVector v = vertices.get(vertices_index);
+            PVector vv = new PVector(v.x - 25, v.y - (-25), v.z);
+            vv.div(50);
+            vv.mult(radius * 2);
+            vv = rotation.mult(vv, null);
+            PVector vertex = PVector.add(location, vv);
             vertex.z += k;
-
             if (vertex.y > len * 0.5) {
               vertex.y = len * 0.5;
             }
@@ -88,51 +92,16 @@ void draw() {
             if (vertex.x < -len * 0.5) {
               vertex.x = -len * 0.5;
             }
-
-            ofVertex(vertex);
+            vertex(vertex.x, vertex.y, vertex.z);
           }
           endContour();
         }
         endShape(CLOSE);
-
-        ofSetColor(color, radius > 25 ? ofMap(radius, 25, 80, 32, 0) : 32);
-
-        ofNoFill();
-        ofBeginShape();
-        for (int outline_index = 0; outline_index < outline.size(); outline_index++) {
-
-          ofNextContour(true);
-
-          outline[outline_index] = outline[outline_index].getResampledByCount(60);
-          vector<glm::vec3> vertices = outline[outline_index].getVertices();
-
-          for (int vertices_index = 0; vertices_index < vertices.size(); vertices_index++) {
-
-            glm::vec3 vertex = location + glm::vec4(((vertices[vertices_index] - glm::vec2(25, -25)) / 50) * radius * 2, 0) * rotation;
-            vertex.z += k;
-
-            if (vertex.y > len * 0.5) {
-              vertex.y = len * 0.5;
-            }
-            if (vertex.y < -len * 0.5) {
-              vertex.y = -len * 0.5;
-            }
-            if (vertex.x > len * 0.5) {
-              vertex.x = len * 0.5;
-            }
-            if (vertex.x < -len * 0.5) {
-              vertex.x = -len * 0.5;
-            }
-
-            ofVertex(vertex);
-          }
-        }
-        ofEndShape(true);
       }
     }
 
-    ofSetColor(0);
-    ofFill();
-    ofDrawBox(len * 0.95);
+    noStroke();
+    fill(0);
+    box(len * 0.95);
   }
 }
