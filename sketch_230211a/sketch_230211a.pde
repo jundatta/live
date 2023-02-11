@@ -1,100 +1,128 @@
 // こちらがオリジナルです。
 // 【作者】中内　純(ハンドルネーム：JunKiyoshi)さん
-// 【作品名】Generating numbers. Draw by openFrameworks
-// https://junkiyoshi.com/2023/02/01/
+// 【作品名】Fixed distance. Draw by openFrameworks
+// https://junkiyoshi.com/2023/02/03/
 
-FloatList radius_list = new FloatList();
-FloatList speed_list = new FloatList();
-ArrayList<PVector> rotation_list = new ArrayList();
-IntList index_list = new IntList();
-
-ArrayList<ArrayList<ofOutlineCoord>> path_list = new ArrayList();
+vector<glm::vec2> location_list;
+vector<ofColor> color_list;
+vector<int> index_list;
 
 //--------------------------------------------------------------
-void setup() {
-  size(720, 720, P3D);
+void ofApp::setup() {
 
-  ArrayList<ofOutline> outlineWords = openFrameworksOutline.ofOutline();
-  String word = "0123456789";
-  char[] charArray = word.toCharArray();
-  for (char c : charArray) {
-    for (ofOutline out : outlineWords) {
-      if (c == out.code) {
-        path_list.add(out.coord);
-        break;
-      }
-    }
-  }
+  ofSetFrameRate(30);
+  ofSetWindowTitle("openFrameworks");
 
-  for (int i = 0; i < 300; i++) {
-    radius_list.append(random(50, 300));
-    speed_list.append(random(3, 7));
-    rotation_list.add(new PVector(random(360), random(360), random(360)));
-    index_list.append((int)random(word.length()));
-  }
-}
-
-//--------------------------------------------------------------
-void update() {
-  for (int i = 0; i < radius_list.size(); i++) {
-    int r = (int)(radius_list.get(i) + speed_list.get(i)) % 300;
-    radius_list.set(i, r);
-  }
-}
-
-//--------------------------------------------------------------
-void draw() {
-  update();
-  
-  translate(width * 0.5f, height * 0.5f);
-
-  background(0);
+  ofBackground(255);
   ofSetLineWidth(2);
+  //ofEnableBlendMode(ofBlendMode::OF_BLENDMODE_ADD);
 
-  ofRotateY(ofGetFrameNum() * 0.7);
-  ofRotateX(ofGetFrameNum() * 1.2);
+  this->font.loadFont("fonts/Kazesawa-Bold.ttf", 15, true, true, true);
+  this->word = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-  for (int i = 0; i < radius_list.size(); i++) {
-    ofRotateZ(rotation_list.get(i).z);
-    ofRotateY(rotation_list.get(i).y);
-    ofRotateX(rotation_list.get(i).x);
+  vector<glm::vec2> location_list;
+  ofColor color;
+  for (int x = -400 - 15; x <= 400 - 15; x += 15) {
 
-    pushMatrix();
+    for (int y = -400 + 15; y <= 400 + 15; y += 20) {
 
-    translate(-8, 15, radius_list.get(i) + 35);
-
-    ArrayList<ofOutlineCoord> outline = path_list.get(index_list.get(i));
-
-    int alpha = radius_list.get(i) < 200 ? 100 : (int)map(radius_list.get(i), 200, 330, 100, 0);
-
-    noStroke();
-    fill(255, alpha);
-    beginShape();
-    for (int outline_index = 0; outline_index < outline.size(); outline_index++) {
-      beginContour();
-      ArrayList<PVector> vertices = outline.get(outline_index).vertices;
-      for (PVector v : vertices) {
-        vertex(v.x, v.y, v.z);
-      }
-      endContour();
+      this->location_list.push_back(glm::vec2(x + 10, y - 10));
+      color.setHsb(ofRandom(255), 255, 255);
+      this->color_list.push_back(color);
+      this->index_list.push_back(ofRandom(this->word.size()));
     }
-    endShape(CLOSE);
-
-    alpha = radius_list.get(i) < 200 ? 255 : (int)map(radius_list.get(i), 200, 330, 255, 0);
-
-    noFill();
-    stroke(255, alpha);
-    beginShape();
-    for (int outline_index = 0; outline_index < outline.size(); outline_index++) {
-      beginContour();
-      ArrayList<PVector> vertices = outline.get(outline_index).vertices;
-      for (PVector v : vertices) {
-        vertex(v.x, v.y, v.z);
-      }
-      endContour();
-    }
-    endShape(CLOSE);
-
-    popMatrix();
   }
+}
+
+//--------------------------------------------------------------
+void ofApp::update() {
+
+  ofSeedRandom(39);
+}
+
+//--------------------------------------------------------------
+void ofApp::draw() {
+
+  this->cam.begin();
+  ofRotateX(120);
+
+  auto noise_location = glm::vec3(ofMap(ofNoise(ofRandom(1000), ofGetFrameNum() * 0.01), 0, 1, -200, 200), ofMap(ofNoise(ofRandom(1000), ofGetFrameNum() * 0.01), 0, 1, -200, 200), 30);
+  ofSetColor(0);
+  ofDrawSphere(noise_location - glm::vec3(0, 0, 30), 10);
+  ofColor color;
+  for (int i = 0; i < this->location_list.size(); i++) {
+
+    auto distance = glm::distance(noise_location, glm::vec3(this->location_list[i], 0));
+    auto deg = glm::vec3();
+    auto noise_seed = glm::vec3(ofRandom(1000), ofRandom(1000), ofRandom(1000));
+    if (distance < 150) {
+
+      auto gap = glm::vec3(this->location_list[i], 0) - noise_location;
+      auto location = noise_location + glm::normalize(gap) * 150;
+
+      deg.x = ofMap(ofNoise(noise_seed.x, ofGetFrameNum() * 0.02), 0, 1, -180, 180);
+      deg.y = ofMap(ofNoise(noise_seed.y, ofGetFrameNum() * 0.02), 0, 1, -180, 180);
+      deg.z = ofMap(ofNoise(noise_seed.z, ofGetFrameNum() * 0.02), 0, 1, -180, 180);
+
+      ofPushMatrix();
+      ofTranslate(location);
+      ofRotateZ(deg.z);
+      ofRotateY(deg.y);
+      ofRotateX(deg.x);
+
+      this->index_list[i] = (this->index_list[i] + 1) % this->word.size();
+    } else {
+
+      ofPushMatrix();
+      ofTranslate(this->location_list[i]);
+      ofRotateZ(deg.z);
+      ofRotateY(deg.y);
+      ofRotateX(deg.x);
+    }
+
+    ofPath chara_path = this->font.getCharacterAsPoints(this->word[this->index_list[i]], true, false);
+    vector<ofPolyline> outline = chara_path.getOutline();
+
+
+    ofFill();
+    ofSetColor(this->color_list[i], 128);
+    ofBeginShape();
+    for (int outline_index = 0; outline_index < outline.size(); outline_index++) {
+
+      ofNextContour(true);
+
+      auto vertices = outline[outline_index].getVertices();
+      for (auto& vertex : vertices) {
+
+        ofVertex(vertex + glm::vec2(-6, 8));
+      }
+    }
+    ofEndShape(true);
+
+    ofNoFill();
+    ofSetColor(this->color_list[i]);
+    ofBeginShape();
+    for (int outline_index = 0; outline_index < outline.size(); outline_index++) {
+
+      ofNextContour(true);
+
+      auto vertices = outline[outline_index].getVertices();
+      for (auto& vertex : vertices) {
+
+        ofVertex(vertex + glm::vec2(-6, 8));
+      }
+    }
+    ofEndShape(true);
+
+    ofPopMatrix();
+  }
+
+  this->cam.end();
+}
+
+//--------------------------------------------------------------
+int main() {
+
+  ofSetupOpenGL(720, 720, OF_WINDOW);
+  ofRunApp(new ofApp());
 }
