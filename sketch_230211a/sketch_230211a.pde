@@ -8,94 +8,93 @@ FloatList speed_list = new FloatList();
 ArrayList<PVector> rotation_list = new ArrayList();
 IntList index_list = new IntList();
 
+ArrayList<ArrayList<ofOutlineCoord>> path_list = new ArrayList();
+
 //--------------------------------------------------------------
-void ofApp::setup() {
+void setup() {
+  size(720, 720, P3D);
 
-  ofSetFrameRate(30);
-  ofSetWindowTitle("openFrameworks");
+  ArrayList<ofOutline> outlineWords = openFrameworksOutline.ofOutline();
+  String word = "0123456789";
+  char[] charArray = word.toCharArray();
+  for (char c : charArray) {
+    for (ofOutline out : outlineWords) {
+      if (c == out.code) {
+        path_list.add(out.coord);
+        break;
+      }
+    }
+  }
 
-  ofBackground(0);
-  ofSetLineWidth(2);
-  ofEnableDepthTest();
-
-  this->font.loadFont("fonts/Kazesawa-Bold.ttf", 35, true, true, true);
-  this->word = "0123456789";
-
-  vector<glm::vec2> location_list;
   for (int i = 0; i < 300; i++) {
-
-    this->radius_list.push_back(ofRandom(50, 300));
-    this->speed_list.push_back(ofRandom(3, 7));
-    this->rotation_list.push_back(glm::vec3(ofRandom(360), ofRandom(360), ofRandom(360)));
-    this->index_list.push_back(ofRandom(this->word.size()));
+    radius_list.append(random(50, 300));
+    speed_list.append(random(3, 7));
+    rotation_list.add(new PVector(random(360), random(360), random(360)));
+    index_list.append((int)random(word.length()));
   }
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
-
-  for (int i = 0; i < this->radius_list.size(); i++) {
-
-    this->radius_list[i] = (int)(this->radius_list[i] + this->speed_list[i]) % 300;
+void update() {
+  for (int i = 0; i < radius_list.size(); i++) {
+    int r = (int)(radius_list.get(i) + speed_list.get(i)) % 300;
+    radius_list.set(i, r);
   }
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
+  
+  translate(width * 0.5f, height * 0.5f);
 
-  this->cam.begin();
+  background(0);
+  ofSetLineWidth(2);
+
   ofRotateY(ofGetFrameNum() * 0.7);
   ofRotateX(ofGetFrameNum() * 1.2);
 
-  for (int i = 0; i < this->radius_list.size(); i++) {
+  for (int i = 0; i < radius_list.size(); i++) {
+    ofRotateZ(rotation_list.get(i).z);
+    ofRotateY(rotation_list.get(i).y);
+    ofRotateX(rotation_list.get(i).x);
 
-    ofRotateZ(this->rotation_list[i].z);
-    ofRotateY(this->rotation_list[i].y);
-    ofRotateX(this->rotation_list[i].x);
+    pushMatrix();
 
-    ofPushMatrix();
-    ofTranslate(-8, 15, this->radius_list[i] + 35);
+    translate(-8, 15, radius_list.get(i) + 35);
 
-    ofPath chara_path = this->font.getCharacterAsPoints(this->word[this->index_list[i]], true, false);
-    vector<ofPolyline> outline = chara_path.getOutline();
+    ArrayList<ofOutlineCoord> outline = path_list.get(index_list.get(i));
 
-    auto alpha = this->radius_list[i] < 200 ? 100 : ofMap(this->radius_list[i], 200, 330, 100, 0);
+    int alpha = radius_list.get(i) < 200 ? 100 : (int)map(radius_list.get(i), 200, 330, 100, 0);
 
-    ofFill();
-    ofSetColor(255, alpha);
-    ofBeginShape();
+    noStroke();
+    fill(255, alpha);
+    beginShape();
     for (int outline_index = 0; outline_index < outline.size(); outline_index++) {
-
-      ofNextContour(true);
-
-      auto vertices = outline[outline_index].getVertices();
-      ofVertices(vertices);
+      beginContour();
+      ArrayList<PVector> vertices = outline.get(outline_index).vertices;
+      for (PVector v : vertices) {
+        vertex(v.x, v.y, v.z);
+      }
+      endContour();
     }
-    ofEndShape(true);
+    endShape(CLOSE);
 
-    alpha = this->radius_list[i] < 200 ? 255 : ofMap(this->radius_list[i], 200, 330, 255, 0);
+    alpha = radius_list.get(i) < 200 ? 255 : (int)map(radius_list.get(i), 200, 330, 255, 0);
 
-    ofNoFill();
-    ofSetColor(255, alpha);
-    ofBeginShape();
+    noFill();
+    stroke(255, alpha);
+    beginShape();
     for (int outline_index = 0; outline_index < outline.size(); outline_index++) {
-
-      ofNextContour(true);
-
-      auto vertices = outline[outline_index].getVertices();
-      ofVertices(vertices);
+      beginContour();
+      ArrayList<PVector> vertices = outline.get(outline_index).vertices;
+      for (PVector v : vertices) {
+        vertex(v.x, v.y, v.z);
+      }
+      endContour();
     }
-    ofEndShape(true);
+    endShape(CLOSE);
 
-    ofPopMatrix();
+    popMatrix();
   }
-
-  this->cam.end();
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
