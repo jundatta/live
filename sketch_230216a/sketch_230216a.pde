@@ -11,7 +11,7 @@ float sinput;
 float pad = 20;
 
 void setup() {
-  size(1112, 834);
+  size(1112, 834, P3D);
 
   pg = createGraphics(width, height);
 
@@ -32,7 +32,10 @@ float colorMod(float togg, float mod1, float mod2, float x, float y) {
 
 void makeWave() {
   pg.beginDraw();
-  pg.background(0, 0, 50, 20);
+  //  pg.background(0, 0, 50, 20);
+  pg.noStroke();
+  pg.fill(0, 0, 50, 20);
+  pg.rect(0, 0, width, height);
   for (float x = pad; x < width-pad+1; x+=gsx ) {
     for (float y = pad; y < height-pad+1; y+=gsy ) {
       float d = dist(x, y, x, x)/2.0f;
@@ -53,7 +56,10 @@ void makeWave() {
 }
 
 void draw() {
-  background(0, 0, 50, 40);
+  //  background(0, 0, 50, 40);
+  noStroke();
+  fill(0, 0, 50, 40);
+  rect(0, 0, width, height);
 
   float t = (frameCount%loopLength)/speed;
   sinput = map(t, 0, 1, 0, TAU);
