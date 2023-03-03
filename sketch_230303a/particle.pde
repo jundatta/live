@@ -3,14 +3,15 @@ class P {
   float x, y, yA;
   float spinX, spinY;
   float rot;
-  float size;
-  float index;
+
+  int size;
+  int index;
 
   float xV, yV;
   float spinXV, spinYV;
   float rotV;
 
-  P() {
+  P(int sss) {
     //ポジション
     this.x = random(gra.width);
     this.y = random(gra.height);
@@ -25,7 +26,7 @@ class P {
     this.setV(1);
 
     //サイズ
-    this.size = size/50.0f+random(size/60.0f);//数字を変えると大きさが変わる●
+    this.size = int(sss/50.0f+random(sss/60.0f));//数字を変えると大きさが変わる●
 
     //画像インデックス
     this.index = floor(random(3.99));
@@ -66,7 +67,8 @@ class P {
     gra.scale(sin(radians(this.spinX)), sin(radians(this.spinY)));
     gra.rotate(radians(this.rot));
     //gra.image(partImg, 0, 0, this.size, this.size, this.index*partImg.width/4, season*partImg.height/4, partImg.width/4, partImg.height/4 );
-    gra.image(partImg, 0, 0, this.size, this.size);
+    PImage pImg = partImgs[int(season * 4 + this.index)];
+    gra.image(pImg, 0, 0, this.size, this.size);
     gra.pop();
 
     if (this.x >= gra.width || this.x <= 0) {

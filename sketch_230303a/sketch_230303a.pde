@@ -14,6 +14,7 @@ int size;
 PImage maskImg;
 PImage bgImg;
 PImage partImg;
+PImage[] partImgs = new PImage[4*4];
 PImage bgColorImg;
 
 //季節
@@ -23,6 +24,24 @@ void preload() {
   maskImg = loadImage("mask.png");//マスク画像●1000*1000px
   bgImg = loadImage("background.png");//背景画像●1000*1000px
   partImg = loadImage("particle.png");//パーティクル画像●1080*1080px 4*4
+  
+  int partW = partImg.width / 4;
+  int partH = partImg.height / 4;
+  for (int season = 0; season < 4; season++) {
+    for (int index = 0; index < 4; index++) {
+      PImage pImg = createImage(partW, partH, ARGB);
+      for (int dy = 0; dy < partH; dy++) {
+        for (int dx = 0; dx < partW; dx++) {
+          int sx = index * partW + dx;
+          int sy = season * partH + dy;
+          color c = partImg.get(sx, sy);
+          pImg.set(dx, dy, c);
+        }
+      }
+      partImgs[season * 4 + index] = pImg;
+    }
+  }
+  
   bgColorImg = loadImage("bgColor.png");//背景色指定画像●適当なサイズ 0-24時の背景の色を横方向のグラデーションで指定
 }
 
@@ -37,7 +56,7 @@ void setup() {
   rectMode(CENTER);
 
   for (float i = 0; i < pNum; i++) {
-    P p = new P();
+    P p = new P(size);
     lists.add(p);
   }
 }
@@ -64,9 +83,11 @@ void draw() {
     power +=0.1;
   }
 
+  partImg.loadPixels();
   for (int i = 0; i < lists.size(); i++) {
     lists.get(i).act();
   }
+  partImg.updatePixels();
   gra.endDraw();
 
   //時間情報の整理
@@ -97,11 +118,4 @@ void mouseReleased() {
     lists.get(i).jump(power);
   }
   power = 0;
-}
-
-//環境に　よってうごくかも。。？？
-void deviceShaken() {
-  for (int i = 0; i < lists.size(); i++) {
-    lists.get(i).jump(random(3));
-  }
 }
