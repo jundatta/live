@@ -1,7 +1,16 @@
 //  パーティクルクラス
 class P {
+  float x, y, yA;
+  float spinX, spinY;
+  float rot;
+  float size;
+  float index;
 
-  constructor() {
+  float xV, yV;
+  float spinXV, spinYV;
+  float rotV;
+
+  P() {
     //ポジション
     this.x = random(gra.width);
     this.y = random(gra.height);
@@ -16,16 +25,16 @@ class P {
     this.setV(1);
 
     //サイズ
-    this.size = size/50+random(size/60);//数字を変えると大きさが変わる●
+    this.size = size/50.0f+random(size/60.0f);//数字を変えると大きさが変わる●
 
     //画像インデックス
-    this.index = Math.floor(random(3.99));
+    this.index = floor(random(3.99));
   }
 
   //スピードをセット
-  setV(s) {
+  void setV(float s) {
     //ポジション
-    this.xV = (random(1)-0.5)*s/2;
+    this.xV = (random(1)-0.5)*s/2.0f;
     this.yV = (random(1)*-1 - 0.1)*s;
     //スピン
     this.spinXV = random(2) + 1;
@@ -35,13 +44,13 @@ class P {
   }
 
 
-  jump(s) {
+  void jump(float s) {
     this.y -= random(5)+0.5;
     this.setV(s);
   }
 
   //  描画
-  act() {
+  void act() {
     //  各種パラメータ計算
     this.spinX += this.spinXV+ abs(this.yV);
     this.spinY += this.spinYV+ abs(this.yV);
@@ -56,7 +65,8 @@ class P {
     gra.translate(this.x, this.y);
     gra.scale(sin(radians(this.spinX)), sin(radians(this.spinY)));
     gra.rotate(radians(this.rot));
-    gra.image(partImg, 0, 0, this.size, this.size, this.index*partImg.width/4, season*partImg.height/4, partImg.width/4, partImg.height/4 );
+    //gra.image(partImg, 0, 0, this.size, this.size, this.index*partImg.width/4, season*partImg.height/4, partImg.width/4, partImg.height/4 );
+    gra.image(partImg, 0, 0, this.size, this.size);
     gra.pop();
 
     if (this.x >= gra.width || this.x <= 0) {
