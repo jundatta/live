@@ -7,16 +7,56 @@
 
 //TODO: different weapons fire different numbers of shots at different angles
 
-let shipImages;
-let shipImagesGray;
-let bulletImages;
-let explosionImages;
-let ships;
-let bullets;
-let powerups;
-let explosions;
-let terrainImage;
-let weapons;
+ArrayList<PImage> shipImages = new ArrayList();
+ArrayList<PImage> shipImagesGray = new ArrayList();
+ArrayList<PImage> bulletImages = new ArrayList();
+ArrayList<PImage> explosionImages = new ArrayList();
+class Ship {
+  PImage img, imgGray;
+  PVector pos, vel;
+  Weapon weapon;
+  float angle;
+  float size;
+  float health;
+  float shield;
+}
+ArrayList<Ship> ships;
+class Bullet {
+  PVector pos, vel;
+  float angle;
+  PImage img;
+  float size;
+  Ship ship;
+  boolean isDead;
+}
+ArrayList<Bullet> bullets;
+class Powerup {
+  PVector pos, vel;
+  String type;
+  PImage img;
+  float size;
+  float rotation;
+  float angle;
+  boolean isDead;
+}
+ArrayList<Powerup> powerups;
+class Explosion {
+  PVector pos, vel;
+  ArrayList<PImage> explosionImages;
+  int animIx;
+  PImage img;
+  float size;
+  float rotation;
+  float angle;
+  boolean isDead;
+}
+ArrayList<Explosion> explosions = new ArrayList();
+PImage terrainImage;
+class Weapon {
+  PImage bulletImage;
+  int numBullets;
+}
+ArrayList<Weapon> weapons = new ArrayList();
 
 function preload() {
   const ixs = collect(12, ix => ix);
