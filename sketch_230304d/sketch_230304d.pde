@@ -58,20 +58,36 @@ class Weapon {
 }
 ArrayList<Weapon> weapons = new ArrayList();
 
-function preload() {
-  const ixs = collect(12, ix => ix);
-  shipImages = ixs.map(pad2).map(nStr => loadImage("ship_00" + nStr + ".png"));
-  shipImagesGray = ixs.map(ix => ix + 12).map(pad2).map(nStr => loadImage("ship_00" + nStr + ".png"));
-  bulletImages = [0, 1, 2, 3].map(pad2).map(nStr => loadImage("bullet_00" + nStr + ".png"));
-  explosionImages = [1, 2, 3, 4, 5].map(n => loadImage("explosion" + n + ".png"));
-  powerupImageMap = {
-  health:
-  loadImage("powerup_health.png"),
-  power:
-  loadImage("powerup_power.png"),
-  shield:
-  loadImage("powerup_shield.png")
-};
+class PowerupImageMap {
+  PImage health, power, shield;
+  PowerupImageMap(String h, String p, String s) {
+    health = loadImage(h);
+    power = loadImage(p);
+    shield = loadImage(s);
+  }
+}
+void preload() {
+  for (int i = 0; i < 12; i++) {
+    String s = "ship_00" + pad2(i) + ".png";
+    PImage img = loadImage(s);
+    shipImages.add(img);
+    s = "ship_00" + pad2(i+12) + ".png";
+    img = loadImage(s);
+    shipImagesGray.add(img);
+  }
+  for (int i = 0; i < 4; i++) {
+    String s = "bullet_00" + pad2(i) + ".png";
+    PImage img = loadImage(s);
+    bulletImages.add(img);
+  }
+  for (int i = 1; i < 6; i++) {
+    String s = "explosion" + i + ".png";
+    PImage img = loadImage(s);
+    explosionImages.add(img);
+  }
+  PowerupImageMap powerupImageMap("powerup_health.png", "powerup_power.png", "powerup_shield.png");
+}
+
 weapons = createWeapons();
 terrainImageMap = {
   "water":
