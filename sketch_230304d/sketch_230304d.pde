@@ -137,6 +137,8 @@ void preload() {
 void setup() {
   P5JS.setup(this);
 
+  preload();
+
   size(1112, 834);
   background(100);
   ships = new ArrayList();
@@ -226,7 +228,9 @@ void draw() {
 
 PGraphics drawMapToImage() {
   PGraphics g = createGraphics(width, height);
+  g.beginDraw();
   drawTerrain(g);
+  g.endDraw();
   return g;
 }
 
@@ -383,7 +387,7 @@ void drawTerrain(PGraphics g) {
 
         if (imageCode.equals("ggggg") || imageCode.equals("eeeee")) {
           String abstractTileName = random(1) < 0.9 ? P5JS.random("xxxxx1", "xxxxx2") : P5JS.random("xxxxxtree1", "xxxxxtree2", "xxxxxtree3", "xxxxxhouse1", "xxxxxhouse2", "xxxxxflag");
-          imageCode = abstractTileName.replace("x", imageCode.substring(0));
+          imageCode = abstractTileName.replace("x", imageCode.substring(0, 1));
         }
       } else {
         imageCode = "water";
@@ -394,13 +398,14 @@ void drawTerrain(PGraphics g) {
       g.noStroke();
       g.translate(x, y);
       PImage img = terrainImageMap.get(imageCode);
-      if (!(img == null)) {
+      if (img == null) {
         // console.log("couldn't find image for " + imageCode);
-        String s = imageCode.substring(0);
+        String s = imageCode.substring(0, 1);
         String replacementCode = s + s + s + s + s + "1";
+        //println("[" + s + "]" + replacementCode);
         img = terrainImageMap.get(replacementCode);
       }
-      if (!(img == null)) {
+      if (img == null) {
         println("no img: " + imageCode);
       }
       g.scale(tileScale);
@@ -435,7 +440,6 @@ void createAndAddShip() {
   ship.tookDamageRecently = 0;
   spawnAndMaybeRemoveOlder(ship, ships, 30);
 }
-
 
 PVector randomScreenPosition() {
   return new PVector(random(width), random(height));
@@ -475,7 +479,9 @@ void updateBullet(Bullet bullet) {
     bullet.isDead = true;
     return;
   }
-  for (Ship ship : ships) {
+  //for (Ship ship : ships) {
+  ArrayList<Ship> loopShips = (ArrayList<Ship>)ships.clone();
+  for (Ship ship : loopShips) {
     if (bullet.owner == ship || ship.isDead || bullet.isDead) {
       continue;
     }
@@ -484,6 +490,7 @@ void updateBullet(Bullet bullet) {
       ship.health -= 30;
       bullet.isDead = true;
       if (ship.health <= 0) {
+        println("shipsいじりそうなところ通ったよん♪");
         ship.isDead = true;
         createAndAddExplosion(ship);
         createAndAddShip();
@@ -577,17 +584,6 @@ void spawnAndMaybeRemoveOlder(Explosion entity, ArrayList<Explosion> list, int m
     list = al;
   }
 }
-void spawnAndMaybeRemoveOlder(Ship entity, ArrayList<Ship> list, int maxInGame) {
-  list.add(0, entity);//TODO: unshift is O(n) - bad for lots of bullets!
-  if (list.size() > maxInGame) {
-    ArrayList<Ship> al = new ArrayList();
-    for (int i = 0; i < maxInGame; i++) {
-      var e = list.get(i);
-      al.add(e);
-    }
-    list = al;
-  }
-}
 void spawnAndMaybeRemoveOlder(Bullet entity, ArrayList<Bullet> list, int maxInGame) {
   list.add(0, entity);//TODO: unshift is O(n) - bad for lots of bullets!
   if (list.size() > maxInGame) {
@@ -603,6 +599,17 @@ void spawnAndMaybeRemoveOlder(Powerup entity, ArrayList<Powerup> list, int maxIn
   list.add(0, entity);//TODO: unshift is O(n) - bad for lots of bullets!
   if (list.size() > maxInGame) {
     ArrayList<Powerup> al = new ArrayList();
+    for (int i = 0; i < maxInGame; i++) {
+      var e = list.get(i);
+      al.add(e);
+    }
+    list = al;
+  }
+}
+void spawnAndMaybeRemoveOlder(Ship entity, ArrayList<Ship> list, int maxInGame) {
+  list.add(0, entity);//TODO: unshift is O(n) - bad for lots of bullets!
+  if (list.size() > maxInGame) {
+    ArrayList<Ship> al = new ArrayList();
     for (int i = 0; i < maxInGame; i++) {
       var e = list.get(i);
       al.add(e);
