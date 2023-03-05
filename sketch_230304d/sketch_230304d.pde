@@ -58,14 +58,15 @@ class Weapon {
 }
 ArrayList<Weapon> weapons = new ArrayList();
 
-class PowerupImageMap {
-  PImage health, power, shield;
-  PowerupImageMap(String h, String p, String s) {
-    health = loadImage(h);
-    power = loadImage(p);
-    shield = loadImage(s);
+class PowerupImage {
+  String type;
+  PImage img;
+  PowerupImage(String type) {
+    this.type = type;
+    img = loadImage("powerup_" + type + ".png");
   }
 }
+ArrayList<PowerupImage> powerupImageMap = new ArrayList();
 
 class TerrainImage {
   String K;
@@ -115,7 +116,9 @@ void preload() {
     PImage img = loadImage(s);
     explosionImages.add(img);
   }
-  PowerupImageMap powerupImageMap("powerup_health.png", "powerup_power.png", "powerup_shield.png");
+  powerupImageMap.add("health");
+  powerupImageMap.add("power");
+  powerupImageMap.add("shield");
 
   weapons = createWeapons();
 
@@ -126,6 +129,8 @@ void preload() {
 }
 
 void setup() {
+  P5JS.setup(this);
+
   size(1112, 834);
   background(100);
   ships = new ArrayList();
@@ -343,7 +348,7 @@ void drawTerrain(PGraphics g) {
       String type = cell.type;
       int rowIx = cell.rowIx;
       int colIx = cell.colIx;
-      if (rowIx === 16 && colIx === 1) {
+      if (rowIx == 16 && colIx == 1) {
         // debugger;
       }
       String imageCode;
@@ -370,29 +375,27 @@ void drawTerrain(PGraphics g) {
           imageCode = makeImageCode(type, upCell, rightCell, downCell, leftCell);
         }
 
-        if (imageCode === "ggggg" || imageCode === "eeeee") {
-          const abstractTileName = random() < 0.9 ? random(["xxxxx1", "xxxxx2"]) : random(["xxxxxtree1", "xxxxxtree2", "xxxxxtree3", "xxxxxhouse1", "xxxxxhouse2", "xxxxxflag"]);
-          imageCode = abstractTileName.replace(/x/g, imageCode[0]);
+        if (imageCode.equals("ggggg") || imageCode.equals("eeeee")) {
+          String abstractTileName = random() < 0.9 ? P5JS.random(["xxxxx1", "xxxxx2"]) : P5JS.random(["xxxxxtree1", "xxxxxtree2", "xxxxxtree3", "xxxxxhouse1", "xxxxxhouse2", "xxxxxflag"]);
+          imageCode = abstractTileName.replace("x", imageCode[0]);
         }
       } else {
         imageCode = "water";
       }
-      const x = colIx * cellSize;
-      const y = rowIx * cellSize;
+      float x = colIx * cellSize;
+      float y = rowIx * cellSize;
       g.push();
       g.noStroke();
       g.translate(x, y);
-      let img = terrainImageMap[imageCode];
-      if (!img) {
+      PImage img = terrainImageMap.get(imageCode);
+      if (!(img == null)) {
         // console.log("couldn't find image for " + imageCode);
-        const replacementCode = (imageCode[0].repeat(5)) + "1";
-        img = terrainImageMap[replacementCode];
+        String s = imageCode[0];
+        String replacementCode = s + s + s + s + s + "1";
+        img = terrainImageMap.get(replacementCode);
       }
-      if (!img) {
-        console.error("no img: ", {
-          imageCode;
-        }
-        );
+      if (!(img == null)) {
+        println("no img: " + imageCode);
       }
       g.scale(tileScale);
       g.imageMode(CORNER);
@@ -406,72 +409,70 @@ void drawTerrain(PGraphics g) {
   }
 }
 
-function collect(num, callbackFn) {
-  const arr = [];
-  for (let i = 0; i < num; i++) {
-    arr.push(callbackFn());
-  }
-  return arr;
-}
-
-function createAndAddShip() {
-  const ix = round(random(0, 11));
-  const [img, imgGray] = [shipImages[ix], shipImagesGray[ix]];
-  const vel = p5.Vector.random2D().mult(random(1, 3));
-  const weapon = weapons[0];
-  const ship = {
-    img,
-    imgGray,
-    pos: randomScreenPosition(),
-    vel,
-    weapon,
-  angle:
-  vel.heading() + PI / 2,
-  size:
-  random([1, 2, 3]),
-  health:
-  100,
-  shield:
-  100;
-}
-spawnAndMaybeRemoveOlder(ship, ships, 30);
+void createAndAddShip() {
+  int ix = round(random(0, 11));
+  PImage img = shipImages.get(ix);
+  PImage imgGray = shipImagesGray.get(ix);
+  PVector vel = PVector.random2D().mult(random(1, 3));
+  Weapon weapon = weapons.get(0);
+  Ship ship = new Ship();
+  ship.img = img;
+  ship.imgGray = imgGray;
+  ship.pos = randomScreenPosition();
+  ship.vel = vel;
+  ship.weapon = weapon;
+  ship.angle = vel.heading() + PI / 2.0f;
+  ship.size = P5JS.random(1, 2, 3);
+  ship.health = 100;
+  ship.shield = 100;
+  spawnAndMaybeRemoveOlder(ship, ships, 30);
 }
 
 
-function randomScreenPosition() {
-  return createVector(random(width), random(height));
+PVector randomScreenPosition() {
+  return new PVector(random(width), random(height));
 }
 
-function updateShip(ship) {
-  ship.vel.rotate(radians(map(noise(frameCount / 100), 0, 1, -3, 3)));
-  ship.angle = ship.vel.heading() + PI / 2
-    ship.pos.add(ship.vel);
+void updateShip(Ship ship) {
+  ship.vel.rotate(radians(map(noise(frameCount / 100.0f), 0, 1, -3, 3)));
+  ship.angle = ship.vel.heading() + PI / 2.0f;
+  ship.pos.add(ship.vel);
   if (isFarFromScreen(ship.pos)) {
     ship.pos = randomScreenPosition();
   }
 
   if (random() < 0.01) {
-    const angleOffsets = ship.weapon.numBullets === 3 ? [-PI / 10, 0, PI / 10] : [0];
+    FloatList angleOffsets = new FloatList();
+    if (ship.weapon.numBullets == 3) {
+      angleOffsets.append(-PI / 10.0f);
+      angleOffsets.append(0);
+      angleOffsets.append(PI / 10.0f);
+    } else {
+      angleOffsets.append(0);
+    }
     angleOffsets.forEach(angleOffset => createAndAddBullet(ship, angleOffset));
+    for (float angleOffset : angleOffsets) {
+      createAndAddBullet(ship, angleOffset));
+    }
   }
   ship.tookDamageRecently--;
 }
 
-function isOffscreen(pos) {
+boolean isOffscreen(PVector pos) {
   return (pos.x < 0 || pos.y < 0 || pos.x > width || pos.y > height);
 }
 
-function updateBullet(bullet) {
+void updateBullet(Bullet bullet) {
   bullet.pos.add(bullet.vel);
   if (isOffscreen(bullet.pos)) {
     bullet.isDead = true;
     return;
   }
-  for (let ship of ships) {
-    if (bullet.owner === ship || ship.isDead || bullet.isDead) {
+  for (Ship ship of ships) {
+    if (bullet.owner == ship || ship.isDead || bullet.isDead) {
       continue;
     }
-    if (p5.Vector.dist(bullet.pos, ship.pos) < 50) {
+    if (PVector.dist(bullet.pos, ship.pos) < 50) {
       ship.tookDamageRecently = 6;
       ship.health -= 30;
       bullet.isDead = true;
@@ -484,76 +485,63 @@ function updateBullet(bullet) {
   }
 }
 
-function updatePowerup(powerup) {
+void updatePowerup(Powerup powerup) {
   powerup.pos.add(powerup.vel);
   powerup.angle += powerup.rotation;
 
-  for (let ship of ships) {
-    if (p5.Vector.dist(powerup.pos, ship.pos) < 50) {
+  for (Ship ship of ships) {
+    if (PVector.dist(powerup.pos, ship.pos) < 50) {
       processReceivedPowerup(ship, powerup);
       powerup.isDead = true;
     }
   }
 }
 
-function updateExplosion(explosion) {
+void updateExplosion(Explosion explosion) {
   explosion.pos.add(explosion.vel);
   explosion.angle += explosion.rotation;
 
-  if (frameCount % 10 === 0) {
+  if (frameCount % 10 == 0) {
     explosion.animIx++;
   }
 
   if (explosion.animIx > explosion.images.length - 1) {
     explosion.isDead = true;
   } else {
-    explosion.img = explosion.images[explosion.animIx];
+    explosion.img = explosion.images.get(explosion.animIx);
   }
 }
 
-function createAndAddBullet(ship, angleOffset) {
-  const newVel = ship.vel.copy().add(ship.vel.copy().setMag(4 * ship.size));
+void createAndAddBullet(Ship ship, float angleOffset) {
+  PVector newVel = ship.vel.copy().add(ship.vel.copy().setMag(4 * ship.size));
   newVel.rotate(angleOffset);
-  const bullet = {
-  pos:
-  ship.pos.copy(),
-  vel:
-  newVel,
-  angle:
-  ship.vel.heading() + PI / 2 + angleOffset,
-  img:
-  ship.weapon.bulletImage,
-  size:
-  ship.size,
-  owner:
-  ship,
-  isDead:
-  false
-};
+  Bullet bullet = new Bullet();
+  bullet.pos = ship.pos.copy();
+  bullet.vel = newVel;
+  bullet.angle = ship.vel.heading() + PI / 2.0f + angleOffset;
+  bullet.img = ship.weapon.bulletImage;
+  bullet.size = ship.size;
+  bullet.owner = ship;
+  bullet.isDead = false;
 
-spawnAndMaybeRemoveOlder(bullet, bullets, 100);
+  spawnAndMaybeRemoveOlder(bullet, bullets, 100);
 }
 
-function createAndAddPowerup() {
-  const [type, img] = random(Object.entries(powerupImageMap));
-  const powerup = {
-  pos:
-  randomScreenPosition(),
-  vel:
-  p5.Vector.random2D().mult(random(0.1, 0.5)),
-    type,
-    img,
-  size:
-  random(1, 3),
-  rotation:
-  random(0.01, 0.02) * random([-1, 1]),
-  angle:
-  random(TWO_PI),
-  isDead:
-  false
-}
+void createAndAddPowerup() {
+  PowerupImage pi = P5JS.random(powerupImageMap);
+  String type = pi.type;
+  PImage img = pi.img;
+  Powerup powerup = new Powerup();
+  powerup.pos = randomScreenPosition();
+  powerup.vel = PVector.random2D().mult(random(0.1, 0.5));
+  powerup.type = type;
+  powerup.img = img;
+  powerup.size = random(1, 3);
+  powerup.rotation = random(0.01, 0.02) * P5JS.random(-1, 1);
+  powerup.angle = random(TWO_PI);
+  powerup.isDead = false;
 
-spawnAndMaybeRemoveOlder(powerup, powerups, 50);
+  spawnAndMaybeRemoveOlder(powerup, powerups, 50);
 }
 
 function createAndAddExplosion(ship) {
@@ -615,14 +603,6 @@ function drawEntity(ent) {
   scale(ent.size, ent.size);
   image(ent.img, 0, 0);
   pop();
-}
-
-function collect(n, fn) {
-  const arr = [];
-  for (let i = 0; i < n; i++) {
-    arr.push(fn(i));
-  }
-  return arr;
 }
 
 function repeat(n, fn) {

@@ -206,7 +206,7 @@ function drawTerrain(g) {
         } else {
           const neighbours = [upCell, rightCell, downCell, leftCell].map(c => c?.type || type);
           imageCode = [type, ...neighbours].join("");
-//          console.log("[" + type + "]:" + neighbours + " : " + imageCode);
+          //          console.log("[" + type + "]:" + neighbours + " : " + imageCode);
         }
 
         if (imageCode === "ggggg" || imageCode === "eeeee") {
