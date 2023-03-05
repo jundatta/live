@@ -143,46 +143,71 @@ void setup() {
 }
 
 void draw() {
-  background('skyblue');
+  background(#a0d8ef);
 
   push();
   imageMode(CORNER);
   image(terrainImage, 0, 0);
   pop();
-  for (let ship of ships) {
+  for (var ship : ships) {
     updateShip(ship);
   }
 
-  for (let bullet of bullets) {
+  for (var bullet : bullets) {
     updateBullet(bullet);
   }
 
-  for (let powerup of powerups) {
+  for (var powerup : powerups) {
     updatePowerup(powerup);
   }
 
-  for (let explosion of explosions) {
+  for (var explosion : explosions) {
     updateExplosion(explosion);
   }
   push();
-  for (let powerup of powerups) {
+  for (var powerup : powerups) {
     drawEntity(powerup);
   }
-  for (let bullet of bullets) {
+  for (var bullet : bullets) {
     drawEntity(bullet);
   }
-  for (let ship of ships) {
+  for (var ship : ships) {
     drawShip(ship);
   }
-  for (let explosion of explosions) {
+  for (var explosion : explosions) {
     drawEntity(explosion);
   }
   pop();
 
-  powerups = powerups.filter(p => !p.isDead);
-  ships = ships.filter(s => !s.isDead);
-  bullets = bullets.filter(b => !b.isDead);
+  ArrayList<Powerup> puList = new ArrayList();
+  for (Powerup p : powerups) {
+    if (!p.isDead) {
+      puList.add(p);
+    }
+  }
+  powerups = puList;
+  ArrayList<Ship> shList = new ArrayList();
+  for (Ship s : ships) {
+    if (!s.isDead) {
+      shList.add(s);
+    }
+  }
+  ships = shList;
+  ArrayList<Bullet> buList = new ArrayList();
+  for (Bullet b : bullets) {
+    if (!b.isDead) {
+      buList.add(b);
+    }
+  }
+  bullets = buList;
   explosions = explosions.filter(e => !e.isDead);
+  ArrayList<Explosion> exList = new ArrayList();
+  for (Explosion e : explosions) {
+    if (!e.isDead) {
+      exList.add(e);
+    }
+  }
+  explosions = exList;
 
   if (random() < 0.1) {
     createAndAddPowerup();
