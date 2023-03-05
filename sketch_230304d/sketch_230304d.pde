@@ -19,6 +19,8 @@ class Ship {
   float size;
   float health;
   float shield;
+  boolean isDead;
+  int tookDamageRecently;
 }
 ArrayList<Ship> ships;
 class Bullet {
@@ -26,7 +28,7 @@ class Bullet {
   float angle;
   PImage img;
   float size;
-  Ship ship;
+  Ship owner;
   boolean isDead;
 }
 ArrayList<Bullet> bullets;
@@ -42,7 +44,7 @@ class Powerup {
 ArrayList<Powerup> powerups;
 class Explosion {
   PVector pos, vel;
-  ArrayList<PImage> explosionImages;
+  ArrayList<PImage> images;
   int animIx;
   PImage img;
   float size;
@@ -55,6 +57,10 @@ PImage terrainImage;
 class Weapon {
   PImage bulletImage;
   int numBullets;
+  Weapon(PImage bulletImage, int numBullets) {
+    this.bulletImage = bulletImage;
+    this.numBullets = numBullets;
+  }
 }
 ArrayList<Weapon> weapons = new ArrayList();
 
@@ -79,24 +85,25 @@ class TerrainImage {
 class TerrainImageMap {
   ArrayList<TerrainImage> tim = new ArrayList();
   void add(String K, String fileName) {
-    TerrainImage ti = TerrainImage(K, fileName);
+    TerrainImage ti = new TerrainImage(K, fileName);
     tim.add(ti);
   }
   void add(String[] keys) {
     for (String K : keys) {
-      TerrainImage ti = TerrainImage(K, K + ".png");
+      TerrainImage ti = new TerrainImage(K, K + ".png");
       tim.add(ti);
     }
   }
   PImage get(String K) {
     for (TerrainImage ti : tim) {
-      if (ti.equals(K)) {
+      if (ti.K.equals(K)) {
         return ti.img;
       }
     }
     return null;
   }
 }
+TerrainImageMap terrainImageMap = new TerrainImageMap();
 void preload() {
   for (int i = 0; i < 12; i++) {
     String s = "ship_00" + pad2(i) + ".png";
@@ -116,15 +123,14 @@ void preload() {
     PImage img = loadImage(s);
     explosionImages.add(img);
   }
-  powerupImageMap.add("health");
-  powerupImageMap.add("power");
-  powerupImageMap.add("shield");
+  powerupImageMap.add(new PowerupImage("health"));
+  powerupImageMap.add(new PowerupImage("power"));
+  powerupImageMap.add(new PowerupImage("shield"));
 
   weapons = createWeapons();
 
-  TerrainImageMap terrainImageMap = new TerrainImageMap();
   terrainImageMap.add("water", "tile_water.png");
-  final imageKeys = generateImageKeys();
+  String[] imageKeys = generateImageKeys();
   terrainImageMap.add(imageKeys);
 }
 
@@ -205,7 +211,6 @@ void draw() {
     }
   }
   bullets = buList;
-  explosions = explosions.filter(e => !e.isDead);
   ArrayList<Explosion> exList = new ArrayList();
   for (Explosion e : explosions) {
     if (!e.isDead) {
@@ -214,7 +219,7 @@ void draw() {
   }
   explosions = exList;
 
-  if (random() < 0.1) {
+  if (random(1) < 0.1) {
     createAndAddPowerup();
   }
 }
@@ -237,7 +242,7 @@ class Row {
   GridPos gridPos;
   Row(String type, int colIx, int rowIx) {
     this.type = type;
-    this.gridPos = GridPos(colIx, rowIx);
+    this.gridPos = new GridPos(colIx, rowIx);
   }
 }
 class DrawTerrain {
@@ -250,7 +255,7 @@ class DrawTerrain {
   }
   Row getCellAt(int cIx, int rIx) {
     ArrayList<Row> row = rows.get(rIx);
-    Row r = row.get(cix);
+    Row r = row.get(cIx);
     return r;
   }
   boolean inGridBounds(int x, int y) {
@@ -259,8 +264,8 @@ class DrawTerrain {
   Row getNextCell(GridPos gridPos, int xOff, int yOff) {
     int x = gridPos.colIx + xOff;
     int y = gridPos.rowIx + yOff;
-    if (inGridBounds(x, y, numCols, numRows)) {
-      return getCellAt(rows, x, y);
+    if (inGridBounds(x, y)) {
+      return getCellAt(x, y);
     } else {
       return null;
     }
@@ -328,7 +333,7 @@ void drawTerrain(PGraphics g) {
     ArrayList<Row> row = new ArrayList();
     rows.add(row);
     for (int colIx = 0; colIx < numCols; colIx++) {
-      float n = g.noise(colIx * noiseScale, rowIx * noiseScale);
+      float n = noise(colIx * noiseScale, rowIx * noiseScale);
       String type;
       if (n > 0.6) {
         type = "e";
@@ -346,14 +351,15 @@ void drawTerrain(PGraphics g) {
   for (ArrayList<Row> row : rows) {
     for (Row cell : row) {
       String type = cell.type;
-      int rowIx = cell.rowIx;
-      int colIx = cell.colIx;
+      int rowIx = cell.gridPos.rowIx;
+      int colIx = cell.gridPos.colIx;
       if (rowIx == 16 && colIx == 1) {
         // debugger;
       }
       String imageCode;
       if (type.equals("g") || type.equals("e")) {
         DrawTerrain dt = new DrawTerrain(rows, numCols, numRows);
+        GridPos gridPos = cell.gridPos;
         Row upCell = dt.getNextCell(gridPos, 0, -1);
         Row rightCell = dt.getNextCell(gridPos, 1, 0);
         Row upRightCell = dt.getNextCell(gridPos, 1, -1);
@@ -366,8 +372,8 @@ void drawTerrain(PGraphics g) {
         if (
           isNotIncludesCell(upCell, rightCell, upRightCell) ||
           isNotIncludesCell(upCell, leftCell, upLeftCell) ||
-          isNotIncludesCell(downCell, rightCell, downRightCell.type) ||
-          isNotIncludesCell(downCell, leftCell, downLeftCell.type)
+          isNotIncludesCell(downCell, rightCell, downRightCell) ||
+          isNotIncludesCell(downCell, leftCell, downLeftCell)
           ) {
           //make special code including corners
           imageCode = makeImageCode(type, upCell, upRightCell, rightCell, downRightCell, downCell, downLeftCell, leftCell, upLeftCell);
@@ -376,8 +382,8 @@ void drawTerrain(PGraphics g) {
         }
 
         if (imageCode.equals("ggggg") || imageCode.equals("eeeee")) {
-          String abstractTileName = random() < 0.9 ? P5JS.random(["xxxxx1", "xxxxx2"]) : P5JS.random(["xxxxxtree1", "xxxxxtree2", "xxxxxtree3", "xxxxxhouse1", "xxxxxhouse2", "xxxxxflag"]);
-          imageCode = abstractTileName.replace("x", imageCode[0]);
+          String abstractTileName = random(1) < 0.9 ? P5JS.random("xxxxx1", "xxxxx2") : P5JS.random("xxxxxtree1", "xxxxxtree2", "xxxxxtree3", "xxxxxhouse1", "xxxxxhouse2", "xxxxxflag");
+          imageCode = abstractTileName.replace("x", imageCode.substring(0));
         }
       } else {
         imageCode = "water";
@@ -390,7 +396,7 @@ void drawTerrain(PGraphics g) {
       PImage img = terrainImageMap.get(imageCode);
       if (!(img == null)) {
         // console.log("couldn't find image for " + imageCode);
-        String s = imageCode[0];
+        String s = imageCode.substring(0);
         String replacementCode = s + s + s + s + s + "1";
         img = terrainImageMap.get(replacementCode);
       }
@@ -425,6 +431,8 @@ void createAndAddShip() {
   ship.size = P5JS.random(1, 2, 3);
   ship.health = 100;
   ship.shield = 100;
+  ship.isDead = false;
+  ship.tookDamageRecently = 0;
   spawnAndMaybeRemoveOlder(ship, ships, 30);
 }
 
@@ -441,7 +449,7 @@ void updateShip(Ship ship) {
     ship.pos = randomScreenPosition();
   }
 
-  if (random() < 0.01) {
+  if (random(1) < 0.01) {
     FloatList angleOffsets = new FloatList();
     if (ship.weapon.numBullets == 3) {
       angleOffsets.append(-PI / 10.0f);
@@ -450,9 +458,8 @@ void updateShip(Ship ship) {
     } else {
       angleOffsets.append(0);
     }
-    angleOffsets.forEach(angleOffset => createAndAddBullet(ship, angleOffset));
     for (float angleOffset : angleOffsets) {
-      createAndAddBullet(ship, angleOffset));
+      createAndAddBullet(ship, angleOffset);
     }
   }
   ship.tookDamageRecently--;
@@ -468,7 +475,7 @@ void updateBullet(Bullet bullet) {
     bullet.isDead = true;
     return;
   }
-  for (Ship ship of ships) {
+  for (Ship ship : ships) {
     if (bullet.owner == ship || ship.isDead || bullet.isDead) {
       continue;
     }
@@ -489,7 +496,7 @@ void updatePowerup(Powerup powerup) {
   powerup.pos.add(powerup.vel);
   powerup.angle += powerup.rotation;
 
-  for (Ship ship of ships) {
+  for (Ship ship : ships) {
     if (PVector.dist(powerup.pos, ship.pos) < 50) {
       processReceivedPowerup(ship, powerup);
       powerup.isDead = true;
@@ -505,7 +512,7 @@ void updateExplosion(Explosion explosion) {
     explosion.animIx++;
   }
 
-  if (explosion.animIx > explosion.images.length - 1) {
+  if (explosion.animIx > explosion.images.size() - 1) {
     explosion.isDead = true;
   } else {
     explosion.img = explosion.images.get(explosion.animIx);
@@ -544,40 +551,67 @@ void createAndAddPowerup() {
   spawnAndMaybeRemoveOlder(powerup, powerups, 50);
 }
 
-function createAndAddExplosion(ship) {
-  const explosion = {
-  pos:
-  ship.pos.copy(),
-  vel:
-  p5.Vector.random2D().mult(random(0.1, 0.5)),
-  images:
-  explosionImages,
-  animIx:
-  0,
-  img:
-  explosionImages[0],
-  size:
-  ship.size,
-  rotation:
-  random(0.01, 0.02) * random([-1, 1]),
-  angle:
-  random(TWO_PI),
-  isDead:
-  false
-};
+void createAndAddExplosion(Ship ship) {
+  Explosion explosion = new Explosion();
+  explosion.pos = ship.pos.copy();
+  explosion.vel = PVector.random2D().mult(random(0.1, 0.5));
+  explosion.images = explosionImages;
+  explosion.animIx = 0;
+  explosion.img = explosionImages.get(0);
+  explosion.size = ship.size;
+  explosion.rotation = random(0.01, 0.02) * P5JS.random(-1, 1);
+  explosion.angle = random(TWO_PI);
+  explosion.isDead = false;
 
-spawnAndMaybeRemoveOlder(explosion, explosions, 50);
+  spawnAndMaybeRemoveOlder(explosion, explosions, 50);
 }
 
-function spawnAndMaybeRemoveOlder(entity, list, maxInGame) {
-  list.unshift(entity);//TODO: unshift is O(n) - bad for lots of bullets!
-
-  if (list.length > maxInGame) {
-    list.length = maxInGame;
+void spawnAndMaybeRemoveOlder(Explosion entity, ArrayList<Explosion> list, int maxInGame) {
+  list.add(0, entity);//TODO: unshift is O(n) - bad for lots of bullets!
+  if (list.size() > maxInGame) {
+    ArrayList<Explosion> al = new ArrayList();
+    for (int i = 0; i < maxInGame; i++) {
+      var e = list.get(i);
+      al.add(e);
+    }
+    list = al;
+  }
+}
+void spawnAndMaybeRemoveOlder(Ship entity, ArrayList<Ship> list, int maxInGame) {
+  list.add(0, entity);//TODO: unshift is O(n) - bad for lots of bullets!
+  if (list.size() > maxInGame) {
+    ArrayList<Ship> al = new ArrayList();
+    for (int i = 0; i < maxInGame; i++) {
+      var e = list.get(i);
+      al.add(e);
+    }
+    list = al;
+  }
+}
+void spawnAndMaybeRemoveOlder(Bullet entity, ArrayList<Bullet> list, int maxInGame) {
+  list.add(0, entity);//TODO: unshift is O(n) - bad for lots of bullets!
+  if (list.size() > maxInGame) {
+    ArrayList<Bullet> al = new ArrayList();
+    for (int i = 0; i < maxInGame; i++) {
+      var e = list.get(i);
+      al.add(e);
+    }
+    list = al;
+  }
+}
+void spawnAndMaybeRemoveOlder(Powerup entity, ArrayList<Powerup> list, int maxInGame) {
+  list.add(0, entity);//TODO: unshift is O(n) - bad for lots of bullets!
+  if (list.size() > maxInGame) {
+    ArrayList<Powerup> al = new ArrayList();
+    for (int i = 0; i < maxInGame; i++) {
+      var e = list.get(i);
+      al.add(e);
+    }
+    list = al;
   }
 }
 
-function drawShip(ship) {
+void drawShip(Ship ship) {
   push();
   translate(ship.pos.x, ship.pos.y);
   push();
@@ -595,7 +629,25 @@ function drawShip(ship) {
 }
 
 //bullets, powerups, other
-function drawEntity(ent) {
+void drawEntity(Powerup ent) {
+  push();
+  imageMode(CENTER);
+  translate(ent.pos.x, ent.pos.y);
+  rotate(ent.angle);
+  scale(ent.size, ent.size);
+  image(ent.img, 0, 0);
+  pop();
+}
+void drawEntity(Bullet ent) {
+  push();
+  imageMode(CENTER);
+  translate(ent.pos.x, ent.pos.y);
+  rotate(ent.angle);
+  scale(ent.size, ent.size);
+  image(ent.img, 0, 0);
+  pop();
+}
+void drawEntity(Explosion ent) {
   push();
   imageMode(CENTER);
   translate(ent.pos.x, ent.pos.y);
@@ -605,61 +657,33 @@ function drawEntity(ent) {
   pop();
 }
 
-function repeat(n, fn) {
-  for (let i = 0; i < n; i++) {
-    fn(i);
-  }
-}
-
-function pad2(n) {
+String pad2(int n) {
   return n > 9 ? n + "" : "0" + n;
 }
 
-function processReceivedPowerup(ship, powerup) {
-  if (powerup.type === "power") {
-    ship.weapon = random(weapons);
+void processReceivedPowerup(Ship ship, Powerup powerup) {
+  if (powerup.type.equals("power")) {
+    ship.weapon = P5JS.random(weapons);
   }
-  if (powerup.type === "health") {
+  if (powerup.type.equals("health")) {
     ship.health += 20;
   }
-  if (powerup.type === "shield") {
+  if (powerup.type.equals("shield")) {
     ship.shield += 10;
   }
 }
 
-function createWeapons() {
-  return [ {
-  bulletImage:
-    bulletImages[0],
-    numBullets:
-    1;
-  }
-  ,
-  {
-  bulletImage:
-    bulletImages[1],
-    numBullets:
-    1;
-  }
-  ,
-  {
-  bulletImage:
-    bulletImages[2],
-    numBullets:
-    1;
-  }
-  ,
-  {
-  bulletImage:
-    bulletImages[3],
-    numBullets:
-    3;
-  }
-  ];
+ArrayList<Weapon> createWeapons() {
+  ArrayList<Weapon> ws = new ArrayList();
+  ws.add(new Weapon(bulletImages.get(0), 1));
+  ws.add(new Weapon(bulletImages.get(1), 1));
+  ws.add(new Weapon(bulletImages.get(2), 1));
+  ws.add(new Weapon(bulletImages.get(3), 3));
+  return ws;
 }
 
-function isFarFromScreen(pos) {
-  const margin = 300;
+boolean isFarFromScreen(PVector pos) {
+  float margin = 300;
   return pos.x < -margin || pos.x > width + margin || pos.y < -margin || pos.y > height + margin;
 }
 
