@@ -66,6 +66,36 @@ class PowerupImageMap {
     shield = loadImage(s);
   }
 }
+
+class TerrainImage {
+  String K;
+  PImage img;
+  TerrainImage(String K, String fileName) {
+    this.K = K;
+    this.img = loadImage(fileName);
+  }
+}
+class TerrainImageMap {
+  ArrayList<TerrainImage> tim = new ArrayList();
+  void add(String K, String fileName) {
+    TerrainImage ti = TerrainImage(K, fileName);
+    tim.add(ti);
+  }
+  void add(String[] keys) {
+    for (String K : keys) {
+      TerrainImage ti = TerrainImage(K, K + ".png");
+      tim.add(ti);
+    }
+  }
+  PImage get(String K) {
+    for (TerrainImage ti : tim) {
+      if (ti.equals(K)) {
+        return ti.img;
+      }
+    }
+    return null;
+  }
+}
 void preload() {
   for (int i = 0; i < 12; i++) {
     String s = "ship_00" + pad2(i) + ".png";
@@ -86,18 +116,13 @@ void preload() {
     explosionImages.add(img);
   }
   PowerupImageMap powerupImageMap("powerup_health.png", "powerup_power.png", "powerup_shield.png");
-}
 
-weapons = createWeapons();
-terrainImageMap = {
-  "water":
-loadImage("tile_water.png")
-  }
-const imageKeys = generateImageKeys();
-imageKeys.forEach(key => {
-  terrainImageMap[key] = loadImage(key + ".png");
-}
-);
+  weapons = createWeapons();
+  
+  TerrainImageMap terrainImageMap = new TerrainImageMap();
+  terrainImageMap.add("water", "tile_water.png");
+  final imageKeys = generateImageKeys();
+  terrainImageMap.add(imageKeys);
 }
 
 function setup() {
@@ -105,10 +130,10 @@ function setup() {
   background(100);
   ships = [];
 
-  noiseSeed(123)
-    repeat(40, () => {
+  noiseSeed(123);
+  repeat(40, () => {
     const ix = round(random(0, 11));
-    return createAndAddShip()
+    return createAndAddShip();
   }
   );
 
@@ -120,9 +145,9 @@ function setup() {
 }
 
 function draw() {
-  background('skyblue')
+  background('skyblue');
 
-    push();
+  push();
   imageMode(CORNER);
   image(terrainImage, 0, 0);
   pop();
@@ -175,9 +200,9 @@ function drawMapToImage() {
 
 function drawTerrain(g) {
   const noiseScale = 0.1;
-  const tileScale = 3
+  const tileScale = 3;
 
-    const cellSize = 16 * tileScale;
+  const cellSize = 16 * tileScale;
   const rows = [];
 
   const numCols = ceil(width / cellSize);
@@ -203,7 +228,7 @@ function drawTerrain(g) {
         gridPos:
         {
           colIx,
-            rowIx
+            rowIx;
         }
       }
       );
@@ -289,13 +314,13 @@ function drawTerrain(g) {
       }
       if (!img) {
         console.error("no img: ", {
-          imageCode
+          imageCode;
         }
         );
       }
       g.scale(tileScale);
-      g.imageMode(CORNER)
-        g.image(img, 0, 0);
+      g.imageMode(CORNER);
+      g.image(img, 0, 0);
       g.textAlign(CENTER, CENTER);
       g.textSize(3.5);
       // g.text(imageCode, 0, 0);
@@ -314,12 +339,11 @@ function collect(num, callbackFn) {
 }
 
 function createAndAddShip() {
-
   const ix = round(random(0, 11));
   const [img, imgGray] = [shipImages[ix], shipImagesGray[ix]];
   const vel = p5.Vector.random2D().mult(random(1, 3));
-  const weapon = weapons[0]
-    const ship = {
+  const weapon = weapons[0];
+  const ship = {
     img,
     imgGray,
     pos: randomScreenPosition(),
@@ -331,7 +355,7 @@ function createAndAddShip() {
   health:
   100,
   shield:
-  100
+  100;
 }
 spawnAndMaybeRemoveOlder(ship, ships, 30);
 }
@@ -450,13 +474,12 @@ function createAndAddPowerup() {
   random(TWO_PI),
   isDead:
   false
-};
+}
 
 spawnAndMaybeRemoveOlder(powerup, powerups, 50);
 }
 
 function createAndAddExplosion(ship) {
-
   const explosion = {
   pos:
   ship.pos.copy(),
@@ -500,10 +523,10 @@ function drawShip(ship) {
   } else {
     image(ship.img, 0, 0);
   }
-  pop()
-    textSize(10)
-    text(ship.health + "\n" + ship.shield, 20, 20)
-    pop()
+  pop();
+  textSize(10);
+  text(ship.health + "\n" + ship.shield, 20, 20);
+  pop();
 }
 
 //bullets, powerups, other
@@ -512,9 +535,9 @@ function drawEntity(ent) {
   imageMode(CENTER);
   translate(ent.pos.x, ent.pos.y);
   rotate(ent.angle);
-  scale(ent.size, ent.size)
-    image(ent.img, 0, 0);
-  pop()
+  scale(ent.size, ent.size);
+  image(ent.img, 0, 0);
+  pop();
 }
 
 function collect(n, fn) {
@@ -532,7 +555,7 @@ function repeat(n, fn) {
 }
 
 function pad2(n) {
-  return n > 9 ? n + "" : "0" + n
+  return n > 9 ? n + "" : "0" + n;
 }
 
 function processReceivedPowerup(ship, powerup) {
@@ -552,28 +575,28 @@ function createWeapons() {
   bulletImage:
     bulletImages[0],
     numBullets:
-    1
+    1;
   }
   ,
   {
   bulletImage:
     bulletImages[1],
     numBullets:
-    1
+    1;
   }
   ,
   {
   bulletImage:
     bulletImages[2],
     numBullets:
-    1
+    1;
   }
   ,
   {
   bulletImage:
     bulletImages[3],
     numBullets:
-    3
+    3;
   }
   ];
 }
@@ -583,56 +606,50 @@ function isFarFromScreen(pos) {
   return pos.x < -margin || pos.x > width + margin || pos.y < -margin || pos.y > height + margin;
 }
 
-function generateImageKeys() {
-  const imageKeys = [];
-
-  function buildCode(n, charForZero, charForOne) {
-    let myN = n;
-
-    let result = [];
-    for (let counter = 0; counter < 4; counter++) {
-      result.push(n & 1);
-      n = n >> 1;
-    }
-    const chars = [charForZero, charForOne];
-    return result.map(val => chars[val]).join("")
-  }
-
-  for (let type of ["g", "e"]) {
-    for (let i = 1; i < 16; i++) {
-      if (i === 1 || i === 2 || i === 4 || i === 5 || i === 15 || i === 8 || i === 10) {
-        continue; //no narrow corridor tiles gwgw or wgwg, for example.
-      }
-      const code = type + buildCode(i, "w", type);
-      imageKeys.push(code);
-      // terrainImageMap[code] = loadImage(code + ".png");
-    }
-  }
-
-  ["g", "e"].forEach(landType => {
-    [
-      "xxwxxxxxx",
-      "xxxxwxxxx",
-      "xxxxxxwxx",
-      "xxxxxxxxw",
-      "xxxxx1",
-      "xxxxx2"
-      ].forEach(abstractType => {
-      const concreteCode = abstractType.replace(/x/g, landType);
-      imageKeys.push(concreteCode);
-      // terrainImageMap[concreteCode] = loadImage(concreteCode + ".png");
-    }
-    );
-
-    ["xxxxxtree1", "xxxxxtree2", "xxxxxtree3", "xxxxxhouse1",
-      "xxxxxhouse2", "xxxxxflag", "xxxxxlamppost"
-      ].forEach(abstractCode => {
-      const code = abstractCode.replace(/[x]/g, landType);
-      imageKeys.push(code);
-      // terrainImageMap[code] = loadImage(code + ".png");
-    }
-    );
-  }
-  );
+String[] generateImageKeys() {
+  final String[] imageKeys = {
+    "gggww",
+    "gwggw",
+    "ggggw",
+    "ggwwg",
+    "gggwg",
+    "gwwgg",
+    "ggwgg",
+    "gwggg",
+    "eeeww",
+    "eweew",
+    "eeeew",
+    "eewwe",
+    "eeewe",
+    "ewwee",
+    "eewee",
+    "eweee",
+    "ggwgggggg",
+    "ggggwgggg",
+    "ggggggwgg",
+    "ggggggggw",
+    "ggggg1",
+    "ggggg2",
+    "gggggtree1",
+    "gggggtree2",
+    "gggggtree3",
+    "ggggghouse1",
+    "ggggghouse2",
+    "gggggflag",
+    "ggggglamppost",
+    "eeweeeeee",
+    "eeeeweeee",
+    "eeeeeewee",
+    "eeeeeeeew",
+    "eeeee1",
+    "eeeee2",
+    "eeeeetree1",
+    "eeeeetree2",
+    "eeeeetree3",
+    "eeeeehouse1",
+    "eeeeehouse2",
+    "eeeeeflag",
+    "eeeeelamppost",
+  };
   return imageKeys;
 }

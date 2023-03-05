@@ -38,6 +38,7 @@ imageKeys.forEach(key => {
   terrainImageMap[key] = loadImage(key + ".png");
 }
 );
+console.log(terrainImageMap);
 }
 
 function setup() {
