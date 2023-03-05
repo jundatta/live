@@ -214,30 +214,117 @@ void draw() {
   }
 }
 
-function drawMapToImage() {
-  const g = createGraphics(width, height);
+PGraphics drawMapToImage() {
+  PGraphics g = createGraphics(width, height);
   drawTerrain(g);
   return g;
 }
 
+class GridPos {
+  int colIx, rowIx;
+  GridPos(int colIx, int rowIx) {
+    this.colIx = colIx;
+    this.rowIx = rowIx;
+  }
+}
+class Row {
+  String type;
+  GridPos gridPos;
+  Row(String type, int colIx, int rowIx) {
+    this.type = type;
+    this.gridPos = GridPos(colIx, rowIx);
+  }
+}
+class DrawTerrain {
+  ArrayList<ArrayList<Row>> rows;
+  int numCols, numRows;
+  DrawTerrain(ArrayList<ArrayList<Row>> rows, int numCols, int numRows) {
+    this.rows = rows;
+    this.numCols = numCols;
+    this.numRows = numRows;
+  }
+  Row getCellAt(int cIx, int rIx) {
+    ArrayList<Row> row = rows.get(rIx);
+    Row r = row.get(cix);
+    return r;
+  }
+  boolean inGridBounds(int x, int y) {
+    return x >= 0 && y >= 0 && x < numCols && y < numRows;
+  }
+  Row getNextCell(GridPos gridPos, int xOff, int yOff) {
+    int x = gridPos.colIx + xOff;
+    int y = gridPos.rowIx + yOff;
+    if (inGridBounds(x, y, numCols, numRows)) {
+      return getCellAt(rows, x, y);
+    } else {
+      return null;
+    }
+  }
+}
+boolean isNotIncludesCell(Row c0, Row c1, Row c2) {
+  // c0,c1,c2が有効でc2のtypeがc0およびc1のtypeと一致しない場合trueを返す
+  if (c0 == null) {
+    return false;
+  }
+  if (c1 == null) {
+    return false;
+  }
+  if (c2 == null) {
+    return false;
+  }
+  if (c0.type.equals(c2.type)) {
+    return false;
+  }
+  if (c1.type.equals(c2.type)) {
+    return false;
+  }
+  return true;
+}
+String makeImageCodeType(String type, Row c) {
+  String s = "";
+  if (c != null) {
+    s += c.type;
+  } else {
+    s += type;
+  }
+  return s;
+}
+String makeImageCode(String type, Row c0, Row c1, Row c2, Row c3, Row c4, Row c5, Row c6, Row c7) {
+  String s = "" + type;
+  s += makeImageCodeType(type, c0);
+  s += makeImageCodeType(type, c1);
+  s += makeImageCodeType(type, c2);
+  s += makeImageCodeType(type, c3);
+  s += makeImageCodeType(type, c4);
+  s += makeImageCodeType(type, c5);
+  s += makeImageCodeType(type, c6);
+  s += makeImageCodeType(type, c7);
+  return s;
+}
+String makeImageCode(String type, Row c0, Row c1, Row c2, Row c3) {
+  String s = "" + type;
+  s += makeImageCodeType(type, c0);
+  s += makeImageCodeType(type, c1);
+  s += makeImageCodeType(type, c2);
+  s += makeImageCodeType(type, c3);
+  return s;
+}
+void drawTerrain(PGraphics g) {
+  float noiseScale = 0.1;
+  float tileScale = 3;
 
-function drawTerrain(g) {
-  const noiseScale = 0.1;
-  const tileScale = 3;
+  float cellSize = 16 * tileScale;
+  ArrayList<ArrayList<Row>> rows = new ArrayList();
 
-  const cellSize = 16 * tileScale;
-  const rows = [];
+  int numCols = ceil(width / cellSize);
+  int numRows = ceil(height / cellSize);
 
-  const numCols = ceil(width / cellSize);
-  const numRows = ceil(height / cellSize);
-
-  for (let rowIx = 0; rowIx < numRows; rowIx++) {
-
-    const row = [];
-    rows.push(row);
-    for (let colIx = 0; colIx < numCols; colIx++) {
-      const n = g.noise(colIx * noiseScale, rowIx * noiseScale);
-      let type;
+  for (int rowIx = 0; rowIx < numRows; rowIx++) {
+    ArrayList<Row> row = new ArrayList();
+    rows.add(row);
+    for (int colIx = 0; colIx < numCols; colIx++) {
+      float n = g.noise(colIx * noiseScale, rowIx * noiseScale);
+      String type;
       if (n > 0.6) {
         type = "e";
       } else if (n < 0.4) {
@@ -246,78 +333,44 @@ function drawTerrain(g) {
         type = "w";
       }
 
-      row.push( {
-        type,
-        gridPos:
-        {
-          colIx,
-            rowIx;
-        }
-      }
-      );
+      Row r = new Row(type, colIx, rowIx);
+      row.add(r);
     }
   }
 
-  function getCellAt(cIx, rIx) {
-    return rows[rIx][cIx];
-  }
-
-  function inGridBounds(x, y) {
-    return x >= 0 && y >= 0 && x < numCols && y < numRows;
-  }
-
-  function getNextCell(gridPos, xOff, yOff) {
-    const [x, y] = [gridPos.colIx + xOff, gridPos.rowIx + yOff];
-    if (inGridBounds(x, y)) {
-      return getCellAt(x, y);
-    } else {
-      return undefined;
-    }
-  }
-
-  for (let row of rows) {
-    for (let cell of row) {
-      const {
-        type,
-          gridPos
-      }
-      = cell;
-
-      const {
-        rowIx,
-          colIx
-      }
-      = gridPos;
+  for (ArrayList<Row> row : rows) {
+    for (Row cell : row) {
+      String type = cell.type;
+      int rowIx = cell.rowIx;
+      int colIx = cell.colIx;
       if (rowIx === 16 && colIx === 1) {
         // debugger;
       }
-      let imageCode;
-      if (type === "g" || type === "e") {
-        const upCell = getNextCell(gridPos, 0, -1);
-        const rightCell = getNextCell(gridPos, 1, 0);
-        const upRightCell = getNextCell(gridPos, 1, -1);
-        const upLeftCell = getNextCell(gridPos, -1, -1);
-        const downRightCell = getNextCell(gridPos, 1, 1);
-        const downLeftCell = getNextCell(gridPos, -1, 1);
-        const downCell = getNextCell(gridPos, 0, 1);
-        const leftCell = getNextCell(gridPos, -1, 0);
+      String imageCode;
+      if (type.equals("g") || type.equals("e")) {
+        DrawTerrain dt = new DrawTerrain(rows, numCols, numRows);
+        Row upCell = dt.getNextCell(gridPos, 0, -1);
+        Row rightCell = dt.getNextCell(gridPos, 1, 0);
+        Row upRightCell = dt.getNextCell(gridPos, 1, -1);
+        Row upLeftCell = dt.getNextCell(gridPos, -1, -1);
+        Row downRightCell = dt.getNextCell(gridPos, 1, 1);
+        Row downLeftCell = dt.getNextCell(gridPos, -1, 1);
+        Row downCell = dt.getNextCell(gridPos, 0, 1);
+        Row leftCell = dt.getNextCell(gridPos, -1, 0);
 
         if (
-          (upCell && rightCell && ![upCell.type, rightCell.type].includes(upRightCell.type)) ||
-          (upCell && leftCell && ![upCell.type, leftCell.type].includes(upLeftCell.type)) ||
-          (downCell && rightCell && ![downCell.type, rightCell.type].includes(downRightCell.type)) ||
-          (downCell && leftCell && ![downCell.type, leftCell.type].includes(downLeftCell.type))
+          isNotIncludesCell(upCell, rightCell, upRightCell) ||
+          isNotIncludesCell(upCell, leftCell, upLeftCell) ||
+          isNotIncludesCell(downCell, rightCell, downRightCell.type) ||
+          isNotIncludesCell(downCell, leftCell, downLeftCell.type)
           ) {
           //make special code including corners
-          const neighbours = [upCell, upRightCell, rightCell, downRightCell, downCell, downLeftCell, leftCell, upLeftCell].map(c => c?.type || type);
-          imageCode = [type, ...neighbours].join("");
+          imageCode = makeImageCode(type, upCell, upRightCell, rightCell, downRightCell, downCell, downLeftCell, leftCell, upLeftCell);
         } else {
-          const neighbours = [upCell, rightCell, downCell, leftCell].map(c => c?.type || type);
-          imageCode = [type, ...neighbours].join("");
+          imageCode = makeImageCode(type, upCell, rightCell, downCell, leftCell);
         }
 
         if (imageCode === "ggggg" || imageCode === "eeeee") {
-
           const abstractTileName = random() < 0.9 ? random(["xxxxx1", "xxxxx2"]) : random(["xxxxxtree1", "xxxxxtree2", "xxxxxtree3", "xxxxxhouse1", "xxxxxhouse2", "xxxxxflag"]);
           imageCode = abstractTileName.replace(/x/g, imageCode[0]);
         }
@@ -372,7 +425,8 @@ function createAndAddShip() {
     pos: randomScreenPosition(),
     vel,
     weapon,
-    angle: vel.heading() + PI / 2,
+  angle:
+  vel.heading() + PI / 2,
   size:
   random([1, 2, 3]),
   health:

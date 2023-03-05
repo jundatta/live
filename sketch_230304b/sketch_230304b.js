@@ -38,7 +38,6 @@ imageKeys.forEach(key => {
   terrainImageMap[key] = loadImage(key + ".png");
 }
 );
-console.log(terrainImageMap);
 }
 
 function setup() {
@@ -47,7 +46,7 @@ function setup() {
   ships = [];
 
   noiseSeed(123)
-  repeat(40, () => {
+    repeat(40, () => {
     const ix = round(random(0, 11));
     return createAndAddShip()
   }
@@ -207,10 +206,10 @@ function drawTerrain(g) {
         } else {
           const neighbours = [upCell, rightCell, downCell, leftCell].map(c => c?.type || type);
           imageCode = [type, ...neighbours].join("");
+//          console.log("[" + type + "]:" + neighbours + " : " + imageCode);
         }
 
         if (imageCode === "ggggg" || imageCode === "eeeee") {
-
           const abstractTileName = random() < 0.9 ? random(["xxxxx1", "xxxxx2"]) : random(["xxxxxtree1", "xxxxxtree2", "xxxxxtree3", "xxxxxhouse1", "xxxxxhouse2", "xxxxxflag"]);
           imageCode = abstractTileName.replace(/x/g, imageCode[0]);
         }
