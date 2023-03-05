@@ -47,7 +47,7 @@ function setup() {
   ships = [];
 
   noiseSeed(123)
-    repeat(40, () => {
+  repeat(40, () => {
     const ix = round(random(0, 11));
     return createAndAddShip()
   }

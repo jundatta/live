@@ -118,33 +118,31 @@ void preload() {
   PowerupImageMap powerupImageMap("powerup_health.png", "powerup_power.png", "powerup_shield.png");
 
   weapons = createWeapons();
-  
+
   TerrainImageMap terrainImageMap = new TerrainImageMap();
   terrainImageMap.add("water", "tile_water.png");
   final imageKeys = generateImageKeys();
   terrainImageMap.add(imageKeys);
 }
 
-function setup() {
-  createCanvas(windowWidth, windowHeight);
+void setup() {
+  size(1112, 834);
   background(100);
-  ships = [];
+  ships = new ArrayList();
 
   noiseSeed(123);
-  repeat(40, () => {
-    const ix = round(random(0, 11));
-    return createAndAddShip();
+  for (int i = 0; i < 40; i++) {
+    createAndAddShip();
   }
-  );
 
-  bullets = [];
-  powerups = [];
-  explosions = [];
+  bullets = new ArrayList();
+  powerups = new ArrayList();
+  explosions = new ArrayList();
   imageMode(CENTER);
   terrainImage = drawMapToImage();
 }
 
-function draw() {
+void draw() {
   background('skyblue');
 
   push();
