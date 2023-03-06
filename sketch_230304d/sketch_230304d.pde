@@ -490,7 +490,7 @@ void updateBullet(Bullet bullet) {
       ship.health -= 30;
       bullet.isDead = true;
       if (ship.health <= 0) {
-        println("shipsいじりそうなところ通ったよん♪");
+        //println("shipsいじりそうなところ通ったよん♪");
         ship.isDead = true;
         createAndAddExplosion(ship);
         createAndAddShip();
@@ -630,6 +630,7 @@ void drawShip(Ship ship) {
     image(ship.img, 0, 0);
   }
   pop();
+  fill(0);
   textSize(10);
   text(ship.health + "\n" + ship.shield, 20, 20);
   pop();
