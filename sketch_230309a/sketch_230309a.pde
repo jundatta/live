@@ -5,7 +5,7 @@
 
 PVector[][] globe;
 float r = 200;
-float total = 20;
+int total = 20;
 float lapse = 0;    // timer
 
 void setup() {
