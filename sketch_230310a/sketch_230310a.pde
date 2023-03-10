@@ -44,7 +44,6 @@ void update() {
   frame.clear();
 
   for (float radius = 150; radius <= 250; radius += 100) {
-    int cont = 0;
     float noise_seed = random(1000);
     for (int i = 0; i < triangle_list.size(); i++) {
       ofMeshFace mf = triangle_list.get(i);
@@ -56,11 +55,13 @@ void update() {
       float avgY = (t0.y + t1.y + t2.y) / 3.0f;
       float avgZ = (t0.z + t1.z + t2.z) / 3.0f;
       PVector avg = new PVector(avgX, avgY, avgZ);
-      float noise_value = openFrameworksNoise.ofNoise(noise_seed, avg.x * 0.0025, avg.y * 0.0025 + ofGetFrameNum() * 0.035, avg.z * 0.0025);
+      //println(ofGetFrameNum());
+      //float noise_value = openFrameworksNoise.ofNoise(noise_seed, avg.x * 0.0025, avg.y * 0.0025 + ofGetFrameNum() * 0.035, avg.z * 0.0025);
+      float noise_value = openFrameworksNoise.ofNoise(noise_seed, avg.x * 0.0025, avg.y * 0.0025 + 0 * 0.035, avg.z * 0.0025);
       if (noise_value < 0.47 || noise_value > 0.52) {
-        cont++;
         continue;
       }
+      println(noise_value);
 
       ArrayList<PVector> vertices = new ArrayList();
       vertices.add(addCalc(t0, radius + 15));
@@ -117,7 +118,6 @@ void update() {
       frame.addIndex(frame.getNumVertices() - 3);
       frame.addIndex(frame.getNumVertices() - 6);
     }
-    println(cont + "回飛ばした");
   }
 }
 
