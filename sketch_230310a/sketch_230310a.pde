@@ -19,22 +19,25 @@ void setup() {
     PVector t0 = vs.get(i * 3 + 0);
     PVector t1 = vs.get(i * 3 + 1);
     PVector t2 = vs.get(i * 3 + 2);
-    ofMeshFace mf = ofMeshFace(t0, t1, t2);
+    ofMeshFace mf = new ofMeshFace(t0, t1, t2);
     triangle_list.add(mf);
   }
+  println(triangle_list.size());
 }
 
 //--------------------------------------------------------------
-PVector addCalc(PVector t, float r, PVetor avg) {  // （名前は適当＼(^_^)／）
-  //vertices.add(glm::normalize(triangle_list[i].getVertex(0)) * (radius + 15) - avg);
-  float x = (t.x * r) - avg.x;
-  float y = (t.y * r) - avg.y;
-  float z = (t.z * r) - avg.z;
+PVector addCalc(PVector t, float r) {  // （名前は適当＼(^_^)／）
+  //vertices.add(glm::normalize(triangle_list[i].getVertex(0)) * (radius + 15));
+  t.normalize();
+  float x = t.x * r;
+  float y = t.y * r;
+  float z = t.z * r;
   return new PVector(x, y, z);
 }
 void update() {
   ofSeedRandom(1000);
 
+  println(mesh.getVertices().size() + " : " + frame.getVertices().size());
   mesh.clear();
   frame.clear();
 
@@ -56,32 +59,24 @@ void update() {
       }
 
       ArrayList<PVector> vertices = new ArrayList();
+      vertices.add(addCalc(t0, radius + 15));
+      vertices.add(addCalc(t1, radius + 15));
+      vertices.add(addCalc(t2, radius + 15));
 
-      vertices.add(addCalc(t0, radius + 15, avg));
-      vertices.add(addCalc(t1, radius + 15, avg));
-      vertices.add(addCalc(t2, radius + 15, avg));
-
-      vertices.add(addCalc(t0, radius - 15, avg));
-      vertices.add(addCalc(t1, radius - 15, avg));
-      vertices.add(addCalc(t2, radius - 15, avg));
-
-      for (auto& vertex : vertices) {
-        vertex += avg;
-      }
+      vertices.add(addCalc(t0, radius - 15));
+      vertices.add(addCalc(t1, radius - 15));
+      vertices.add(addCalc(t2, radius - 15));
 
       mesh.addVertices(vertices);
       frame.addVertices(vertices);
 
       for (int k = 0; k < vertices.size(); k++) {
-
         if (radius == 150) {
-
-          mesh.addColor(ofColor(192, 0, 0));
-          frame.addColor(ofColor(255, 0, 0));
+          mesh.addColor(color(192, 0, 0));
+          frame.addColor(color(255, 0, 0));
         } else {
-
-          mesh.addColor(ofColor(50, 50, 192));
-          frame.addColor(ofColor(100, 100, 255));
+          mesh.addColor(color(50, 50, 192));
+          frame.addColor(color(100, 100, 255));
         }
       }
 
@@ -124,14 +119,12 @@ void update() {
 //--------------------------------------------------------------
 void draw() {
   update();
+  translate(width * 0.5f, height * 0.5f);
 
   background(0);
 
-  cam.begin();
   ofRotateY(ofGetFrameNum());
 
   mesh.drawFaces();
-  frame.drawWireframe();
-
-  cam.end();
+  //frame.drawWireframe();
 }
