@@ -29,10 +29,12 @@ void setup() {
 //--------------------------------------------------------------
 PVector addCalc(PVector t, float r) {  // （名前は適当＼(^_^)／）
   //vertices.add(glm::normalize(triangle_list[i].getVertex(0)) * (radius + 15));
-  t.normalize();
-  float x = t.x * r;
-  float y = t.y * r;
-  float z = t.z * r;
+  //t.normalize(); うぎゃあああああああああ＼(^_^)／
+  PVector v = t.copy();
+  v.normalize();
+  float x = v.x * r;
+  float y = v.y * r;
+  float z = v.z * r;
   return new PVector(x, y, z);
 }
 void update() {
@@ -55,13 +57,10 @@ void update() {
       float avgY = (t0.y + t1.y + t2.y) / 3.0f;
       float avgZ = (t0.z + t1.z + t2.z) / 3.0f;
       PVector avg = new PVector(avgX, avgY, avgZ);
-      //println(ofGetFrameNum());
-      //float noise_value = openFrameworksNoise.ofNoise(noise_seed, avg.x * 0.0025, avg.y * 0.0025 + ofGetFrameNum() * 0.035, avg.z * 0.0025);
-      float noise_value = openFrameworksNoise.ofNoise(noise_seed, avg.x * 0.0025, avg.y * 0.0025 + 0 * 0.035, avg.z * 0.0025);
+      float noise_value = openFrameworksNoise.ofNoise(noise_seed, avg.x * 0.0025, avg.y * 0.0025 + ofGetFrameNum() * 0.035, avg.z * 0.0025);
       if (noise_value < 0.47 || noise_value > 0.52) {
         continue;
       }
-      println(noise_value);
 
       ArrayList<PVector> vertices = new ArrayList();
       vertices.add(addCalc(t0, radius + 15));
