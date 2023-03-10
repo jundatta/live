@@ -13,7 +13,8 @@ void setup() {
 
   //auto ico_sphere = ofIcoSpherePrimitive(300, 7);
   //triangle_list.insert(triangle_list.end(), ico_sphere.getMesh().getUniqueFaces().begin(), ico_sphere.getMesh().getUniqueFaces().end());
-  Sphere sp = new Sphere(300, 7);
+  //Sphere sp = new Sphere(300, 7);
+  Sphere sp = new Sphere(300, 5);
   ArrayList<PVector> vs = sp.getVertices();
   for (int i = 0; i < vs.size() / 3; i++) {
     PVector t0 = vs.get(i * 3 + 0);
@@ -37,11 +38,13 @@ PVector addCalc(PVector t, float r) {  // （名前は適当＼(^_^)／）
 void update() {
   ofSeedRandom(1000);
 
-  println(mesh.getVertices().size() + " : " + frame.getVertices().size());
+  //println(mesh.vertices.size() + " : " + mesh.colors.size()
+  //  + mesh.texCoords.size() + " : " + mesh.indices.size() + " : " + mesh.tex);
   mesh.clear();
   frame.clear();
 
   for (float radius = 150; radius <= 250; radius += 100) {
+    int cont = 0;
     float noise_seed = random(1000);
     for (int i = 0; i < triangle_list.size(); i++) {
       ofMeshFace mf = triangle_list.get(i);
@@ -55,6 +58,7 @@ void update() {
       PVector avg = new PVector(avgX, avgY, avgZ);
       float noise_value = openFrameworksNoise.ofNoise(noise_seed, avg.x * 0.0025, avg.y * 0.0025 + ofGetFrameNum() * 0.035, avg.z * 0.0025);
       if (noise_value < 0.47 || noise_value > 0.52) {
+        cont++;
         continue;
       }
 
@@ -113,6 +117,7 @@ void update() {
       frame.addIndex(frame.getNumVertices() - 3);
       frame.addIndex(frame.getNumVertices() - 6);
     }
+    println(cont + "回飛ばした");
   }
 }
 
@@ -126,5 +131,5 @@ void draw() {
   ofRotateY(ofGetFrameNum());
 
   mesh.drawFaces();
-  //frame.drawWireframe();
+  frame.drawWireframe();
 }
