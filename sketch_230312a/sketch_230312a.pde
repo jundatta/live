@@ -4,58 +4,60 @@
 // https://junkiyoshi.com/openframeworks20230308/
 
 //--------------------------------------------------------------
-void ofApp::setup() {
-
-  ofSetFrameRate(60);
-  ofSetWindowTitle("openFrameworks");
-
-  ofBackground(0);
-  ofSetColor(255);
-  ofSetLineWidth(1.5);
+void setup() {
+  size(720, 720, P3D);
 }
 //--------------------------------------------------------------
-void ofApp::update() {
-
+void update() {
   ofSeedRandom(39);
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
+  translate(width * 0.5f, height * 0.5f);
 
-  this->cam.begin();
+  background(0);
+  stroke(255);
+  ofSetLineWidth(1.5);
 
-  auto radius = 150;
+  var radius = 150;
   int deg_span = 6;
 
-  auto target_deg = ofGetFrameNum() % 360;
+  var target_deg = ofGetFrameNum() % 360;
   for (int deg = 0; deg < 360; deg += deg_span) {
 
-    auto location = glm::vec3(radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD), 0);
-    auto target_location = glm::vec3(radius * cos(target_deg * DEG_TO_RAD), radius * sin(target_deg * DEG_TO_RAD), 0);
-    auto distance = glm::distance(location, target_location);
+    var location = new PVector(radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD), 0);
+    var target_location = new PVector(radius * cos(target_deg * DEG_TO_RAD), radius * sin(target_deg * DEG_TO_RAD), 0);
+    var distance = PVector.dist(location, target_location);
 
-    auto len = 20;
+    var len = 20.0f;
     if (distance < 60) {
-
-      len = ofMap(distance, 0, 60, 60, 20);
+      len = map(distance, 0, 60, 60, 20);
     }
 
-    auto location_1 = glm::vec3((radius + len * 0.5) * cos(deg * DEG_TO_RAD), (radius + len * 0.5) * sin(deg * DEG_TO_RAD), 0);
-    auto location_2 = glm::vec3((radius - len * 0.5) * cos(deg * DEG_TO_RAD), (radius - len * 0.5) * sin(deg * DEG_TO_RAD), 0);
+    var location_1 = new PVector((radius + len * 0.5) * cos(deg * DEG_TO_RAD), (radius + len * 0.5) * sin(deg * DEG_TO_RAD), 0);
+    var location_2 = new PVector((radius - len * 0.5) * cos(deg * DEG_TO_RAD), (radius - len * 0.5) * sin(deg * DEG_TO_RAD), 0);
 
-    ofDrawLine(location_1, location_2);
-    ofDrawSphere(location_1, 2);
-    ofDrawSphere(location_2, 2);
+    var sx = location_1.x;
+    var sy = location_1.y;
+    var sz = location_1.z;
+    var ex = location_2.x;
+    var ey = location_2.y;
+    var ez = location_2.z;
+    line(sx, sy, sz, ex, ey, ez);
+    push();
+    translate(sx, sy, sz);
+    sphere(2);
+    pop();
+    push();
+    translate(ex, ey, ez);
+    sphere(2);
+    pop();
 
-    ofDrawSphere(target_location, 8);
+    push();
+    translate(target_location.x, target_location.y, target_location.z);
+    sphere(8);
+    pop();
   }
-
-  this->cam.end();
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
