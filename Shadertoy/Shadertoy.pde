@@ -1,7 +1,7 @@
 // こちらがオリジナルです。
 // 【作者】srtussさん
-// 【作品名】jetstream
-// https://www.shadertoy.com/view/XlsGRs
+// 【作品名】Industry II (sound)
+// https://www.shadertoy.com/view/Xd2GW3
 
 PShader sd;
 int startMillis;
@@ -14,7 +14,7 @@ void setup() {
 
   sd = loadShader("Shadertoy.glsl");
   sd.set("iResolution", (float)width, (float)height, 0.0f);
-  sd.set("iChannel0", loadImage("iChannel0.png"));
+  //sd.set("iChannel0", loadImage("iChannel0.png"));
   //sd.set("iChannel1", loadImage("iChannel1.png"));
   //sd.set("iChannel2", loadImage("iChannel2.png"));
 
