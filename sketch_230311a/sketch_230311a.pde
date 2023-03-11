@@ -1,92 +1,82 @@
-vector<glm::vec2> location_list;
-vector<float> radius_list;
-vector<float> speed_list;
-vector<float> max_radius_list;
-vector<ofColor> color_list;
+ArrayList<PVector> location_list = new ArrayList();
+FloatList radius_list = new FloatList();
+FloatList speed_list = new FloatList();
+FloatList max_radius_list = new FloatList();
+IntList color_list = new IntList();
 
 //--------------------------------------------------------------
-void ofApp::setup() {
-
-  ofSetFrameRate(60);
-  ofSetWindowTitle("openframeworks");
-
-  ofBackground(0);
-  ofEnableBlendMode(ofBlendMode::OF_BLENDMODE_ADD);
+void setup() {
+  size(720, 720, P3D);
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
-
-  for (int i = this->location_list.size() - 1; i >= 0; i--) {
-
-    if (this->radius_list[i] > 0) {
-
-      this->radius_list[i] += this->speed_list[i];
+void update() {
+  for (int i = location_list.size() - 1; i >= 0; i--) {
+    float radius = radius_list.get(i);
+    if (radius > 0) {
+      radius += speed_list.get(i);
     } else {
-
-      this->radius_list[i] += this->speed_list[i] * 20;
+      radius += speed_list.get(i) * 20;
     }
+    radius_list.set(i, radius);
 
-    if (this->radius_list[i] > this->max_radius_list[i]) {
-
-      this->location_list.erase(this->location_list.begin() + i);
-      this->radius_list.erase(this->radius_list.begin() + i);
-      this->speed_list.erase(this->speed_list.begin() + i);
-      this->max_radius_list.erase(this->max_radius_list.begin() + i);
-      this->color_list.erase(this->color_list.begin() + i);
+    if (radius > max_radius_list.get(i)) {
+      location_list.remove(i);
+      radius_list.remove(i);
+      speed_list.remove(i);
+      max_radius_list.remove(i);
+      color_list.remove(i);
     }
   }
 
-  ofColor color;
+  push();
+  colorMode(HSB, 255, 255, 255);
   for (int i = 0; i < 1; i++) {
+    int random_deg = (int)random(360);
+    int random_radius = 250 + (int)random(-20, 20);
 
-    int random_deg = ofRandom(360);
-    int random_radius = 250 + ofRandom(-20, 20);
+    PVector location = new PVector(random_radius * cos(random_deg * DEG_TO_RAD), random_radius * sin(random_deg * DEG_TO_RAD));
+    location_list.add(location);
+    radius_list.append(random(-600, -300));
+    speed_list.append(random(0.1, 0.5));
+    max_radius_list.append(random(15, 30));
 
-    auto location = glm::vec2(random_radius * cos(random_deg * DEG_TO_RAD), random_radius * sin(random_deg * DEG_TO_RAD));
-    this->location_list.push_back(location);
-    this->radius_list.push_back(ofRandom(-600, -300));
-    this->speed_list.push_back(ofRandom(0.1, 0.5));
-    this->max_radius_list.push_back(ofRandom(15, 30));
-
-    color.setHsb(ofMap(location.x, -270, 270, 0, 255), 255, 255);
-    this->color_list.push_back(color);
+    color c = color(map(location.x, -270, 270, 0, 255), 255, 255);
+    color_list.append(c);
   }
+  pop();
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
 
-  ofTranslate(ofGetWindowSize() * 0.5);
+  background(0);
+  blendMode(ADD);
 
-  for (int i = 0; i < this->location_list.size(); i++) {
+  translate(width * 0.5f, height * 0.5f);
 
-    if (this->radius_list[i] > 0) {
+  for (int i = 0; i < location_list.size(); i++) {
+    float radius = radius_list.get(i);
+    float max_radius = max_radius_list.get(i);
+    color c = color_list.get(i);
+    PVector location = location_list.get(i);
+    float x = location.x;
+    float y = location.y;
+    if (radius > 0) {
+      float alpha = radius < max_radius * 0.8 ? 255 : map(radius, max_radius * 0.8, max_radius, 255, 64);
+      stroke(red(c), green(c), blue(c), alpha);
+      noFill();
+      circle(x, y, radius);
 
-      auto alpha = this->radius_list[i] < this->max_radius_list[i] * 0.8 ? 255 : ofMap(this->radius_list[i], this->max_radius_list[i] * 0.8, this->max_radius_list[i], 255, 64);
-      ofSetColor(this->color_list[i], alpha);
-
-      ofNoFill();
-      ofDrawCircle(this->location_list[i], this->radius_list[i]);
-
-      ofSetColor(this->color_list[i]);
-
-      ofFill();
-      ofDrawCircle(this->location_list[i], 2);
+      fill(c);
+      noFill();
+      circle(x, y, 2);
     } else {
-
-      auto alpha = ofMap(this->radius_list[i], -600, 0, 64, 255);
-      ofSetColor(this->color_list[i], alpha);
-
-      ofNoFill();
-      ofDrawLine(glm::vec3(this->location_list[i], this->radius_list[i]), glm::vec3(this->location_list[i], this->radius_list[i] - 20));
+      float alpha = map(radius, -600, 0, 64, 255);
+      stroke(red(c), green(c), blue(c), alpha);
+      noFill();
+      line(x, y, radius, x, y, radius - 20);
     }
   }
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
