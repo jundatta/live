@@ -1,7 +1,7 @@
 // こちらがオリジナルです。
-// 【作者】Dukeさん
-// 【作品名】Sun surface
-// https://www.shadertoy.com/view/XlSSzK
+// 【作者】srtussさん
+// 【作品名】jetstream
+// https://www.shadertoy.com/view/XlsGRs
 
 PShader sd;
 int startMillis;
