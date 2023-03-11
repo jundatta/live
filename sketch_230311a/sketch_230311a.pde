@@ -53,6 +53,7 @@ void draw() {
 
   background(0);
   blendMode(ADD);
+  strokeWeight(1.5f);
 
   translate(width * 0.5f, height * 0.5f);
 
@@ -67,11 +68,11 @@ void draw() {
       float alpha = radius < max_radius * 0.8 ? 255 : map(radius, max_radius * 0.8, max_radius, 255, 64);
       stroke(red(c), green(c), blue(c), alpha);
       noFill();
-      circle(x, y, radius);
+      circle(x, y, radius * 2);
 
       fill(c);
       noFill();
-      circle(x, y, 2);
+      circle(x, y, 2 * 2);
     } else {
       float alpha = map(radius, -600, 0, 64, 255);
       stroke(red(c), green(c), blue(c), alpha);
