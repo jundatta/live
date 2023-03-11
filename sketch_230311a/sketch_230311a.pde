@@ -1,3 +1,8 @@
+// オリジナルはこちらです。
+// 【作者】中内　純(ハンドルネーム：JunKiyoshi)さん
+// 【作品名】Line and ripple. Draw by openFrameworks
+// https://junkiyoshi.com/openframeworks20230309/
+
 ArrayList<PVector> location_list = new ArrayList();
 FloatList radius_list = new FloatList();
 FloatList speed_list = new FloatList();
