@@ -1,7 +1,7 @@
 // こちらがオリジナルです。
 // 【作者】srtussさん
-// 【作品名】Relentless
-// https://www.shadertoy.com/view/lss3WS
+// 【作品名】Noise Bands (sound)
+// https://www.shadertoy.com/view/lldGDM
 
 PShader sd;
 int startMillis;

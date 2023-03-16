@@ -11,260 +11,268 @@ uniform sampler2D iChannel0;
 uniform sampler2D iChannel1;
 uniform sampler2D iChannel2;
 
-// srtuss, 2013
-//
-// In this shader I accumulated ideas for a game i was making.
-// All geometry is ray-traced.
-//
-// The effect is inspired by the imges music like this spawns in my mind:
-// http://www.youtube.com/watch?v=1uFAu65tZpo
-//
+// srtuss, 2016
 
-// ** improved camera shaking
-// ** cleaned up code
-// ** added stuff to the gates
+vec2 solve(float A, float B, float C)
+{
+    float X0, X1, Q;
+    float Discr = B * B - 4.0 * A * C;
+    if(Discr < 0.0)
+    {
+        return vec2(100.0, 100.0);
+    }
+    else if(Discr == 0.0)
+    {X0 = X1 = -0.5 * B / A;}
+    else
+    {
+        Q = (B > 0.0) ? -0.5 * (B + sqrt(Discr)) : -0.5 * (B - sqrt(Discr));
+        X0 = Q / A;
+        X1 = C / Q;
+    }
+    if(X0 > X1)
+    {
+        float H = X1;
+        X1 = X0;
+        X0 = H;
+    }
+    return vec2(X0, X1);
+}
+/*float hsh(vec2 p)
+{
+    float V = fract(p.x * 2467.0 + p.x * 4789.0 - p.x * p.y * 3761.0);
+    return V;
+}*/
+float hsh(vec2 p)
+{
+    return fract(sin(p.x * 234.28972) + cos(p.y * 298.879812) * 279872.18979);
+}
 
-//#define GREEN_VERSION
+struct HIT
+{
+    float t0;
+    vec3 nml;
+    vec3 pos;
+    float oid;
+};
 
-#define time iTime
+vec3 gsph1 = vec3(0., -0.5, 0.);
+#define gsph2 vec3(1., sin(iTime) * 0.2 - 1.0, 0.)
+vec3 gsph3 = vec3(1.5, -0.5, -1.4);
+
+HIT scene(vec3 RO, vec3 RD)
+{
+    float WOID = -1.0;
+    vec3 WHit, WNml;
+    float Radius = 0.5;
+    vec3 Center = gsph1;
+    vec3 WL = RO - Center; float A = dot(RD, RD), B = 2.0 * dot(RD, WL), C = dot(WL, WL) - Radius * Radius;
+    float WT0 = 100.0, WT1;
+    WT1 = solve(A, B, C).x;
+    if(WT1 > 0.0)
+    {
+        WT0 = WT1;
+        WHit = WT1 * RD + RO;
+        WNml = WHit - Center;
+        WOID = 0.0;
+    }
+
+    vec3 PN = normalize(vec3(0.0, -0.7, 0.0));
+    WT1 = (0.0 - dot(PN, RO)) / dot(PN, RD);
+    if(WT1 > 0.0 && WT1 < WT0)
+    {
+        WT0 = WT1;
+        WNml = PN;
+        WOID = 1.0;
+    }
+
+    PN = normalize(vec3(0.0, 0.0, -1.0));
+    WT1 = (-1.501 - dot(PN, RO)) / dot(PN, RD);
+    if(WT1 > 0.0 && WT1 < WT0)
+    {
+        WT0 = WT1;
+        WNml = PN;
+        WOID = 4.0;
+    }
+
+    Radius = 0.2;
+    Center = gsph2;
+    WL = RO - Center; A = dot(RD, RD); B = 2.0 * dot(RD, WL); C = dot(WL, WL) - Radius * Radius;
+    WT1 = solve(A, B, C).x;
+    if(WT1 > 0.0 && WT1 < WT0)
+    {
+        WT0 = WT1;
+        WHit = WT0 * RD + RO;
+        WNml = WHit - Center;
+        WOID = 2.0;
+    }
+
+    Radius = 0.6;
+    Center = gsph3;
+    WL = RO - Center; A = dot(RD, RD); B = 2.0 * dot(RD, WL); C = dot(WL, WL) - Radius * Radius;
+    WT1 = solve(A, B, C).x;
+    if(WT1 > 0.0 && WT1 < WT0)
+    {
+        WT0 = WT1;
+        WHit = WT0 * RD + RO;
+        WNml = WHit - Center;
+        WOID = 3.0;
+        
+        //WNml += (fract(sin(WHit.x * 10.0 + WHit.y * 33.0 - WHit.z * 100.0) * 187252.521) - 0.5) * vec3(0.05);
+    }
+
+    HIT ret;
+    ret.nml = WNml;
+    ret.pos = RO + RD * WT0;
+    ret.t0 = WT0;
+    ret.oid = WOID;
+    return ret;
+}
+
+float nse(vec2 p)
+{
+	return hsh(floor(p) * 1.01);
+}
+
+float map1(vec2 p, vec2 id)
+{
+    if(nse(id * 1012.1986982) > 0.5)
+    {
+        p = p.yx;
+    }
+    float v = length(vec2(p.x, max(abs(p.y) - 0.8, 0.0))) - 0.04;
+    return v;
+}
+
+float map2(vec2 p, float ts, float g)
+{
+    p *= ts;
+    //p += iTime;
+    float stress = length(fwidth(p));
+    
+    float s = 1.0;
+    vec2 id = floor(p / s), id3 = id;
+    vec2 q = mod(p, s) - s * 0.5;
+    float v = 1e38;
+    
+    if(hsh(id * 0.4) > 0.5)
+	    v = length(max(abs(q) - 0.3, 0.0)) - 0.15;
+    
+    if(hsh(id * 0.7) > 0.5)
+	    v = min(v, length(max(abs(q) - 0.1, 0.0)) - 0.1);
+    
+    s = 2.0;
+    p += s * 0.25;
+    id = floor(p / s);
+    q = mod(p, s) - s * 0.5;
+    vec2 q2 = mod(p + s * 0.5, s) - s * 0.5;
+    vec2 id2 = floor(p / s + 0.5);
+    //v = 1e38;
+    
+    float w = map1(q, id);
+    w = min(w, map1(q2, id2));
+    
+    if(nse(id3) < 0.5)
+	    v = min(w, max(v, -(w - 0.06)));
+    else
+        v = min(w, v);
+    
+    if(g > 0.5)
+        v = abs(v);
+    
+    return smoothstep(0.0, stress / ts, v / ts);
+}
+
+float map0(vec2 p)
+{
+    return mix(0.6, map2(p, 0.5, 0.0) * 0.15 + 0.85, mix(map2(p, 2.0, 0.0), map2(p, 2.0, 1.0), map2(p * 0.4, 2.0, 0.0)));
+}
+
+vec3 obj0(vec3 hit, vec3 nml, vec3 o)
+{
+    float v = dot(hit - o, normalize(vec3(1.2, 1.0, 0.5)));
+    v = abs(v) - 0.01;
+    return smoothstep(0.0, 0.02, v) * vec3(1.0);
+}
+
+vec3 mtl(vec3 hit, vec3 nml, float oid)
+{
+    //Surf = vec(sinr(Hit:x() * 20), sinr(Hit:y() * 20), sinr(Hit:z() * 20)) * 0.1 + 0.7
+    //Surf = array(vec(1.0, 0.5, 0.5), vec(0.4, 0.8, 0.5), vec(0.5, 0.5, 1.0), vec(1.0, 1.0, 0.5), vec(0.9))[OID + 1, vector]
+    vec3 surf = vec3(0.0, 0.0, 0.0);
+    surf = mix(surf, vec3(1) * obj0(hit, nml, gsph1), step(abs(oid - 0.0), 0.1));
+    surf = mix(surf, vec3(0.8) * map0(hit.xz), step(abs(oid - 1.0), 0.1));
+    surf = mix(surf, vec3(1) * obj0(hit, nml, gsph2), step(abs(oid - 2.0), 0.1));
+    surf = mix(surf, vec3(1) * obj0(hit, nml, gsph3), step(abs(oid - 3.0), 0.1));
+    surf = mix(surf, vec3(1), step(abs(oid - 4.0), 0.1));
+    //surf *= (nse(hit.xz) * 0.3 + nse(hit.xz * 0.2) * 0.3 + 0.2);
+    //Surf *= exp(Hit:distance(VEye) * -0.3) * 2.0
+    float D = 2.;
+    surf *= 1.0 - exp(max(0., distance(hit, vec3(1.5, 0.0, -1.4)) - 0.4) * -6.9) * 0.6;
+    surf *= 1.0 - exp(max(0., distance(hit, vec3(0.)) - 0.2) * -3.9) * 0.6;
+    return surf;
+}
 
 vec2 rotate(vec2 p, float a)
 {
 	return vec2(p.x * cos(a) - p.y * sin(a), p.x * sin(a) + p.y * cos(a));
 }
-float box(vec2 p, vec2 b, float r)
-{
-	return length(max(abs(p) - b, 0.0)) - r;
-}
-
-// iq's ray-plane-intersection code
-vec3 intersect(in vec3 o, in vec3 d, vec3 c, vec3 u, vec3 v)
-{
-	vec3 q = o - c;
-	return vec3(
-		dot(cross(u, v), q),
-		dot(cross(q, u), d),
-		dot(cross(v, q), d)) / dot(cross(v, u), d);
-}
-
-// some noise functions for fast developing
-float rand11(float p)
-{
-    return fract(sin(p * 591.32) * 43758.5357);
-}
-float rand12(vec2 p)
-{
-    return fract(sin(dot(p.xy, vec2(12.9898, 78.233))) * 43758.5357);
-}
-vec2 rand21(float p)
-{
-	return fract(vec2(sin(p * 591.32), cos(p * 391.32)));
-}
-vec2 rand22(in vec2 p)
-{
-	return fract(vec2(sin(p.x * 591.32 + p.y * 154.077), cos(p.x * 391.32 + p.y * 49.077)));
-}
-
-float noise11(float p)
-{
-	float fl = floor(p);
-	return mix(rand11(fl), rand11(fl + 1.0), fract(p));//smoothstep(0.0, 1.0, fract(p)));
-}
-float fbm11(float p)
-{
-	return noise11(p) * 0.5 + noise11(p * 2.0) * 0.25 + noise11(p * 5.0) * 0.125;
-}
-vec3 noise31(float p)
-{
-	return vec3(noise11(p), noise11(p + 18.952), noise11(p - 11.372)) * 2.0 - 1.0;
-}
-
-// something that looks a bit like godrays coming from the surface
-float sky(vec3 p)
-{
-	float a = atan(p.x, p.z);
-	float t = time * 0.1;
-	float v = rand11(floor(a * 4.0 + t)) * 0.5 + rand11(floor(a * 8.0 - t)) * 0.25 + rand11(floor(a * 16.0 + t)) * 0.125;
-	return v;
-}
-
-vec3 voronoi(in vec2 x)
-{
-	vec2 n = floor(x); // grid cell id
-	vec2 f = fract(x); // grid internal position
-	vec2 mg; // shortest distance...
-	vec2 mr; // ..and second shortest distance
-	float md = 8.0, md2 = 8.0;
-	for(int j = -1; j <= 1; j ++)
-	{
-		for(int i = -1; i <= 1; i ++)
-		{
-			vec2 g = vec2(float(i), float(j)); // cell id
-			vec2 o = rand22(n + g); // offset to edge point
-			vec2 r = g + o - f;
-			
-			float d = max(abs(r.x), abs(r.y)); // distance to the edge
-			
-			if(d < md)
-				{md2 = md; md = d; mr = r; mg = g;}
-			else if(d < md2)
-				{md2 = d;}
-		}
-	}
-	return vec3(n + mg, md2 - md);
-}
-
-#define A2V(a) vec2(sin((a) * 6.28318531 / 100.0), cos((a) * 6.28318531 / 100.0))
-
-float circles(vec2 p)
-{
-	float v, w, l, c;
-	vec2 pp;
-	l = length(p);
-	
-	
-	pp = rotate(p, time * 3.0);
-	c = max(dot(pp, normalize(vec2(-0.2, 0.5))), -dot(pp, normalize(vec2(0.2, 0.5))));
-	c = min(c, max(dot(pp, normalize(vec2(0.5, -0.5))), -dot(pp, normalize(vec2(0.2, -0.5)))));
-	c = min(c, max(dot(pp, normalize(vec2(0.3, 0.5))), -dot(pp, normalize(vec2(0.2, 0.5)))));
-	
-	// innerest stuff
-	v = abs(l - 0.5) - 0.03;
-	v = max(v, -c);
-	v = min(v, abs(l - 0.54) - 0.02);
-	v = min(v, abs(l - 0.64) - 0.05);
-	
-	pp = rotate(p, time * -1.333);
-	c = max(dot(pp, A2V(-5.0)), -dot(pp, A2V(5.0)));
-	c = min(c, max(dot(pp, A2V(25.0 - 5.0)), -dot(pp, A2V(25.0 + 5.0))));
-	c = min(c, max(dot(pp, A2V(50.0 - 5.0)), -dot(pp, A2V(50.0 + 5.0))));
-	c = min(c, max(dot(pp, A2V(75.0 - 5.0)), -dot(pp, A2V(75.0 + 5.0))));
-	
-	w = abs(l - 0.83) - 0.09;
-	v = min(v, max(w, c));
-	
-	return v;
-}
-
-float shade1(float d)
-{
-	float v = 1.0 - smoothstep(0.0, mix(0.012, 0.2, 0.0), d);
-	float g = exp(d * -20.0);
-	return v + g * 0.5;
-}
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
 	vec2 uv = fragCoord.xy / iResolution.xy;
-	uv = uv * 2.0 - 1.0;
-	uv.x *= iResolution.x / iResolution.y;
-	
-	
-	// using an iq styled camera this time :)
-	// ray origin
-	vec3 ro = 0.7 * vec3(cos(0.2 * time), 0.0, sin(0.2 * time));
-	ro.y = cos(0.6 * time) * 0.3 + 0.65;
-	// camera look at
-	vec3 ta = vec3(0.0, 0.2, 0.0);
-	
-	// camera shake intensity
-	float shake = clamp(3.0 * (1.0 - length(ro.yz)), 0.3, 1.0);
-	float st = mod(time, 10.0) * 143.0;
-	
-	// build camera matrix
-	vec3 ww = normalize(ta - ro + noise31(st) * shake * 0.01);
-	vec3 uu = normalize(cross(ww, normalize(vec3(0.0, 1.0, 0.2 * sin(time)))));
-	vec3 vv = normalize(cross(uu, ww));
-	// obtain ray direction
-	vec3 rd = normalize(uv.x * uu + uv.y * vv + 1.0 * ww);
-	
-	// shaking and movement
-	ro += noise31(-st) * shake * 0.015;
-	ro.x += time * 2.0;
-	
-	float inten = 0.0;
-	
-	// background
-	float sd = dot(rd, vec3(0.0, 1.0, 0.0));
-	inten = pow(1.0 - abs(sd), 20.0) + pow(sky(rd), 5.0) * step(0.0, rd.y) * 0.2;
-	
-	vec3 its;
-	float v, g;
-	
-	// voronoi floor layers
-	for(int i = 0; i < 4; i ++)
-	{
-		float layer = float(i);
-		its = intersect(ro, rd, vec3(0.0, -5.0 - layer * 5.0, 0.0), vec3(1.0, 0.0, 0.0), vec3(0.0, 0.0, 1.0));
-		if(its.x > 0.0)
-		{
-			vec3 vo = voronoi((its.yz) * 0.05 + 8.0 * rand21(float(i)));
-			v = exp(-100.0 * (vo.z - 0.02));
-			
-			float fx = 0.0;
-			
-			// add some special fx to lowest layer
-			if(i == 3)
-			{
-				float crd = 0.0;//fract(time * 0.2) * 50.0 - 25.0;
-				float fxi = cos(vo.x * 0.2 + time * 1.5);//abs(crd - vo.x);
-				fx = clamp(smoothstep(0.9, 1.0, fxi), 0.0, 0.9) * 1.0 * rand12(vo.xy);
-				fx *= exp(-3.0 * vo.z) * 2.0;
-			}
-			inten += v * 0.1 + fx;
-		}
-	}
-	
-	// draw the gates, 4 should be enough
-	float gatex = floor(ro.x / 8.0 + 0.5) * 8.0 + 4.0;
-	float go = -16.0;
-	for(int i = 0; i < 4; i ++)
-	{
-		its = intersect(ro, rd, vec3(gatex + go, 0.0, 0.0), vec3(0.0, 1.0, 0.0), vec3(0.0, 0.0, 1.0));
-		if(dot(its.yz, its.yz) < 2.0 && its.x > 0.0)
-		{
-			v = circles(its.yz);
-			inten += shade1(v);
-		}
-		
-		go += 8.0;
-	}
-	
-	// draw the stream
-	for(int j = 0; j < 20; j ++)
-	{
-		float id = float(j);
-		
-		vec3 bp = vec3(0.0, (rand11(id) * 2.0 - 1.0) * 0.25, 0.0);
-		vec3 its = intersect(ro, rd, bp, vec3(1.0, 0.0, 0.0), vec3(0.0, 0.0, 1.0));
-		
-		if(its.x > 0.0)
-		{
-			vec2 pp = its.yz;
-			float spd = (1.0 + rand11(id) * 3.0) * 2.5;
-			pp.y += time * spd;
-			pp += (rand21(id) * 2.0 - 1.0) * vec2(0.3, 1.0);
-			float rep = rand11(id) + 1.5;
-			pp.y = mod(pp.y, rep * 2.0) - rep;
-			float d = box(pp, vec2(0.02, 0.3), 0.1);
-			float foc = 0.0;
-			float v = 1.0 - smoothstep(0.0, 0.03, abs(d) - 0.001);
-			float g = min(exp(d * -20.0), 2.0);
-			
-			inten += (v + g * 0.7) * 0.5;
-			
-		}
-	}
-	
-	inten *= 0.4 + (sin(time) * 0.5 + 0.5) * 0.6;
-	
-	// find a color for the computed intensity
-#ifdef GREEN_VERSION
-	vec3 col = pow(vec3(inten), vec3(2.0, 0.15, 9.0));
-#else
-	vec3 col = pow(vec3(inten), 1.5 * vec3(0.15, 2.0, 9.0));
-#endif
-	
+    uv = uv * 2.0 - 1.0;
+    uv.y *= iResolution.y / iResolution.x;
+    uv.y *= -1.0;
+    vec3 ro = vec3(0.4, -2., -3.5);
+    vec3 rd = normalize(vec3(uv, 1.66));
+    
+    float ct = iTime * 0.1;
+    ro.x += cos(ct);
+    ro.y += sin(ct);
+    
+    rd.xy = rotate(rd.xy, 0.1);
+    rd.xz = rotate(rd.xz, -0.1 + cos(ct) * 0.2);
+    rd.yz = rotate(rd.yz, -0.5 + sin(ct) * 0.2);
+    
+    
+    vec3 sun = normalize(vec3(-0.3, -1.0, -0.5));
+    
+    HIT h = scene(ro, rd);
+    h.nml = normalize(h.nml);
+    vec3 ref = reflect(rd, h.nml);
+    vec3 col = max(0.0, dot(h.nml, sun) + 0.2) * mtl(h.pos, h.nml, h.oid);
+    col += pow(max(0.0, dot(ref, sun)), 16.0);
+    col *= step(40.0, scene(h.pos + sun * 0.001, sun).t0) * 0.5 + 0.5;
+    col *= exp(h.t0 * -0.1);
+    
+    vec3 rdo = rd, roo = ro;
+    
+    rd = ref;
+    ro = h.pos + rd * 0.0001;
+    HIT hr = scene(ro, rd);
+    vec3 colr = vec3(0.0);
+    if(hr.t0 < 40.0)
+    {
+        hr.nml = normalize(hr.nml);
+        ref = reflect(rd, hr.nml);
+        colr = max(0.0, dot(hr.nml, sun) + 0.2) * mtl(hr.pos, hr.nml, hr.oid);
+        colr += pow(max(0.0, dot(ref, sun)), 16.0);
+        colr *= step(40.0, scene(hr.pos + sun * 0.001, sun).t0) * 0.5 + 0.5;
+        colr *= exp((h.t0 + hr.t0) * -0.1);
+    }
+    
+    /*vec3 pn = normalize(vec3(0.0, 1.0, 0.0));
+    for(int i = 0; i < 5; ++i)
+    {
+        float t0 = (-0.6 - dot(roo, pn)) / dot(rdo, pn);
+        vec3 hit = roo + rdo * t0;
+
+        col += -map2(hit.xz, 5.0, 1.0) * 0.2;
+    }
+    col = max(col, vec3(0.));*/
+    col = col * 0.9 + colr * 0.3;
+    col = pow(col, vec3(3.2) * vec3(1.0, 0.8, 0.5)) * 2.0;
+    col = pow(col, vec3(1.0 / 2.2));
 	fragColor = vec4(col, 1.0);
 }
 
