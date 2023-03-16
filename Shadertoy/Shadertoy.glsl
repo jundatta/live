@@ -1,7 +1,7 @@
 // ‚±‚¿‚ç‚ªƒIƒŠƒWƒiƒ‹‚Å‚·B
 // yìÒzsrtuss‚³‚ñ
-// yì•i–¼zRelentless
-// https://www.shadertoy.com/view/lss3WS
+// yì•i–¼zNoise Bands (sound) 
+// https://www.shadertoy.com/view/lldGDM
 
 uniform vec3 iResolution;
 uniform vec4 iMouse;
