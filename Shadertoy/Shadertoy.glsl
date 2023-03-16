@@ -1,7 +1,7 @@
 // Ç±ÇøÇÁÇ™ÉIÉäÉWÉiÉãÇ≈Ç∑ÅB
-// ÅyçÏé“ÅzsrtussÇ≥ÇÒ
-// ÅyçÏïiñºÅzNoise Bands (sound) 
-// https://www.shadertoy.com/view/lldGDM
+// ÅyçÏé“ÅzDukeÇ≥ÇÒ
+// ÅyçÏïiñºÅzDusty nebula 3
+// https://www.shadertoy.com/view/lsVSRW
 
 uniform vec3 iResolution;
 uniform vec4 iMouse;
@@ -11,269 +11,274 @@ uniform sampler2D iChannel0;
 uniform sampler2D iChannel1;
 uniform sampler2D iChannel2;
 
-// srtuss, 2016
+// "Dusty nebula 3" by Duke
+//-------------------------------------------------------------------------------------
+// Based on "Protoplanetary disk" (https://www.shadertoy.com/view/MdtGRl) 
+// otaviogood's "Alien Beacon" (https://www.shadertoy.com/view/ld2SzK)
+// and Shane's "Cheap Cloud Flythrough" (https://www.shadertoy.com/view/Xsc3R4) shaders
+// Some ideas came from other shaders from this wonderful site
+// Press 1-2-3 to zoom in and zoom out.
+// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0
+//-------------------------------------------------------------------------------------
 
-vec2 solve(float A, float B, float C)
+#define ROTATION
+
+//#define MOUSE_CAMERA_CONTROL
+
+#define DITHERING
+#define BACKGROUND
+
+//-------------------
+#define pi 3.14159265
+#define R(p, a) p=cos(a)*p+sin(a)*vec2(p.y, -p.x)
+
+// iq's noise
+float noise( in vec3 x )
 {
-    float X0, X1, Q;
-    float Discr = B * B - 4.0 * A * C;
-    if(Discr < 0.0)
-    {
-        return vec2(100.0, 100.0);
-    }
-    else if(Discr == 0.0)
-    {X0 = X1 = -0.5 * B / A;}
-    else
-    {
-        Q = (B > 0.0) ? -0.5 * (B + sqrt(Discr)) : -0.5 * (B - sqrt(Discr));
-        X0 = Q / A;
-        X1 = C / Q;
-    }
-    if(X0 > X1)
-    {
-        float H = X1;
-        X1 = X0;
-        X0 = H;
-    }
-    return vec2(X0, X1);
-}
-/*float hsh(vec2 p)
-{
-    float V = fract(p.x * 2467.0 + p.x * 4789.0 - p.x * p.y * 3761.0);
-    return V;
-}*/
-float hsh(vec2 p)
-{
-    return fract(sin(p.x * 234.28972) + cos(p.y * 298.879812) * 279872.18979);
+    vec3 p = floor(x);
+    vec3 f = fract(x);
+	f = f*f*(3.0-2.0*f);
+	vec2 uv = (p.xy+vec2(37.0,17.0)*p.z) + f.xy;
+	vec2 rg = textureLod( iChannel0, (uv+ 0.5)/256.0, 0.0 ).yx;
+	return 1. - 0.82*mix( rg.x, rg.y, f.z );
 }
 
-struct HIT
+float fbm(vec3 p)
 {
-    float t0;
-    vec3 nml;
-    vec3 pos;
-    float oid;
-};
+   return noise(p*.06125)*.5 + noise(p*.125)*.25 + noise(p*.25)*.125 + noise(p*.4)*.2;
+}
 
-vec3 gsph1 = vec3(0., -0.5, 0.);
-#define gsph2 vec3(1., sin(iTime) * 0.2 - 1.0, 0.)
-vec3 gsph3 = vec3(1.5, -0.5, -1.4);
-
-HIT scene(vec3 RO, vec3 RD)
+float rand(vec2 co)
 {
-    float WOID = -1.0;
-    vec3 WHit, WNml;
-    float Radius = 0.5;
-    vec3 Center = gsph1;
-    vec3 WL = RO - Center; float A = dot(RD, RD), B = 2.0 * dot(RD, WL), C = dot(WL, WL) - Radius * Radius;
-    float WT0 = 100.0, WT1;
-    WT1 = solve(A, B, C).x;
-    if(WT1 > 0.0)
+	return fract(sin(dot(co*0.123,vec2(12.9898,78.233))) * 43758.5453);
+}
+
+//=====================================
+// otaviogood's noise from https://www.shadertoy.com/view/ld2SzK
+//--------------------------------------------------------------
+// This spiral noise works by successively adding and rotating sin waves while increasing frequency.
+// It should work the same on all computers since it's not based on a hash function like some other noises.
+// It can be much faster than other noise functions if you're ok with some repetition.
+const float nudge = 0.739513;	// size of perpendicular vector
+float normalizer = 1.0 / sqrt(1.0 + nudge*nudge);	// pythagorean theorem on that perpendicular to maintain scale
+float SpiralNoiseC(vec3 p)
+{
+    float n = 0.0;	// noise amount
+    float iter = 1.0;
+    for (int i = 0; i < 8; i++)
     {
-        WT0 = WT1;
-        WHit = WT1 * RD + RO;
-        WNml = WHit - Center;
-        WOID = 0.0;
+        // add sin and cos scaled inverse with the frequency
+        n += -abs(sin(p.y*iter) + cos(p.x*iter)) / iter;	// abs for a ridged look
+        // rotate by adding perpendicular and scaling down
+        p.xy += vec2(p.y, -p.x) * nudge;
+        p.xy *= normalizer;
+        // rotate on other axis
+        p.xz += vec2(p.z, -p.x) * nudge;
+        p.xz *= normalizer;
+        // increase the frequency
+        iter *= 1.733733;
     }
+    return n;
+}
 
-    vec3 PN = normalize(vec3(0.0, -0.7, 0.0));
-    WT1 = (0.0 - dot(PN, RO)) / dot(PN, RD);
-    if(WT1 > 0.0 && WT1 < WT0)
+float SpiralNoise3D(vec3 p)
+{
+    float n = 0.0;
+    float iter = 1.0;
+    for (int i = 0; i < 5; i++)
     {
-        WT0 = WT1;
-        WNml = PN;
-        WOID = 1.0;
+        n += (sin(p.y*iter) + cos(p.x*iter)) / iter;
+        p.xz += vec2(p.z, -p.x) * nudge;
+        p.xz *= normalizer;
+        iter *= 1.33733;
     }
-
-    PN = normalize(vec3(0.0, 0.0, -1.0));
-    WT1 = (-1.501 - dot(PN, RO)) / dot(PN, RD);
-    if(WT1 > 0.0 && WT1 < WT0)
-    {
-        WT0 = WT1;
-        WNml = PN;
-        WOID = 4.0;
-    }
-
-    Radius = 0.2;
-    Center = gsph2;
-    WL = RO - Center; A = dot(RD, RD); B = 2.0 * dot(RD, WL); C = dot(WL, WL) - Radius * Radius;
-    WT1 = solve(A, B, C).x;
-    if(WT1 > 0.0 && WT1 < WT0)
-    {
-        WT0 = WT1;
-        WHit = WT0 * RD + RO;
-        WNml = WHit - Center;
-        WOID = 2.0;
-    }
-
-    Radius = 0.6;
-    Center = gsph3;
-    WL = RO - Center; A = dot(RD, RD); B = 2.0 * dot(RD, WL); C = dot(WL, WL) - Radius * Radius;
-    WT1 = solve(A, B, C).x;
-    if(WT1 > 0.0 && WT1 < WT0)
-    {
-        WT0 = WT1;
-        WHit = WT0 * RD + RO;
-        WNml = WHit - Center;
-        WOID = 3.0;
-        
-        //WNml += (fract(sin(WHit.x * 10.0 + WHit.y * 33.0 - WHit.z * 100.0) * 187252.521) - 0.5) * vec3(0.05);
-    }
-
-    HIT ret;
-    ret.nml = WNml;
-    ret.pos = RO + RD * WT0;
-    ret.t0 = WT0;
-    ret.oid = WOID;
-    return ret;
+    return n;
 }
 
-float nse(vec2 p)
+float Nebulae(vec3 p)
 {
-	return hsh(floor(p) * 1.01);
+	float final = p.y + 4.5;
+    final += SpiralNoiseC(p.zxy*0.123+100.0)*3.0;	// large scale features
+    final -= SpiralNoise3D(p);	// more large scale features, but 3d
+
+    return final;
 }
 
-float map1(vec2 p, vec2 id)
+float map(vec3 p) 
 {
-    if(nse(id * 1012.1986982) > 0.5)
-    {
-        p = p.yx;
-    }
-    float v = length(vec2(p.x, max(abs(p.y) - 0.8, 0.0))) - 0.04;
-    return v;
+   #ifdef ROTATION
+   R(p.xz, iMouse.x*0.008*pi+iTime*0.1);
+   #endif
+   p.y+=4.1;
+   return Nebulae(p) + fbm(p*50.+iTime);
 }
 
-float map2(vec2 p, float ts, float g)
+// assign color to the media
+vec3 computeColor( float density, float radius )
 {
-    p *= ts;
-    //p += iTime;
-    float stress = length(fwidth(p));
-    
-    float s = 1.0;
-    vec2 id = floor(p / s), id3 = id;
-    vec2 q = mod(p, s) - s * 0.5;
-    float v = 1e38;
-    
-    if(hsh(id * 0.4) > 0.5)
-	    v = length(max(abs(q) - 0.3, 0.0)) - 0.15;
-    
-    if(hsh(id * 0.7) > 0.5)
-	    v = min(v, length(max(abs(q) - 0.1, 0.0)) - 0.1);
-    
-    s = 2.0;
-    p += s * 0.25;
-    id = floor(p / s);
-    q = mod(p, s) - s * 0.5;
-    vec2 q2 = mod(p + s * 0.5, s) - s * 0.5;
-    vec2 id2 = floor(p / s + 0.5);
-    //v = 1e38;
-    
-    float w = map1(q, id);
-    w = min(w, map1(q2, id2));
-    
-    if(nse(id3) < 0.5)
-	    v = min(w, max(v, -(w - 0.06)));
-    else
-        v = min(w, v);
-    
-    if(g > 0.5)
-        v = abs(v);
-    
-    return smoothstep(0.0, stress / ts, v / ts);
+	// color based on density alone, gives impression of occlusion within
+	// the media
+	vec3 result = mix( vec3(1.0,0.9,0.8), vec3(0.4,0.15,0.1), density );
+	
+	// color added to the media
+	vec3 colCenter = 7.*vec3(0.8,1.0,1.0);
+	vec3 colEdge = 1.5*vec3(0.48,0.53,0.5);
+	result *= mix( colCenter, colEdge, min( (radius+.05)/1.30, 1.15 ) );
+	
+	return result;
 }
 
-float map0(vec2 p)
+bool RaySphereIntersect(vec3 org, vec3 dir, out float near, out float far)
 {
-    return mix(0.6, map2(p, 0.5, 0.0) * 0.15 + 0.85, mix(map2(p, 2.0, 0.0), map2(p, 2.0, 1.0), map2(p * 0.4, 2.0, 0.0)));
-}
-
-vec3 obj0(vec3 hit, vec3 nml, vec3 o)
-{
-    float v = dot(hit - o, normalize(vec3(1.2, 1.0, 0.5)));
-    v = abs(v) - 0.01;
-    return smoothstep(0.0, 0.02, v) * vec3(1.0);
-}
-
-vec3 mtl(vec3 hit, vec3 nml, float oid)
-{
-    //Surf = vec(sinr(Hit:x() * 20), sinr(Hit:y() * 20), sinr(Hit:z() * 20)) * 0.1 + 0.7
-    //Surf = array(vec(1.0, 0.5, 0.5), vec(0.4, 0.8, 0.5), vec(0.5, 0.5, 1.0), vec(1.0, 1.0, 0.5), vec(0.9))[OID + 1, vector]
-    vec3 surf = vec3(0.0, 0.0, 0.0);
-    surf = mix(surf, vec3(1) * obj0(hit, nml, gsph1), step(abs(oid - 0.0), 0.1));
-    surf = mix(surf, vec3(0.8) * map0(hit.xz), step(abs(oid - 1.0), 0.1));
-    surf = mix(surf, vec3(1) * obj0(hit, nml, gsph2), step(abs(oid - 2.0), 0.1));
-    surf = mix(surf, vec3(1) * obj0(hit, nml, gsph3), step(abs(oid - 3.0), 0.1));
-    surf = mix(surf, vec3(1), step(abs(oid - 4.0), 0.1));
-    //surf *= (nse(hit.xz) * 0.3 + nse(hit.xz * 0.2) * 0.3 + 0.2);
-    //Surf *= exp(Hit:distance(VEye) * -0.3) * 2.0
-    float D = 2.;
-    surf *= 1.0 - exp(max(0., distance(hit, vec3(1.5, 0.0, -1.4)) - 0.4) * -6.9) * 0.6;
-    surf *= 1.0 - exp(max(0., distance(hit, vec3(0.)) - 0.2) * -3.9) * 0.6;
-    return surf;
-}
-
-vec2 rotate(vec2 p, float a)
-{
-	return vec2(p.x * cos(a) - p.y * sin(a), p.x * sin(a) + p.y * cos(a));
+	float b = dot(dir, org);
+	float c = dot(org, org) - 20.;
+	float delta = b*b - c;
+	if( delta < 0.0) 
+		return false;
+	float deltasqrt = sqrt(delta);
+	near = -b - deltasqrt;
+	far = -b + deltasqrt;
+	return far > 0.0;
 }
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
-{
-	vec2 uv = fragCoord.xy / iResolution.xy;
-    uv = uv * 2.0 - 1.0;
-    uv.y *= iResolution.y / iResolution.x;
-    uv.y *= -1.0;
-    vec3 ro = vec3(0.4, -2., -3.5);
-    vec3 rd = normalize(vec3(uv, 1.66));
-    
-    float ct = iTime * 0.1;
-    ro.x += cos(ct);
-    ro.y += sin(ct);
-    
-    rd.xy = rotate(rd.xy, 0.1);
-    rd.xz = rotate(rd.xz, -0.1 + cos(ct) * 0.2);
-    rd.yz = rotate(rd.yz, -0.5 + sin(ct) * 0.2);
-    
-    
-    vec3 sun = normalize(vec3(-0.3, -1.0, -0.5));
-    
-    HIT h = scene(ro, rd);
-    h.nml = normalize(h.nml);
-    vec3 ref = reflect(rd, h.nml);
-    vec3 col = max(0.0, dot(h.nml, sun) + 0.2) * mtl(h.pos, h.nml, h.oid);
-    col += pow(max(0.0, dot(ref, sun)), 16.0);
-    col *= step(40.0, scene(h.pos + sun * 0.001, sun).t0) * 0.5 + 0.5;
-    col *= exp(h.t0 * -0.1);
-    
-    vec3 rdo = rd, roo = ro;
-    
-    rd = ref;
-    ro = h.pos + rd * 0.0001;
-    HIT hr = scene(ro, rd);
-    vec3 colr = vec3(0.0);
-    if(hr.t0 < 40.0)
-    {
-        hr.nml = normalize(hr.nml);
-        ref = reflect(rd, hr.nml);
-        colr = max(0.0, dot(hr.nml, sun) + 0.2) * mtl(hr.pos, hr.nml, hr.oid);
-        colr += pow(max(0.0, dot(ref, sun)), 16.0);
-        colr *= step(40.0, scene(hr.pos + sun * 0.001, sun).t0) * 0.5 + 0.5;
-        colr *= exp((h.t0 + hr.t0) * -0.1);
-    }
-    
-    /*vec3 pn = normalize(vec3(0.0, 1.0, 0.0));
-    for(int i = 0; i < 5; ++i)
-    {
-        float t0 = (-0.6 - dot(roo, pn)) / dot(rdo, pn);
-        vec3 hit = roo + rdo * t0;
+{  
+    const float KEY_1 = 49.5/256.0;
+	const float KEY_2 = 50.5/256.0;
+	const float KEY_3 = 51.5/256.0;
+    float key = 0.0;
+    key += 0.7*texture(iChannel1, vec2(KEY_1,0.25)).x;
+    key += 0.7*texture(iChannel1, vec2(KEY_2,0.25)).x;
+    key += 0.7*texture(iChannel1, vec2(KEY_3,0.25)).x;
 
-        col += -map2(hit.xz, 5.0, 1.0) * 0.2;
+	// ro: ray origin
+	// rd: direction of the ray
+	vec3 rd = normalize(vec3((gl_FragCoord.xy-0.5*iResolution.xy)/iResolution.y, 1.));
+	vec3 ro = vec3(0., 0., -6.+key*1.6);
+
+    #ifdef MOUSE_CAMERA_CONTROL
+    R(rd.yz, -iMouse.y*0.01*pi*2.);
+    R(rd.xz, iMouse.x*0.01*pi*2.);
+    R(ro.yz, -iMouse.y*0.01*pi*2.);
+    R(ro.xz, iMouse.x*0.01*pi*2.);
+    #else
+    R(rd.yz, -pi*3.93);
+    R(rd.xz, pi*3.2);
+    R(ro.yz, -pi*3.93);
+   	R(ro.xz, pi*3.2);    
+    #endif 
+    
+    #ifdef DITHERING
+	vec2 dpos = ( fragCoord.xy / iResolution.xy );
+	vec2 seed = dpos + fract(iTime);
+   	// randomizing the length 
+    //rd *= (1. + fract(sin(dot(vec3(7, 157, 113), rd.zyx))*43758.5453)*0.1-0.03);
+	#endif 
+    
+	// ld, td: local, total density 
+	// w: weighting factor
+	float ld=0., td=0., w=0.;
+
+	// t: length of the ray
+	// d: distance function
+	float d=1., t=0.;
+    
+    const float h = 0.1;
+   
+	vec4 sum = vec4(0.0);
+   
+    float min_dist=0.0, max_dist=0.0;
+
+    if(RaySphereIntersect(ro, rd, min_dist, max_dist))
+    {
+       
+	t = min_dist*step(t,min_dist);
+   
+	// raymarch loop
+	for (int i=0; i<64; i++) 
+	{
+	 
+		vec3 pos = ro + t*rd;
+  
+		// Loop break conditions.
+        if(td>0.9 || d<0.1*t || t>10. || sum.a > 0.99 || t>max_dist) break;
+	    
+        // evaluate distance function
+        float d = map(pos);
+		       
+		// change this string to control density 
+		d = max(d,0.08);
+      
+		if (d<h) 
+		{
+			// compute local density 
+			ld = h - d;
+            
+            // compute weighting factor 
+			w = (1. - td) * ld;
+     
+			// accumulate density
+			td += w + 1./200.;
+		
+			float radiusFromCenter = length(pos - vec3(0.0));
+			vec4 col = vec4( computeColor(td,radiusFromCenter), td );
+		
+			// uniform scale density
+			col.a *= 0.185;
+			// colour by alpha
+			col.rgb *= col.a;
+			// alpha blend in contribution
+			sum = sum + col*(1.0 - sum.a);  
+       
+		}
+      
+		td += 1./70.;
+       
+        // point light calculations
+        vec3 ldst = vec3(0.0)-pos;
+        float lDist = max(length(ldst), 0.001);
+
+        // star in center
+        vec3 lightColor=vec3(1.0,0.5,0.25);
+        sum.rgb+=lightColor/(lDist*lDist*6.); //add a bloom around the light
+
+        sum.a *= 0.8;
+        
+        // enforce minimum stepsize
+        d = max(d, 0.1); 
+      
+        #ifdef DITHERING
+        // add in noise to reduce banding and create fuzz
+        d=abs(d)*(1.+0.2*rand(seed*vec2(i)));
+        #endif 
+	  
+        //t += max(d * 0.25, 0.02);
+        t += max(d * 0.1 * max(length(ldst),2.0), 0.02);
+      
+	}
+    
+    // simple scattering
+	sum *= 1. / exp( ld * 0.2 ) * 0.6;
+        
+   	sum = clamp( sum, 0.0, 1.0 );
+   
+    sum.xyz = sum.xyz*sum.xyz*(3.0-2.0*sum.xyz);
+    
+	}
+
+    #ifdef BACKGROUND
+    // stars background
+    if (td<.8)
+    {
+        vec3 stars = vec3(noise(rd*500.0)*0.5+0.5);
+        vec3 starbg = vec3(0.0);
+        starbg = mix(starbg, vec3(0.8,0.9,1.0), smoothstep(0.99, 1.0, stars)*clamp(dot(vec3(0.0),rd)+0.75,0.0,1.0));
+        starbg = clamp(starbg, 0.0, 1.0);
+        sum.xyz += starbg; 
     }
-    col = max(col, vec3(0.));*/
-    col = col * 0.9 + colr * 0.3;
-    col = pow(col, vec3(3.2) * vec3(1.0, 0.8, 0.5)) * 2.0;
-    col = pow(col, vec3(1.0 / 2.2));
-	fragColor = vec4(col, 1.0);
+	#endif
+    
+   fragColor = vec4(sum.xyz,1.0);
 }
 
 void main() {
