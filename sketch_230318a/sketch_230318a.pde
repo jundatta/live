@@ -3,16 +3,16 @@
 // 【作品名】Squishy Squish Squish
 // https://openprocessing.org/sketch/1847401
 
-const maxVertexCount = 500; // Increase to get more blobs. Not really a max but more of a guideline for the setup :)
-const substeps = 10; // How many physics steps per frame
-const maxRadius = 0.25; // relative to min canvas length [min(widht,length)]
-const minRadius = 0.1; // relative to min canvas length [min(widht,length)]
-const vertexDistance = 0.015; // How far apart are the vertices (relative to min canvas length) (smaller number == more cpu work)
-const outlineOnly = false; // draw only the outline, no fill
-const showCollisionAreas = false;
+final float maxVertexCount = 500; // Increase to get more blobs. Not really a max but more of a guideline for the setup :)
+final float substeps = 10; // How many physics steps per frame
+final float maxRadius = 0.25; // relative to min canvas length [min(widht,length)]
+final float minRadius = 0.1; // relative to min canvas length [min(widht,length)]
+final float vertexDistance = 0.015; // How far apart are the vertices (relative to min canvas length) (smaller number == more cpu work)
+final boolean outlineOnly = false; // draw only the outline, no fill
+final boolean showCollisionAreas = false;
 
-let mx;
-let my;
+float mx;
+float my;
 let blobs;
 let particles;
 let distanceJoints;
