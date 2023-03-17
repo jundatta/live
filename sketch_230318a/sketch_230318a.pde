@@ -13,7 +13,18 @@ final boolean showCollisionAreas = false;
 
 float mx;
 float my;
-let blobs;
+class Blob {
+  float area;
+  float currentArea;
+  float areaDiff;
+  Particle rootParticle;
+  ArrayList<Particle> particles;
+  ArrayList<Particle> vertices;
+  ArrayList<DistanceJoint> joints;
+  float radius;
+  color c;
+}
+ArrayList<Blob> blobs;
 let particles;
 let distanceJoints;
 let hashGrid;
