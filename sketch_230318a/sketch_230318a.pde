@@ -14,15 +14,27 @@ final boolean showCollisionAreas = false;
 float mx;
 float my;
 class Blob {
-  Coordinate2D area;
-  Coordinate2D currentArea;
+  float area;
+  float currentArea;
   float areaDiff;
   Particle rootParticle;
   ArrayList<Particle> particles;
-  ArrayList<Particle> vertices;
   ArrayList<DistanceJoint> joints;
   float radius;
   color c;
+  Blob(float area, float currentArea, float areaDiff,
+    Particle rootParticle, ArrayList<Particle> particles,
+    ArrayList<DistanceJoint> joints, float radius, color c) {
+    this.area = area;
+    this.currentArea = currentArea;
+    this.areaDiff = areaDiff;
+    this.rootParticle = rootParticle;
+    this.particles = particles;
+    this.vertices = vertices;
+    this.joints = joints;
+    this.radius = radius;
+    this.c = c;
+  }
 }
 ArrayList<Blob> blobs;
 ArrayList<Particle> particles;
@@ -58,7 +70,7 @@ void setup() {
     float radiusLimit = (maxArea - totalArea) / (PI * 2);
     float radius = min(radiusLimit, (random(1) ** 3 * (maxRadius-minRadius) + minRadius)*minLength);
     offsetY += prevRadius + radius + 50;
-    const blob = generateBlob(width / 2+random(-1, 1)*(width/2-marginX-radius), height / 2 - offsetY, radius);
+    var blob = generateBlob(width / 2+random(-1, 1)*(width/2-marginX-radius), height / 2 - offsetY, radius);
     totalArea += blob.area;
     blobs.add(blob);
     //particles.push(...blob.particles);
@@ -202,7 +214,7 @@ void draw() {
   }
 }
 
-function generateBlob(offsetX, offsetY, radius) {
+Blob generateBlob(float offsetX, float offsetY, float radius) {
   int numPoints = floor((radius * PI * 2) / effectiveVertexDistance);
   ArrayList<ChainableParticle> vertices = new ArrayList();
   for (int i = 0; i < numPoints; i++) {
@@ -234,48 +246,26 @@ function generateBlob(offsetX, offsetY, radius) {
     }
   }
 
-  const joints = vertices
-    .map((v) => {
-    const v2 = v.nextSibling.nextSibling;
-    return [
-      new DistanceJoint(
-      v,
-      v.nextSibling,
-      effectiveVertexDistance,
-      0.75
-      ),
-      new DistanceJoint(
-      v,
-      v2,
-      effectiveVertexDistance * 2,
-      0.25
-      ),
-    ];
+  ArrayList<DistanceJoint> joints = new ArrayList();
+  for (var v : vertices) {
+    var v2 = v.nextSibling.nextSibling;
+    var dj = new DistanceJoint(v, v.nextSibling, effectiveVertexDistance, 0.75);
+    joints.add(dj);
+    dj = new DistanceJoint(v, v2 effectiveVertexDistance * 2, 0.25);
+    joints.add(dj);
   }
-  )
-  .flat();
+  joints.flat();
 
-  const area = geometry.polygonArea(vertices) * random(0.6, 0.9);
-  const blob = {
-    area,
-  currentArea:
-  area,
-  areaDiff:
-  0,
-  rootParticle:
-  vertices[0],
-  particles:
-  vertices,
-    joints,
-    radius,
-  color:
-  color(random(360), 100, 100),
-};
-
-blob.particles.forEach((particle) => {
-  particle.parent = blob;
-}
-);
-
-return blob;
+  float area = geometry.polygonArea(vertices) * random(0.6, 0.9);
+  float currentArea = area;
+  float areaDiff = 0;
+  Particle rootParticle = vertices.get(0);
+  ArrayList<Particle> particles = vertices;
+  color c = color(random(360), 100, 100);
+  Blob blob = new Blob(area, currentArea, areaDiff,
+    rootParticle, particles, joints, radius, c);
+  for (var particle : blob.particles) {
+    particle.parent = blob;
+  }
+  return blob;
 }

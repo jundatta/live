@@ -40,7 +40,7 @@ class geometry {
     return new Coordinate2D(x * cos(rot) - y * sin(rot), x * sin(rot) + y * cos(rot));
   }
 
-  static Coordinate2D polygonArea
+  static float polygonArea
     (ArrayList<Particle> polygon) {
     // compute area
     float area = 0;
