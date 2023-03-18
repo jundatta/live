@@ -42,6 +42,7 @@ class HashGrid {
       this.grid.set(ky, cell);
       return cell;
     }
+    // （これコピーして返さんで大丈夫かなぁ。。。）
     return this.grid.get(ky).add(item);
   }
 
@@ -51,7 +52,7 @@ class HashGrid {
     this.grid.get(key).delete(item);
   }
 
-  query(int x, int y, int radius) {
+  Set<ChainableParticle> query(int x, int y, int radius) {
     int xi0 = this.getIndex(x - radius) - 1;
     int xi1 = this.getIndex(x + radius) + 1;
     int yi0 = this.getIndex(y - radius) - 1;
@@ -64,22 +65,26 @@ class HashGrid {
         if (this.grid.has(ky) != null) {
           //this.grid.get(ky).forEach(result.add, result);
           Set<ChainableParticle> v = this.grid.get(ky);
-          for () {
+          for (ChainableParticle p : v) {
+            result.add(p);
           }
         }
       }
     }
-
     return result;
   }
 
-  createClient(item) {
+  HashGridClient createClient(ChainableParticle item) {
     return new HashGridClient(this, item);
   }
 }
 
 class HashGridClient {
-  constructor(hashGrid, item) {
+  HashGrid hashGrid;
+  ChainableParticle item;
+  int indexX, indexY;
+  Set<ChainableParticle> cell;
+  HashGridClient(HashGrid hashGrid, ChainableParticle item) {
     this.hashGrid = hashGrid;
     this.item = item;
     this.indexX = this.hashGrid.getIndex(item.x);
@@ -87,10 +92,10 @@ class HashGridClient {
     this.cell = this.hashGrid.addItem(item);
   }
 
-  update() {
-    const newIndexX = this.hashGrid.getIndex(this.item.x);
-    const newIndexY = this.hashGrid.getIndex(this.item.x);
-    if (newIndexX === this.indexX && newIndexY === this.indexY) return;
+  void update() {
+    int newIndexX = this.hashGrid.getIndex(this.item.x);
+    int newIndexY = this.hashGrid.getIndex(this.item.x);
+    if (newIndexX == this.indexX && newIndexY == this.indexY) return;
 
     this.cell.delete(this.item);
     this.cell = this.hashGrid.addItem(this.item);
@@ -98,7 +103,7 @@ class HashGridClient {
     this.indexY = newIndexY;
   }
 
-  delete() {
+  void delete() {
     this.cell.delete(this.item);
   }
 }

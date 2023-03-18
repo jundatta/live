@@ -14,19 +14,20 @@ class DistanceJoint {
     this.strength = strength;
   }
 
-  update(dt = 1) {
-    const diffx = this.pointB.x - this.pointA.x;
-    const diffy = this.pointB.y - this.pointA.y;
-    const mag = (diffx * diffx + diffy * diffy) ** 0.5;
-    const diffMag = this.len - mag;
+  //void update(dt = 1) {
+  void update(float dt) {
+    float diffx = this.pointB.x - this.pointA.x;
+    float diffy = this.pointB.y - this.pointA.y;
+    float mag = pow((diffx * diffx + diffy * diffy), 0.5);
+    float diffMag = this.len - mag;
     if (mag > 0) {
-      const dA =
+      float dA =
         (((this.pointA.mass / (this.pointA.mass + this.pointB.mass)) *
         diffMag *
         this.strength) /
         mag) *
         -dt;
-      const dB =
+      float dB =
         (((this.pointB.mass / (this.pointA.mass + this.pointB.mass)) *
         diffMag *
         this.strength) /

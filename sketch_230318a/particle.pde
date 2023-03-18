@@ -7,6 +7,7 @@ class Particle extends Coordinate2D {
   float friction;
   float mass;
   Blob parent;
+  HashGridClient client;
   Particle(
     float x,
     float y,
@@ -36,30 +37,31 @@ class Particle extends Coordinate2D {
     this.parent = parent;
   }
 
-  setClient(client) {
+  void setClient(HashGridClient client) {
     this.client = client;
   }
 
-  move(dx, dy) {
+  void move(float dx, float dy) {
     this.x += dx;
     this.y += dy;
   }
 
-  addForce(fx, fy) {
+  void addForce(float fx, float fy) {
     this.vx += fx;
     this.vy += fy;
   }
 
-  attract(
-    otherX,
-    otherY,
-    strength = 1
+  void attract(
+    float otherX,
+    float otherY,
+    //strength = 1
+    float strength
     ) {
-    const diffx = otherX - this.x;
-    const diffy = otherY - this.y;
-    const mag = diffx * diffx + diffy * diffy;
+    float diffx = otherX - this.x;
+    float diffy = otherY - this.y;
+    float mag = diffx * diffx + diffy * diffy;
     if (mag > 0.1) {
-      const magSqrt = 1 / mag ** 0.5;
+      float magSqrt = 1 / pow(mag, 0.5);
       this.addForce(
         diffx * magSqrt * strength, // force x
         diffy * magSqrt * strength, // force y
@@ -67,62 +69,62 @@ class Particle extends Coordinate2D {
     }
   }
 
-  repel(
-    otherX,
-    otherY,
-    radius = 1,
-    strength = 1
+  Coordinate2D repel(
+    float otherX,
+    float otherY,
+    //radius = 1,
+    //strength = 1
+    radius,
+    strength
     ) {
-    const diffx = this.x - otherX;
-    const diffy = this.y - otherY;
-    const mag = diffx * diffx + diffy * diffy;
-    const combinedRadius = radius + this.radius;
-    const minDist = combinedRadius * combinedRadius;
+    float diffx = this.x - otherX;
+    float diffy = this.y - otherY;
+    float mag = diffx * diffx + diffy * diffy;
+    float combinedRadius = radius + this.radius;
+    float minDist = combinedRadius * combinedRadius;
     if (mag > 0 && mag < minDist) {
-      const magSqrt = 1 / mag ** 0.5;
-      const forceX = diffx * magSqrt * strength;
-      const forceY = diffy * magSqrt * strength;
+      float magSqrt = 1 / mag ** 0.5;
+      float forceX = diffx * magSqrt * strength;
+      float forceY = diffy * magSqrt * strength;
       this.addForce(forceX, forceY);
       return new Coordinate2D(forceX, forceY);
     }
-
     return null;
   }
 
-  testCollision(
-    otherX,
-    otherY,
-    radius
+  Coordinate2D testCollision(
+    float otherX,
+    float otherY,
+    float radius
     ) {
-    const diffx = otherX - this.x;
-    const diffy = otherY - this.y;
-    const diffMag = diffx * diffx + diffy * diffy;
-    const combinedRadius = radius + this.radius;
-    if (diffMag < combinedRadius ** 2) {
-      const forceMag = diffMag ** 0.5 - combinedRadius;
-      const invMag = 1 / diffMag;
-      const fx = diffx * invMag * forceMag;
-      const fy = diffy * invMag * forceMag;
-
+    float diffx = otherX - this.x;
+    float diffy = otherY - this.y;
+    float diffMag = diffx * diffx + diffy * diffy;
+    float combinedRadius = radius + this.radius;
+    if (diffMag < pow(combinedRadius, 2)) {
+      float forceMag = diffMag ** 0.5 - combinedRadius;
+      float invMag = 1 / diffMag;
+      float fx = diffx * invMag * forceMag;
+      float fy = diffy * invMag * forceMag;
       return new Coordinate2D(fx, fy);
     }
     return null;
   }
 
-  collide(
-    otherX,
-    otherY,
-    radius
+  Coordinate2D collide(
+    float otherX,
+    float otherY,
+    float radius
     ) {
-    const diffx = otherX - this.x;
-    const diffy = otherY - this.y;
-    const diffMag = diffx * diffx + diffy * diffy;
-    const combinedRadius = radius + this.radius;
+    float diffx = otherX - this.x;
+    float diffy = otherY - this.y;
+    float diffMag = diffx * diffx + diffy * diffy;
+    float combinedRadius = radius + this.radius;
     if (diffMag < combinedRadius ** 2) {
-      const forceMag = diffMag ** 0.5 - combinedRadius;
-      const invMag = 1 / diffMag;
-      const fx = diffx * invMag * forceMag;
-      const fy = diffy * invMag * forceMag;
+      float forceMag = diffMag ** 0.5 - combinedRadius;
+      float invMag = 1 / diffMag;
+      float fx = diffx * invMag * forceMag;
+      float fy = diffy * invMag * forceMag;
 
       this.move(fx, fy);
 
@@ -135,23 +137,23 @@ class Particle extends Coordinate2D {
     return null;
   }
 
-  constrain(
+  void constrain(
     left,
     top,
     right,
     bottom,
     ) {
-    const {
-      x, y, friction, radius
-    }
-    = this;
+    const float x = this.x;
+    const float y = this.y;
+    const float friction = this.friction;
+    const float radius = this.radius;
 
     left += radius;
     top += radius;
     right -= radius;
     bottom -= radius;
 
-    let collide = false;
+    boolean collide = false;
 
     if (x > right) {
       this.x = right;
@@ -174,15 +176,16 @@ class Particle extends Coordinate2D {
     }
   }
 
-  getVelocity() {
+  Coordinate2D getVelocity() {
     return new Coordinate2D(this.vx, this.vy);
   }
 
-  getVelocityMag() {
-    return (this.vx * this.vx + this.vy * this.vy) ** 0.5;
+  float getVelocityMag() {
+    return pow((this.vx * this.vx + this.vy * this.vy), 0.5);
   }
 
-  update(dt = 1) {
+  //update(dt = 1) {
+  update(float dt) {
     this.prevX = this.x;
     this.prevY = this.y;
 
@@ -190,26 +193,29 @@ class Particle extends Coordinate2D {
     this.y += this.vy * dt;
   }
 
-  endUpdate(dt = 1) {
-    const m = this.damping / dt;
+  //endUpdate(dt = 1) {
+  endUpdate(float dt) {
+    const float m = this.damping / dt;
     this.vx = (this.x - this.prevX) * m;
     this.vy = (this.y - this.prevY) * m;
   }
 
-  updateClient() {
+  void updateClient() {
     if (this.client) this.client.update();
   }
 }
 
 class ChainableParticle extends Particle {
-  setIsRoot(isRoot) {
+  boolean isRoot;
+  ArrayList<Particle> prevSibling, nextSibling;
+  void setIsRoot(boolean isRoot) {
     this.isRoot = isRoot;
   }
 
-  setNextSibling(sibling) {
+  void setNextSibling(ArrayList<Particle> sibling) {
     this.nextSibling = sibling;
   }
-  setPrevSibling(sibling) {
+  void setPrevSibling(ArrayList<Particle> sibling) {
     this.prevSibling = sibling;
   }
 }
