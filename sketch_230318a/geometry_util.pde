@@ -1,6 +1,4 @@
-const EPSILON = 0.00001;
-
-class geometry {
+static class geometry {
   static Coordinate2D getLineNormal(
     float x1,
     float y1,
@@ -31,20 +29,14 @@ class geometry {
 
   static Coordinate2D rotate
     (float x, float y, float rot) {
-    return {
-    x:
-      x * Math.cos(rot) - y * Math.sin(rot),
-      y:
-      x * Math.sin(rot) + y * Math.cos(rot),
-    };
     return new Coordinate2D(x * cos(rot) - y * sin(rot), x * sin(rot) + y * cos(rot));
   }
 
   static float polygonArea
-    (ArrayList<Particle> polygon) {
+    (ArrayList<ChainableParticle> polygon) {
     // compute area
     float area = 0;
-    int n = polygon.length;
+    int n = polygon.size();
     for (int i = 1; i <= n; i++) {
       area +=
         polygon.get(i % n).x * (polygon.get((i + 1) % n).y - polygon.get((i - 1) % n).y);

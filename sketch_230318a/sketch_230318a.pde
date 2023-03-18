@@ -17,27 +17,26 @@ class Blob {
   float area;
   float currentArea;
   float areaDiff;
-  Particle rootParticle;
-  ArrayList<Particle> particles;
+  ChainableParticle rootParticle;
+  ArrayList<ChainableParticle> particles;
   ArrayList<DistanceJoint> joints;
   float radius;
   color c;
   Blob(float area, float currentArea, float areaDiff,
-    Particle rootParticle, ArrayList<Particle> particles,
+    ChainableParticle rootParticle, ArrayList<ChainableParticle> particles,
     ArrayList<DistanceJoint> joints, float radius, color c) {
     this.area = area;
     this.currentArea = currentArea;
     this.areaDiff = areaDiff;
     this.rootParticle = rootParticle;
     this.particles = particles;
-    this.vertices = vertices;
     this.joints = joints;
     this.radius = radius;
     this.c = c;
   }
 }
 ArrayList<Blob> blobs;
-ArrayList<Particle> particles;
+ArrayList<ChainableParticle> particles;
 ArrayList<DistanceJoint> distanceJoints;
 HashGrid hashGrid;
 float effectiveVertexDistance;
@@ -46,7 +45,7 @@ float marginX = 20;
 float marginY = 5;
 
 void setup() {
-  createCanvas(4*834/3, 934);
+  size(4*834/3, 934);
   colorMode(HSB, 360, 100, 100, 100);
   pixelDensity(1);
   frameRate(60);
@@ -56,7 +55,7 @@ void setup() {
 
   mx = 0;
   my = 0;
-  hashGrid = new HashGrid(width, height, Math.floor(effectiveVertexDistance*2));
+  hashGrid = new HashGrid(width, height, floor(effectiveVertexDistance*2));
   particles = new ArrayList();
   distanceJoints = new ArrayList();
   blobs = new ArrayList();
@@ -66,9 +65,9 @@ void setup() {
   float totalArea = 0;
   float prevRadius = 0;
   float maxArea = (width - marginX * 2) * (height - marginY * 2) * 0.8;
-  while (totalArea < maxArea && particles.length < maxVertexCount) {
+  while (totalArea < maxArea && particles.size() < maxVertexCount) {
     float radiusLimit = (maxArea - totalArea) / (PI * 2);
-    float radius = min(radiusLimit, (random(1) ** 3 * (maxRadius-minRadius) + minRadius)*minLength);
+    float radius = min(radiusLimit, (pow(random(1), 3) * (maxRadius-minRadius) + minRadius)*minLength);
     offsetY += prevRadius + radius + 50;
     var blob = generateBlob(width / 2+random(-1, 1)*(width/2-marginX-radius), height / 2 - offsetY, radius);
     totalArea += blob.area;
@@ -94,43 +93,46 @@ void draw() {
   float dt = 1 / 60.0f;
   float sdt = dt / substeps;
 
-  for (int i=particles.length; i--; ) {
+  // (i--) != 0は評価の順番的にあやしい（汗）
+  for (int i=particles.size(); (i--) != 0; ) {
     var particle = particles.get(i);
     particle.updateClient();
   }
 
   for (float substep = substeps; (substep--) != 0; ) {
-    for (int i=blobs.length; i--; ) {
+    for (int i=blobs.size(); (i--) != 0; ) {
       var blob = blobs.get(i);
       blob.currentArea = geometry.polygonArea(blob.particles);
       blob.areaDiff = (blob.area - blob.currentArea) / blob.area;
     }
 
-    for (int i=particles.length; i--; ) {
+    for (int i=particles.size(); (i--) != 0; ) {
       var particle = particles.get(i);
-      particle.addForce(0, 1000 * sdt, 0);
-      var coord = Coordinate2D(particle.vx, particle.vy);
+      particle.addForce(0, 1000 * sdt);
+      var coord = new Coordinate2D(particle.vx, particle.vy);
       var v = geometry.limit(coord, effectiveVertexDistance / sdt *2);
       particle.vx = v.x;
       particle.vy = v.y;
       particle.update(sdt);
     }
 
-    for (int i=particles.length; i--; ) {
+    // ここもi--;を(i--) != 0;に変えても評価的にあってるか（汗）
+    for (int i=particles.size(); (i--) != 0; ) {
       var v = particles.get(i);
       // Area constraint
       var v0 = v.prevSibling;
       var v1 = v.nextSibling;
       var lineNormal = geometry.getLineNormal(v0.x, v0.y, v1.x, v1.y);
       var dir = v.parent.areaDiff;
-      v.move(lineNormal.x * dir, lineNormal.y * dir, 0);
+      v.move(lineNormal.x * dir, lineNormal.y * dir);
     }
 
-    for (int i=distanceJoints.length; i--; ) {
+    // ここも（汗）
+    for (int i=distanceJoints.size(); (i--) != 0; ) {
       distanceJoints.get(i).update(1);
     }
 
-    for (int i=particles.length; i--; ) {
+    for (int i=particles.size(); (i--) != 0; ) {
       var particle = particles.get(i);
       Set<ChainableParticle> cps = hashGrid.query(particle.x, particle.y, particle.radius);
       //.forEach((other) => {
@@ -156,14 +158,15 @@ void draw() {
       }
     }
 
-    for (int i=particles.length; i--; ) {
+    // ここも（汗）
+    for (int i=particles.size(); (i--) != 0; ) {
       var particle = particles.get(i);
-      particle.collide(mx, my, mr, 9999);
+      particle.collide(mx, my, mr);
       particle.constrain(
         marginX,
         -99999,
         width - marginX,
-        height - marginY,
+        height - marginY
         );
       particle.endUpdate(sdt);
     }
@@ -174,18 +177,19 @@ void draw() {
   noStroke();
   circle(mx, my, mr * 2 - 2);
 
-  for (int i=blobs.length; i--; ) {
+  // ここも（汗）
+  for (int i=blobs.size(); (i--) != 0; ) {
     var blob = blobs.get(i);
     var currentParticle = blob.rootParticle;
 
     if (outlineOnly) {
-      stroke(blob.color);
+      stroke(blob.c);
       noFill();
       strokeWeight(1);
     } else {
-      stroke(blob.color);
+      stroke(blob.c);
       strokeWeight(effectiveVertexDistance*2-6);
-      fill(blob.color);
+      fill(blob.c);
     }
     beginShape();
     do {
@@ -200,10 +204,9 @@ void draw() {
     curveVertex(currentParticle.x, currentParticle.y);
     endShape();
 
-
     if (showCollisionAreas) {
       strokeWeight(1);
-      stroke(blob.color);
+      stroke(blob.c);
       noFill();
       currentParticle = blob.rootParticle;
       do {
@@ -222,18 +225,17 @@ Blob generateBlob(float offsetX, float offsetY, float radius) {
     float angle = t * TWO_PI;
     float x = cos(angle) * radius + offsetX;
     float y = sin(angle) * radius + offsetY;
-    float z = z;
-    float radius = effectiveVertexDistance;
+    float rad = effectiveVertexDistance;
     float damping = 1;
     float friction = 0.1f;
     float mass = 1;
     Blob parent = null;
-    ChainableParticle particle = new Particle(x, y, z, radius, damping, friction, mass, parent);
+    ChainableParticle particle = new ChainableParticle(x, y, rad, damping, friction, mass, parent);
     particle.setClient(hashGrid.createClient(particle));
     vertices.add(particle);
   }
 
-  int len = vertices.length;
+  int len = vertices.size();
   for (int i = 0; i < len; i++) {
     var v = vertices.get(i);
 
@@ -251,16 +253,17 @@ Blob generateBlob(float offsetX, float offsetY, float radius) {
     var v2 = v.nextSibling.nextSibling;
     var dj = new DistanceJoint(v, v.nextSibling, effectiveVertexDistance, 0.75);
     joints.add(dj);
-    dj = new DistanceJoint(v, v2 effectiveVertexDistance * 2, 0.25);
+    dj = new DistanceJoint(v, v2, effectiveVertexDistance * 2, 0.25);
     joints.add(dj);
   }
-  joints.flat();
+  // うぅう、わかりゃん＼(^_^)／コメントアウトする（汗）
+  //joints.flat();
 
   float area = geometry.polygonArea(vertices) * random(0.6, 0.9);
   float currentArea = area;
   float areaDiff = 0;
-  Particle rootParticle = vertices.get(0);
-  ArrayList<Particle> particles = vertices;
+  ChainableParticle rootParticle = vertices.get(0);
+  ArrayList<ChainableParticle> particles = vertices;
   color c = color(random(360), 100, 100);
   Blob blob = new Blob(area, currentArea, areaDiff,
     rootParticle, particles, joints, radius, c);

@@ -1,6 +1,6 @@
 class DistanceJoint {
   Particle pointA, pointB;
-  float len, strength;
+  float originalLen, len, strength;
   DistanceJoint(
     Particle pointA,
     Particle pointB,

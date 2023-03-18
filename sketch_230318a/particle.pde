@@ -1,5 +1,4 @@
 class Particle extends Coordinate2D {
-  float z;
   float prevX, prevY;
   float sx, sy;
   float vx, vy;
@@ -12,15 +11,13 @@ class Particle extends Coordinate2D {
   Particle(
     float x,
     float y,
-    float z,
     float radius,
     float damping,
     float friction,
     float mass,
-    Blob parent,
+    Blob parent
     ) {
     super(x, y);
-    this.z = z;
     this.prevX = x;
     this.prevY = y;
     this.sx = x;
@@ -66,7 +63,7 @@ class Particle extends Coordinate2D {
       float magSqrt = 1 / pow(mag, 0.5);
       this.addForce(
         diffx * magSqrt * strength, // force x
-        diffy * magSqrt * strength, // force y
+        diffy * magSqrt * strength // force y
         );
     }
   }
@@ -76,8 +73,8 @@ class Particle extends Coordinate2D {
     float otherY,
     //radius = 1,
     //strength = 1
-    radius,
-    strength
+    float radius,
+    float strength
     ) {
     float diffx = this.x - otherX;
     float diffy = this.y - otherY;
@@ -85,7 +82,7 @@ class Particle extends Coordinate2D {
     float combinedRadius = radius + this.radius;
     float minDist = combinedRadius * combinedRadius;
     if (mag > 0 && mag < minDist) {
-      float magSqrt = 1 / mag ** 0.5;
+      float magSqrt = pow(1 / mag, 0.5);
       float forceX = diffx * magSqrt * strength;
       float forceY = diffy * magSqrt * strength;
       this.addForce(forceX, forceY);
@@ -104,7 +101,7 @@ class Particle extends Coordinate2D {
     float diffMag = diffx * diffx + diffy * diffy;
     float combinedRadius = radius + this.radius;
     if (diffMag < pow(combinedRadius, 2)) {
-      float forceMag = diffMag ** 0.5 - combinedRadius;
+      float forceMag = pow(diffMag, 0.5) - combinedRadius;
       float invMag = 1 / diffMag;
       float fx = diffx * invMag * forceMag;
       float fy = diffy * invMag * forceMag;
@@ -122,8 +119,8 @@ class Particle extends Coordinate2D {
     float diffy = otherY - this.y;
     float diffMag = diffx * diffx + diffy * diffy;
     float combinedRadius = radius + this.radius;
-    if (diffMag < combinedRadius ** 2) {
-      float forceMag = diffMag ** 0.5 - combinedRadius;
+    if (diffMag < pow(combinedRadius, 2)) {
+      float forceMag = pow(diffMag, 0.5) - combinedRadius;
       float invMag = 1 / diffMag;
       float fx = diffx * invMag * forceMag;
       float fy = diffy * invMag * forceMag;
@@ -135,20 +132,19 @@ class Particle extends Coordinate2D {
 
       return new Coordinate2D(fx, fy);
     }
-
     return null;
   }
 
   void constrain(
-    left,
-    top,
-    right,
-    bottom,
+    float left,
+    float top,
+    float right,
+    float bottom
     ) {
-    const float x = this.x;
-    const float y = this.y;
-    const float friction = this.friction;
-    const float radius = this.radius;
+    final float x = this.x;
+    final float y = this.y;
+    final float friction = this.friction;
+    final float radius = this.radius;
 
     left += radius;
     top += radius;
@@ -187,7 +183,7 @@ class Particle extends Coordinate2D {
   }
 
   //update(dt = 1) {
-  update(float dt) {
+  void update(float dt) {
     this.prevX = this.x;
     this.prevY = this.y;
 
@@ -196,28 +192,42 @@ class Particle extends Coordinate2D {
   }
 
   //endUpdate(dt = 1) {
-  endUpdate(float dt) {
-    const float m = this.damping / dt;
+  void endUpdate(float dt) {
+    float m = this.damping / dt;
     this.vx = (this.x - this.prevX) * m;
     this.vy = (this.y - this.prevY) * m;
   }
 
   void updateClient() {
-    if (this.client) this.client.update();
+    if (this.client != null) this.client.update();
   }
 }
 
 class ChainableParticle extends Particle {
   boolean isRoot;
-  ArrayList<Particle> prevSibling, nextSibling;
+  ChainableParticle prevSibling, nextSibling;
+  ChainableParticle(
+    float x,
+    float y,
+    float radius,
+    float damping,
+    float friction,
+    float mass,
+    Blob parent
+    ) {
+    super(x, y, radius, damping, friction, mass, parent);
+    this.isRoot = false;
+    this.prevSibling = null;
+    this.nextSibling = null;
+  }
   void setIsRoot(boolean isRoot) {
     this.isRoot = isRoot;
   }
 
-  void setNextSibling(ArrayList<Particle> sibling) {
+  void setNextSibling(ChainableParticle sibling) {
     this.nextSibling = sibling;
   }
-  void setPrevSibling(ArrayList<Particle> sibling) {
+  void setPrevSibling(ChainableParticle sibling) {
     this.prevSibling = sibling;
   }
 }
