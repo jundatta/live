@@ -25,16 +25,16 @@ class Blob {
   color c;
 }
 ArrayList<Blob> blobs;
-let particles;
-let distanceJoints;
-let hashGrid;
-let effectiveVertexDistance;
+ArrayList<Particle> particles;
+ArrayList<DistanceJoint> distanceJoints;
+HashGrid hashGrid;
+float effectiveVertexDistance;
 
-const marginX = 20;
-const marginY = 5;
+float marginX = 20;
+float marginY = 5;
 
-function setup() {
-  createCanvas(4*windowHeight/3, windowHeight);
+void setup() {
+  createCanvas(4*834/3, 934);
   colorMode(HSB, 360, 100, 100, 100);
   pixelDensity(1);
   frameRate(60);
@@ -45,109 +45,107 @@ function setup() {
   mx = 0;
   my = 0;
   hashGrid = new HashGrid(width, height, Math.floor(effectiveVertexDistance*2));
-  particles = [];
-  distanceJoints = [];
-  blobs = [];
+  particles = new ArrayList();
+  distanceJoints = new ArrayList();
+  blobs = new ArrayList();
 
-  const minLength = min(width, height);
-  let offsetY = 0;
-  let totalArea = 0;
-  let prevRadius = 0;
-  let maxArea = (width - marginX * 2) * (height - marginY * 2) * 0.8;
+  float minLength = min(width, height);
+  float offsetY = 0;
+  float totalArea = 0;
+  float prevRadius = 0;
+  float maxArea = (width - marginX * 2) * (height - marginY * 2) * 0.8;
   while (totalArea < maxArea && particles.length < maxVertexCount) {
-    const radiusLimit = (maxArea - totalArea) / (PI * 2);
-    const radius = Math.min(radiusLimit, (random(1) ** 3 * (maxRadius-minRadius) + minRadius)*minLength);
+    float radiusLimit = (maxArea - totalArea) / (PI * 2);
+    float radius = min(radiusLimit, (random(1) ** 3 * (maxRadius-minRadius) + minRadius)*minLength);
     offsetY += prevRadius + radius + 50;
     const blob = generateBlob(width / 2+random(-1, 1)*(width/2-marginX-radius), height / 2 - offsetY, radius);
     totalArea += blob.area;
-    blobs.push(blob);
-    particles.push(...blob.particles);
-    distanceJoints.push(...blob.joints);
+    blobs.add(blob);
+    //particles.push(...blob.particles);
+    for (var p : blob.particles) {
+      particles.add(p);
+    }
+    //distanceJoints.push(...blob.joints);
+    for (var dj : blob.joints) {
+      distanceJoints.add(dj);
+    }
 
     prevRadius = radius;
   }
-};
-
-function keyPressed() {
-  save("img_" + month() + '-' + day() + '_' + hour() + '-' + minute() + '-' + second() + ".jpg");
 }
 
-function draw() {
-  const mr = min(width, height)*0.1;
+void draw() {
+  float mr = min(width, height)*0.1;
   mx = lerp(mx, mouseX, 1);
   my = lerp(my, mouseY, 1);
 
-  const dt = 1 / 60;
-  const sdt = dt / substeps;
+  float dt = 1 / 60.0f;
+  float sdt = dt / substeps;
 
-  for (let i=particles.length; i--; ) {
-    const particle = particles[i];
+  for (int i=particles.length; i--; ) {
+    var particle = particles.get(i);
     particle.updateClient();
   }
 
-  for (let substep = substeps; substep--; ) {
-    for (let i=blobs.length; i--; ) {
-      const blob = blobs[i];
+  for (float substep = substeps; (substep--) != 0; ) {
+    for (int i=blobs.length; i--; ) {
+      var blob = blobs.get(i);
       blob.currentArea = geometry.polygonArea(blob.particles);
       blob.areaDiff = (blob.area - blob.currentArea) / blob.area;
     }
 
-    for (let i=particles.length; i--; ) {
-      const particle = particles[i];
+    for (int i=particles.length; i--; ) {
+      var particle = particles.get(i);
       particle.addForce(0, 1000 * sdt, 0);
-      const v = geometry.limit( {
-      x:
-      particle.vx, y:
-        particle.vy
-      }
-      , effectiveVertexDistance / sdt *2);
+      var coord = Coordinate2D(particle.vx, particle.vy);
+      var v = geometry.limit(coord, effectiveVertexDistance / sdt *2);
       particle.vx = v.x;
       particle.vy = v.y;
       particle.update(sdt);
     }
 
-    for (let i=particles.length; i--; ) {
-      const v = particles[i];
+    for (int i=particles.length; i--; ) {
+      var v = particles.get(i);
       // Area constraint
-      const v0 = v.prevSibling;
-      const v1 = v.nextSibling;
-      const lineNormal = geometry.getLineNormal(v0.x, v0.y, v1.x, v1.y);
-      const dir = v.parent.areaDiff;
+      var v0 = v.prevSibling;
+      var v1 = v.nextSibling;
+      var lineNormal = geometry.getLineNormal(v0.x, v0.y, v1.x, v1.y);
+      var dir = v.parent.areaDiff;
       v.move(lineNormal.x * dir, lineNormal.y * dir, 0);
     }
 
-    for (let i=distanceJoints.length; i--; ) {
-      distanceJoints[i].update(1);
+    for (int i=distanceJoints.length; i--; ) {
+      distanceJoints.get(i).update(1);
     }
 
-    for (let i=particles.length; i--; ) {
-      const particle = particles[i];
-      hashGrid
-        .query(particle.x, particle.y, particle.radius)
-        .forEach((other) => {
+    for (int i=particles.length; i--; ) {
+      var particle = particles.get(i);
+      Set<ChainableParticle> cps = hashGrid.query(particle.x, particle.y, particle.radius);
+      //.forEach((other) => {
+      for (var other : cps) {
+        // ここの比較中身なのだとしたらどうするのかなぁ？
         if (
-          other === particle ||
-          other === particle.nextSibling ||
-          other === particle.prevSibling
+          other == particle ||
+          other == particle.nextSibling ||
+          other == particle.prevSibling
           )
-        return;
+          break;
 
-        const force = particle.testCollision(
+        var force = particle.testCollision(
           other.x,
           other.y,
           other.radius
           );
 
-        if (force) {
+        if (force != null) {
           particle.move(force.x * 0.5, force.y * 0.5);
           other.move(-force.x * 0.5, -force.y * 0.5);
         }
       }
-      );
     }
 
-    for (let i=particles.length; i--; ) {
-      const particle = particles[i];
+    for (int i=particles.length; i--; ) {
+      var particle = particles.get(i);
       particle.collide(mx, my, mr, 9999);
       particle.constrain(
         marginX,
@@ -164,9 +162,9 @@ function draw() {
   noStroke();
   circle(mx, my, mr * 2 - 2);
 
-  for (let i=blobs.length; i--; ) {
-    const blob = blobs[i];
-    let currentParticle = blob.rootParticle;
+  for (int i=blobs.length; i--; ) {
+    var blob = blobs.get(i);
+    var currentParticle = blob.rootParticle;
 
     if (outlineOnly) {
       stroke(blob.color);
@@ -181,7 +179,7 @@ function draw() {
     do {
       curveVertex(currentParticle.x, currentParticle.y);
       currentParticle = currentParticle.nextSibling;
-    } while (currentParticle !== blob.rootParticle);
+    } while (currentParticle != blob.rootParticle);
 
     curveVertex(currentParticle.x, currentParticle.y);
     currentParticle = currentParticle.nextSibling;
@@ -199,7 +197,7 @@ function draw() {
       do {
         circle(currentParticle.x, currentParticle.y, currentParticle.radius*2);
         currentParticle = currentParticle.nextSibling;
-      } while (currentParticle !== blob.rootParticle);
+      } while (currentParticle != blob.rootParticle);
     }
   }
 }

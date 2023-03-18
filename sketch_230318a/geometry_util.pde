@@ -41,7 +41,7 @@ class geometry {
   }
 
   static Coordinate2D polygonArea
-    (ArrayList<Particle> polygon) => {
+    (ArrayList<Particle> polygon) {
     // compute area
     float area = 0;
     int n = polygon.length;
