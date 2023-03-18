@@ -1,9 +1,11 @@
 class DistanceJoint {
-  constructor(
-    pointA,
-    pointB,
-    len,
-    strength
+  Particle pointA, pointB;
+  float len, strength;
+  DistanceJoint(
+    Particle pointA,
+    Particle pointB,
+    float len,
+    float strength
     ) {
     this.pointA = pointA;
     this.pointB = pointB;

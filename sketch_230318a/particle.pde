@@ -1,15 +1,22 @@
 class Particle extends Coordinate2D {
-  constructor( {
-    x,
-      y,
-      z,
-      radius,
-      damping,
-      friction,
-      mass,
-      parent,
-  }
-  ) {
+  float prevX, prevY;
+  float sx, sy;
+  float vx, vy;
+  float radius;
+  float damping;
+  float friction;
+  float mass;
+  Blob parent;
+  Particle(
+    float x,
+    float y,
+    float z,
+    float radius,
+    float damping,
+    float friction,
+    float mass,
+    Blob parent,
+    ) {
     super(x, y);
     this.prevX = x;
     this.prevY = y;
@@ -17,10 +24,15 @@ class Particle extends Coordinate2D {
     this.sy = y;
     this.vx = 0;
     this.vy = 0;
-    this.radius = radius ?? 10;
-    this.damping = damping ?? 0.9;
-    this.friction = friction ?? 0.1;
-    this.mass = mass ?? 1;
+    // とりあえず、こうしておこう♪
+    //this.radius = radius ?? 10;
+    //this.damping = damping ?? 0.9;
+    //this.friction = friction ?? 0.1;
+    //this.mass = mass ?? 1;
+    this.radius = radius;
+    this.damping = damping;
+    this.friction = friction;
+    this.mass = mass;
     this.parent = parent;
   }
 

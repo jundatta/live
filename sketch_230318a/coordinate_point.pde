@@ -1,5 +1,6 @@
 class Coordinate2D {
-  constructor(x, y) {
+  float x, y;
+  Coordinate2D(float x, float y) {
     this.x = x;
     this.y = y;
   }
