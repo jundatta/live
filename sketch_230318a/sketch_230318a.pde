@@ -134,7 +134,8 @@ void draw() {
 
     for (int i=particles.size(); (i--) != 0; ) {
       var particle = particles.get(i);
-      Set<ChainableParticle> cps = hashGrid.query(particle.x, particle.y, particle.radius);
+      HashSet<ChainableParticle> cps
+        = hashGrid.query((int)particle.x, (int)particle.y, (int)particle.radius);
       //.forEach((other) => {
       for (var other : cps) {
         // ここの比較中身なのだとしたらどうするのかなぁ？
