@@ -14,8 +14,8 @@ final boolean showCollisionAreas = false;
 float mx;
 float my;
 class Blob {
-  float area;
-  float currentArea;
+  Coordinate2D area;
+  Coordinate2D currentArea;
   float areaDiff;
   Particle rootParticle;
   ArrayList<Particle> particles;

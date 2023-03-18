@@ -1,17 +1,20 @@
 class HashGrid {
-  constructor(width, height, cellSize) {
-    this.width = width;
-    this.height = height;
+  float w, h;
+  float cellSize;
+  Map<String, Set<ChainableParticle>> grid;
+  HashGrid(float w, float h, float cellSize) {
+    this.w = w;
+    this.h = h;
     this.cellSize = cellSize;
     this.grid = new Map();
     this._initGrid();
   }
 
-  _initGrid() {
-    const yLen = this.height / this.cellSize;
-    const xLen = this.width / this.cellSize;
-    for (let y = 0; y < yLen; y++) {
-      for (let x = 0; x < xLen; x++) {
+  void _initGrid() {
+    int yLen = this.h / this.cellSize;
+    int xLen = this.w / this.cellSize;
+    for (int y = 0; y < yLen; y++) {
+      for (int x = 0; x < xLen; x++) {
         this.grid.set(
           this.getKey(x * this.cellSize, y * this.cellSize),
           new Set()
@@ -20,46 +23,49 @@ class HashGrid {
     }
   }
 
-  getIndex(value) {
-    return (value / this.cellSize) | 0;
+  int getIndex(int value) {
+    return (int)(value / this.cellSize);
   }
 
-  getKey(x, y) {
+  String getKey(int x, int y) {
     return this._getKeyByIndices(this.getIndex(x), this.getIndex(y));
   }
 
-  _getKeyByIndices(xi, yi) {
+  String _getKeyByIndices(int xi, int yi) {
     return xi + "." + yi;
   }
 
-  addItem(item) {
-    const key = this.getKey(item.x, item.y);
-    if (!this.grid.has(key)) {
-      const cell = new Set().add(item);
-      this.grid.set(key, cell);
+  Set<ChainableParticle> addItem(Set<ChainableParticle> item) {
+    String ky = this.getKey(item.x, item.y);
+    if (this.grid.has(ky) == null) {
+      Set<ChainableParticle> cell = new Set().add(item);
+      this.grid.set(ky, cell);
       return cell;
     }
-    return this.grid.get(key).add(item);
+    return this.grid.get(ky).add(item);
   }
 
-  removeItem(item) {
-    const key = this.getKey(item.x, item.y);
-    if (!this.grid.has(key)) return;
+  void removeItem(Set<ChainableParticle> item) {
+    String ky = this.getKey(item.x, item.y);
+    if (this.grid.has(ky) == null) return;
     this.grid.get(key).delete(item);
   }
 
-  query(x, y, radius) {
-    const xi0 = this.getIndex(x - radius) - 1;
-    const xi1 = this.getIndex(x + radius) + 1;
-    const yi0 = this.getIndex(y - radius) - 1;
-    const yi1 = this.getIndex(y + radius) + 1;
-    let result = new Set();
-    let key;
-    for (let xi = xi0; xi <= xi1; xi++) {
-      for (let yi = yi0; yi <= yi1; yi++) {
-        key = this._getKeyByIndices(xi, yi);
-        if (this.grid.has(key)) {
-          this.grid.get(key).forEach(result.add, result);
+  query(int x, int y, int radius) {
+    int xi0 = this.getIndex(x - radius) - 1;
+    int xi1 = this.getIndex(x + radius) + 1;
+    int yi0 = this.getIndex(y - radius) - 1;
+    int yi1 = this.getIndex(y + radius) + 1;
+    Set<ChainableParticle> result = new Set();
+    String ky;
+    for (int xi = xi0; xi <= xi1; xi++) {
+      for (int yi = yi0; yi <= yi1; yi++) {
+        ky = this._getKeyByIndices(xi, yi);
+        if (this.grid.has(ky) != null) {
+          //this.grid.get(ky).forEach(result.add, result);
+          Set<ChainableParticle> v = this.grid.get(ky);
+          for () {
+          }
         }
       }
     }

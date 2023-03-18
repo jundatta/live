@@ -1,74 +1,54 @@
 const EPSILON = 0.00001;
 
-const geometry={
-  getLineNormal:
-(
-x1,
-  y1,
-  x2,
-  y2
-  ) => {
-  return {
-  x:
-  y2 - y1, y:
-    -(x2 - x1)
-  };
-}
-,
-  normalize:
-(coord) => {
-  let mag = (coord.x * coord.x + coord.y * coord.y) ** 0.5;
-  if (mag > 1) {
-    return {
-    x:
-      coord.x / mag,
-      y:
-      coord.y / mag,
-    };
+class geometry {
+  static Coordinate2D getLineNormal(
+    float x1,
+    float y1,
+    float x2,
+    float y2
+    ) {
+    return new Coordinate2D(y2 - y1, -(x2 - x1));
   }
 
-  return {
-  x:
-  0, y:
-    0
-  };
-}
-,
+  static Coordinate2D normalize
+    (Coordinate2D coord) {
+    float mag = pow((coord.x * coord.x + coord.y * coord.y), 0.5);
+    if (mag > 1) {
+      return new Coordinate2D(coord.x / mag, coord.y / mag);
+    }
+    return new Coordinate2D(0, 0);
+  }
 
-  limit:
-(coord, maxLength) => {
-  if (!coord) return null;
-  let mag = (coord.x * coord.x + coord.y * coord.y) ** 0.5;
-  if (mag > maxLength) {
+  static Coordinate2D limit
+    (Coordinate2D coord, float maxLength) {
+    if (coord == null) return null;
+    float mag = pow((coord.x * coord.x + coord.y * coord.y), 0.5);
+    if (mag > maxLength) {
+      return new Coordinate2D((coord.x / mag) * maxLength, (coord.y / mag) * maxLength);
+    }
+    return coord;
+  }
+
+  static Coordinate2D rotate
+    (float x, float y, float rot) {
     return {
     x:
-      (coord.x / mag) * maxLength,
+      x * Math.cos(rot) - y * Math.sin(rot),
       y:
-      (coord.y / mag) * maxLength,
+      x * Math.sin(rot) + y * Math.cos(rot),
     };
+    return new Coordinate2D(x * cos(rot) - y * sin(rot), x * sin(rot) + y * cos(rot));
   }
-  return coord;
-}
-,
-  rotate:
-(x, y, rot) => {
-  return {
-  x:
-    x * Math.cos(rot) - y * Math.sin(rot),
-    y:
-    x * Math.sin(rot) + y * Math.cos(rot),
-  };
-}
-,
-  polygonArea:
-(polygon) => {
-  // compute area
-  let area = 0;
-  const n = polygon.length;
-  for (let i = 1; i <= n; i++) {
-    area +=
-      polygon[i % n].x * (polygon[(i + 1) % n].y - polygon[(i - 1) % n].y);
+
+  static Coordinate2D polygonArea
+    (ArrayList<Particle> polygon) => {
+    // compute area
+    float area = 0;
+    int n = polygon.length;
+    for (int i = 1; i <= n; i++) {
+      area +=
+        polygon.get(i % n).x * (polygon.get((i + 1) % n).y - polygon.get((i - 1) % n).y);
+    }
+    return area / 2.0f;
   }
-  return area / 2;
-}
 }
