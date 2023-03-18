@@ -1,4 +1,5 @@
 class Particle extends Coordinate2D {
+  float z;
   float prevX, prevY;
   float sx, sy;
   float vx, vy;
@@ -19,6 +20,7 @@ class Particle extends Coordinate2D {
     Blob parent,
     ) {
     super(x, y);
+    this.z = z;
     this.prevX = x;
     this.prevY = y;
     this.sx = x;

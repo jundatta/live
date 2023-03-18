@@ -203,50 +203,36 @@ void draw() {
 }
 
 function generateBlob(offsetX, offsetY, radius) {
-  const numPoints = Math.floor((radius * PI * 2) / effectiveVertexDistance);
-  const vertices = new Array(numPoints).fill(0).map((_, i, {
-    length
-  }
-  ) => {
-    const t = i / length;
-    const angle = t * TWO_PI;
-    const particle = new ChainableParticle( {
-    x:
-      Math.cos(angle) * radius + offsetX,
-      y:
-      Math.sin(angle) * radius + offsetY,
-      z:
-      0,
-      damping:
-      1,
-      friction:
-      0.1,
-      radius:
-      effectiveVertexDistance,
-      mass:
-      1,
-    }
-    );
+  int numPoints = floor((radius * PI * 2) / effectiveVertexDistance);
+  ArrayList<ChainableParticle> vertices = new ArrayList();
+  for (int i = 0; i < numPoints; i++) {
+    float t = i / (float)numPoints;
+    float angle = t * TWO_PI;
+    float x = cos(angle) * radius + offsetX;
+    float y = sin(angle) * radius + offsetY;
+    float z = z;
+    float radius = effectiveVertexDistance;
+    float damping = 1;
+    float friction = 0.1f;
+    float mass = 1;
+    Blob parent = null;
+    ChainableParticle particle = new Particle(x, y, z, radius, damping, friction, mass, parent);
     particle.setClient(hashGrid.createClient(particle));
-    return particle;
+    vertices.add(particle);
   }
-  );
 
-  vertices.forEach((v, i, {
-    length
-  }
-  ) => {
-    const vprev = vertices[(i + length - 1) % length];
-    const vnext = vertices[(i + 1) % length];
+  int len = vertices.length;
+  for (int i = 0; i < len; i++) {
+    var v = vertices.get(i);
 
+    var vprev = vertices.get((i + len - 1) % len);
+    var vnext = vertices.get((i + 1) % len);
     v.setPrevSibling(vprev);
     v.setNextSibling(vnext);
-
-    if (i === 0) {
+    if (i == 0) {
       v.setIsRoot(true);
     }
   }
-  );
 
   const joints = vertices
     .map((v) => {
