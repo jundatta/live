@@ -3,8 +3,8 @@
 // 【作品名】Cone Spheres
 // https://openprocessing.org/sketch/1782503
 
-let _aryR = [];
-let _limitCount;
+FloatArray _aryR = new FloatArray();
+float _limitCount;
 let _aryTriangle = [];
 let _aryTriCenter = [];
 let _count;
