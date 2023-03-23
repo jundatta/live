@@ -1,15 +1,7 @@
-// オリジナルはこちらです。
-// 【作者】Richard Bourneさん
-// 【作品名】Cone Spheres
-// https://openprocessing.org/sketch/1782503
-
-class Triangle {
-  PVector t[3];
-}
-FloatArray _aryR = new FloatArray();
-float _limitCount;
-ArrayList<ArrayList<Triangle>> _aryTriangle = new ArrayList();
-ArrayList<ArrayList<PVector>> _aryTriCenter = new ArrayList();
+let _aryR = [];
+let _limitCount;
+let _aryTriangle = [];
+let _aryTriCenter = [];
 let _count;
 let _aryInitRot = [];
 let _aryCentRotYZ = [];
@@ -256,8 +248,4 @@ function mouseReleased() {
   _sphereR = width/1000;
 
   _count = 0;
-}
-
-function keyPressed() {
-  save("img_" + month() + '-' + day() + '_' + hour() + '-' + minute() + '-' + second() + ".jpg");
 }
