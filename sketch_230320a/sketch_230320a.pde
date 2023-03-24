@@ -5,48 +5,39 @@
 
 class Triangle {
   PVector t[3];
-}
-FloatArray _aryR = new FloatArray();
-float _limitCount;
-ArrayList<ArrayList<Triangle>> _aryTriangle = new ArrayList();
-ArrayList<ArrayList<PVector>> _aryTriCenter = new ArrayList();
-let _count;
-let _aryInitRot = [];
-let _aryCentRotYZ = [];
-let _numSphere;
-let _arySphereCenter = [];
-
-let _aryInitNoiseXYZ = [];
-let _aryNoiseRangeXYZ = [];
-let _noiseStepT;
-let _sphereR;
-let _maxAreaR;
-
-function setup() {
-  let canvasSize;
-  if (windowWidth <= windowHeight) {
-    canvasSize = windowWidth;
-  } else {
-    canvasSize = windowHeight;
+  Triangle(float x1, float y1, float z1,
+    float x2, float y2, float z2, float x3, float y3, float z3) {
+    t[0] = new PVector(x1, y1, z1);
+    t[1] = new PVector(x2, y2, z2);
+    t[2] = new PVector(x3, y3, z3);
   }
-  createCanvas(1112, 834, WEBGL);
-  colorMode(HSB, 255);
-  document.getElementsByTagName('main')[0].style.margin = 0;
-  setAttributes('premultipliedAlpha', true);
-  frameRate(30);
+}
+float _count;
+final float _limitCount = 3;
+final int _numSphere = 5;
+BaseTriangle _bt[] = new BaseTriangle[_numSphere];
+PVector _InitRot = new PVector();
+PVector _InitNoiseXYZ = new PVector();
+PVector _NoiseRangeXYZ = new PVector();
+
+final float _noiseStepT = 0.008f;
+float _sphereR;
+float _maxAreaR;
+float _maxSphereR;
+
+void setup() {
+  size(1112, 834, WEBGL);
+  colorMode(HSB, 255, 255, 255, 255);
   noStroke();
 
-  _limitCount = 3;
-  _maxAreaR = width/2.5;
-  _numSphere = 5;
-  let maxSphereR = width/5;
-  for (let i = 0; i < _numSphere; i++) {
-    _aryR[i] = maxSphereR;
-    let maxCentX = _maxAreaR - _aryR[i];
-    let maxCentY = _maxAreaR - _aryR[i];
-    let maxCentZ = _maxAreaR - _aryR[i];
-    _arySphereCenter[i] = [maxCentX*random(-1, 1), maxCentY*random(-1, 1), maxCentZ*random(-1, 1)];
-    let createTriangle = new BaseTriangle(_aryR[i], i, _arySphereCenter[i]);
+  _maxAreaR = width/2.5f;
+  _maxSphereR = width/5.0f;
+  for (int i = 0; i < _numSphere; i++) {
+    float maxCentX = _maxAreaR - _maxSphereR;
+    float maxCentY = _maxAreaR - _maxSphereR;
+    float maxCentZ = _maxAreaR - _maxSphereR;
+    PVector sphereCenter = new PVector(maxCentX*random(-1, 1), maxCentY*random(-1, 1), maxCentZ*random(-1, 1));
+    _bt[i] = new BaseTriangle(_maxSphereR, sphereCenter);
   }
 
   for (let i = 0; i < 3; i++) {
@@ -56,7 +47,6 @@ function setup() {
   _aryNoiseRangeXYZ[0] = 1.0/1.5/2;
   _aryNoiseRangeXYZ[1] = 1.0/1.5/2;
   _aryNoiseRangeXYZ[2] = 1.0/1.5/2;
-  _noiseStepT = 0.008;
 
   _sphereR = width/1000;
 
@@ -92,7 +82,7 @@ function draw() {
         rotateZ(_aryCentRotYZ[j][i][1]);
         let coneRatio = 0.07;
         let coneHeight = _sphereR * ratio;
-        translate(0, _aryR[j], 0);
+        translate(0, _maxSphereR, 0);
         translate(0, coneHeight/2, 0);
         fill(i%255, 255, 255);
         cone(coneHeight / coneRatio, coneHeight);
@@ -105,19 +95,24 @@ function draw() {
 }
 
 class BaseTriangle {
-  constructor(r, index, aryCentXYZ) {
-    let triangles = [];
-    triangles[0] = [[r+aryCentXYZ[0], 0+aryCentXYZ[1], 0+aryCentXYZ[2]], [0+aryCentXYZ[0], 0+aryCentXYZ[1], r+aryCentXYZ[2]], [0+aryCentXYZ[0], -r+aryCentXYZ[1], 0+aryCentXYZ[2]]];
-    triangles[1] = [[-r+aryCentXYZ[0], 0+aryCentXYZ[1], 0+aryCentXYZ[2]], [0+aryCentXYZ[0], 0+aryCentXYZ[1], r+aryCentXYZ[2]], [0+aryCentXYZ[0], -r+aryCentXYZ[1], 0+aryCentXYZ[2]]];
-    triangles[2] = [[r+aryCentXYZ[0], 0+aryCentXYZ[1], 0+aryCentXYZ[2]], [0+aryCentXYZ[0], 0+aryCentXYZ[1], -r+aryCentXYZ[2]], [0+aryCentXYZ[0], -r+aryCentXYZ[1], 0+aryCentXYZ[2]]];
-    triangles[3] = [[-r+aryCentXYZ[0], 0+aryCentXYZ[1], 0+aryCentXYZ[2]], [0+aryCentXYZ[0], 0+aryCentXYZ[1], -r+aryCentXYZ[2]], [0+aryCentXYZ[0], -r+aryCentXYZ[1], 0+aryCentXYZ[2]]];
-    triangles[4] = [[r+aryCentXYZ[0], 0+aryCentXYZ[1], 0+aryCentXYZ[2]], [0+aryCentXYZ[0], 0+aryCentXYZ[1], r+aryCentXYZ[2]], [0+aryCentXYZ[0], r+aryCentXYZ[1], 0+aryCentXYZ[2]]];
-    triangles[5] = [[-r+aryCentXYZ[0], 0+aryCentXYZ[1], 0+aryCentXYZ[2]], [0+aryCentXYZ[0], 0+aryCentXYZ[1], r+aryCentXYZ[2]], [0+aryCentXYZ[0], r+aryCentXYZ[1], 0+aryCentXYZ[2]]];
-    triangles[6] = [[r+aryCentXYZ[0], 0+aryCentXYZ[1], 0+aryCentXYZ[2]], [0+aryCentXYZ[0], 0+aryCentXYZ[1], -r+aryCentXYZ[2]], [0+aryCentXYZ[0], r+aryCentXYZ[1], 0+aryCentXYZ[2]]];
-    triangles[7] = [[-r+aryCentXYZ[0], 0+aryCentXYZ[1], 0+aryCentXYZ[2]], [0+aryCentXYZ[0], 0+aryCentXYZ[1], -r+aryCentXYZ[2]], [0+aryCentXYZ[0], r+aryCentXYZ[1], 0+aryCentXYZ[2]]];
-    _aryTriangle[index] = [];
-    _aryTriCenter[index] = [];
-    _aryCentRotYZ[index] = [];
+  ArrayList<Triangle> _aryTriangle;
+  ArrayList<PVector> _aryTriCenter;
+  ArrayList<PVector> _aryCentRotYZ;
+  PVector _SphereCenter;
+  BaseTriangle(float r, PVector aryCentXYZ) {
+    _aryTriangle = new ArrayList();
+    _aryTriCenter = new ArrayList();
+    _aryCentRotYZ = new ArrayList();
+    _SphereCenter = aryCentXYZ;
+    Triangle[] triangles = new Triangle[8];
+    triangles[0] = new Triangle(r+aryCentXYZ.x, 0+aryCentXYZ.y, 0+aryCentXYZ.z, 0+aryCentXYZ.x, 0+aryCentXYZ.y, r+aryCentXYZ.z, 0+aryCentXYZ.x, -r+aryCentXYZ.y, 0+aryCentXYZ.z);
+    triangles[1] = new Triangle(-r+aryCentXYZ.x, 0+aryCentXYZ.y, 0+aryCentXYZ.z, 0+aryCentXYZ.x, 0+aryCentXYZ.y, r+aryCentXYZ.z, 0+aryCentXYZ.x, -r+aryCentXYZ.y, 0+aryCentXYZ.z);
+    triangles[2] = new Triangle(r+aryCentXYZ.x, 0+aryCentXYZ.y, 0+aryCentXYZ.z, 0+aryCentXYZ.x, 0+aryCentXYZ.y, -r+aryCentXYZ.z, 0+aryCentXYZ.x, -r+aryCentXYZ.y, 0+aryCentXYZ.z);
+    triangles[3] = new Triangle(-r+aryCentXYZ.x, 0+aryCentXYZ.y, 0+aryCentXYZ.z, 0+aryCentXYZ.x, 0+aryCentXYZ.y, -r+aryCentXYZ.z, 0+aryCentXYZ.x, -r+aryCentXYZ.y, 0+aryCentXYZ.z);
+    triangles[4] = new Triangle(r+aryCentXYZ.x, 0+aryCentXYZ.y, 0+aryCentXYZ.z, 0+aryCentXYZ.x, 0+aryCentXYZ.y, r+aryCentXYZ.z, 0+aryCentXYZ.x, r+aryCentXYZ.y, 0+aryCentXYZ.z);
+    triangles[5] = new Triangle(-r+aryCentXYZ.x, 0+aryCentXYZ.y, 0+aryCentXYZ.z, 0+aryCentXYZ.x, 0+aryCentXYZ.y, r+aryCentXYZ.z, 0+aryCentXYZ.x, r+aryCentXYZ.y, 0+aryCentXYZ.z);
+    triangles[6] = new Triangle(r+aryCentXYZ.x, 0+aryCentXYZ.y, 0+aryCentXYZ.z, 0+aryCentXYZ.x, 0+aryCentXYZ.y, -r+aryCentXYZ.z, 0+aryCentXYZ.x, r+aryCentXYZ.y, 0+aryCentXYZ.z);
+    triangles[7] = new Triangle(-r+aryCentXYZ.x, 0+aryCentXYZ.y, 0+aryCentXYZ.z, 0+aryCentXYZ.x, 0+aryCentXYZ.y, -r+aryCentXYZ.z, 0+aryCentXYZ.x, r+aryCentXYZ.y, 0+aryCentXYZ.z);
     let countObj = 0;
     for (let i = 0; i < triangles.length; i++) {
       let newSubTriangle = new SubTriangle(triangles[i], countObj + 1, r, index);
@@ -222,7 +217,6 @@ class SubTriangle {
 }
 
 function mouseReleased() {
-  _aryR = [];
   _aryTriangle = [];
   _aryTriCenter = [];
   _aryInitRot = [];
@@ -231,17 +225,12 @@ function mouseReleased() {
   _aryInitNoiseXYZ = [];
   _aryNoiseRangeXYZ = [];
 
-  _limitCount = 3;
-  _maxAreaR = width/2.5;
-  _numSphere = 5;
-  let maxSphereR = width/5;
   for (let i = 0; i < _numSphere; i++) {
-    _aryR[i] = maxSphereR;
-    let maxCentX = _maxAreaR - _aryR[i];
-    let maxCentY = _maxAreaR - _aryR[i];
-    let maxCentZ = _maxAreaR - _aryR[i];
+    let maxCentX = _maxAreaR - _maxSphereR;
+    let maxCentY = _maxAreaR - _maxSphereR;
+    let maxCentZ = _maxAreaR - _maxSphereR;
     _arySphereCenter[i] = [maxCentX*random(-1, 1), maxCentY*random(-1, 1), maxCentZ*random(-1, 1)];
-    let createTriangle = new BaseTriangle(_aryR[i], i, _arySphereCenter[i]);
+    let createTriangle = new BaseTriangle(_maxSphereR, i, _arySphereCenter[i]);
   }
 
   for (let i = 0; i < 3; i++) {
@@ -251,13 +240,6 @@ function mouseReleased() {
   _aryNoiseRangeXYZ[0] = 1.0/1.5/2;
   _aryNoiseRangeXYZ[1] = 1.0/1.5/2;
   _aryNoiseRangeXYZ[2] = 1.0/1.5/2;
-  _noiseStepT = 0.008;
-
-  _sphereR = width/1000;
 
   _count = 0;
-}
-
-function keyPressed() {
-  save("img_" + month() + '-' + day() + '_' + hour() + '-' + minute() + '-' + second() + ".jpg");
 }
