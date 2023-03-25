@@ -35,10 +35,10 @@ PVector _InitRot;
 PVector _NoiseRangeXYZ;
 
 PShape cone;
+PGraphics tex;
 
 void setup() {
   size(1112, 834, P3D);
-  colorMode(HSB, 255, 255, 255, 255);
   noStroke();
 
   _maxAreaR = width/2.5f;
@@ -60,12 +60,15 @@ void setup() {
   _count = 0;
 
   cone = createCone(1, 1);
+  tex = createGraphics(1, 1);
 }
 
 void draw() {
   translate(width * 0.5f, height * 0.5f);
   //background(200);
   background(0);
+  directionalLight(105, 0, 150, -1, 1, -1);
+  directionalLight(105, 0, 150, -1, 1, -1);
   directionalLight(105, 0, 150, -1, 1, -1);
   //specularMaterial(0);  // あきらめる
 
@@ -97,7 +100,12 @@ void draw() {
         float coneHeight = _sphereR * ratio;
         translate(0, _maxSphereR, 0);
         translate(0, coneHeight/2.0f, 0);
-        fill(i%255, 255, 255);
+        //fill(i%255, 255, 255);
+        tex.beginDraw();
+        tex.colorMode(HSB, 255, 255, 255, 255);
+        tex.background(i%255, 255, 255);
+        tex.endDraw();
+        cone.setTexture(tex);
         //cone(coneHeight / coneRatio, coneHeight);
         //PShape cone = createCone(coneHeight / coneRatio, coneHeight);
         scale(coneHeight / coneRatio, coneHeight, coneHeight / coneRatio);
