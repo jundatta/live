@@ -4,7 +4,7 @@
 // https://openprocessing.org/sketch/1782503
 
 class Triangle {
-  PVector t[3];
+  PVector[] t = new PVector[3];
   void setup(float x1, float y1, float z1,
     float x2, float y2, float z2, float x3, float y3, float z3) {
     t[0] = new PVector(x1, y1, z1);
@@ -23,17 +23,20 @@ float _count;
 final int _limitCount = 3;
 final int _numSphere = 5;
 BaseTriangle _bt[] = new BaseTriangle[_numSphere];
-PVector _InitRot = new PVector();
-PVector _InitNoiseXYZ = new PVector();
-PVector _NoiseRangeXYZ = new PVector();
 
 final float _noiseStepT = 0.008f;
 float _sphereR;
 float _maxAreaR;
 float _maxSphereR;
 
+PVector _InitNoiseXYZ;
+PVector _InitRot;
+PVector _NoiseRangeXYZ;
+
+PShape cone;
+
 void setup() {
-  size(1112, 834, WEBGL);
+  size(1112, 834, P3D);
   colorMode(HSB, 255, 255, 255, 255);
   noStroke();
 
@@ -47,58 +50,63 @@ void setup() {
     _bt[i] = new BaseTriangle(_maxSphereR, sphereCenter);
   }
 
-  for (let i = 0; i < 3; i++) {
-    _aryInitNoiseXYZ[i] = random(100);
-    _aryInitRot[i] = random(360);
-  }
-  _aryNoiseRangeXYZ[0] = 1.0/1.5/2;
-  _aryNoiseRangeXYZ[1] = 1.0/1.5/2;
-  _aryNoiseRangeXYZ[2] = 1.0/1.5/2;
+  _InitNoiseXYZ = new PVector(random(100), random(100), random(100));
+  _InitRot = new PVector(random(360), random(360), random(360));
+  _NoiseRangeXYZ = new PVector(1.0/1.5/2.0f, 1.0/1.5/2.0f, 1.0/1.5/2.0f);
 
-  _sphereR = width/1000;
+  _sphereR = width/1000.0f;
 
   _count = 0;
+
+  cone = createCone(1, 1);
 }
 
-function draw() {
+void draw() {
+  translate(width * 0.5f, height * 0.5f);
   //background(200);
   background(0);
   directionalLight(105, 0, 150, -1, 1, -1);
-  specularMaterial(0);
+  //specularMaterial(0);  // あきらめる
 
-  rotateX(_aryInitRot[0] + _count/300);
-  rotateY(_aryInitRot[1] + _count/100);
-  rotateZ(_aryInitRot[2] + _count/200);
-  let freq = 4;
-  let d = 2;
-  for (let j = 0; j < _numSphere; j++) {
-    for (let i = 0; i < _aryTriangle[j].length; i++) {
-      let noiseVal = sin(freq * 2*PI * noise(
-        _aryInitNoiseXYZ[0] + _aryNoiseRangeXYZ[0] * _aryTriCenter[j][i][0] / _maxAreaR,
-        _aryInitNoiseXYZ[1] + _aryNoiseRangeXYZ[1] * _aryTriCenter[j][i][1] / _maxAreaR - _noiseStepT * _count,
-        _aryInitNoiseXYZ[2] + _aryNoiseRangeXYZ[2] * _aryTriCenter[j][i][2] / _maxAreaR
-        ))**d * 1 + 0;
+  rotateX(_InitRot.x + _count/300.0f);
+  rotateY(_InitRot.y + _count/100.0f);
+  rotateZ(_InitRot.z + _count/200.0f);
+  float freq = 4;
+  float d = 2;
+  for (int j = 0; j < _numSphere; j++) {
+    BaseTriangle bt = _bt[j];
+    for (int i = 0; i < bt._aryTriangle.size(); i++) {
+      PVector tc = bt._aryTriCenter.get(i);
+      float noiseVal = pow(sin(freq * 2*PI * noise(
+        _InitNoiseXYZ.x + _NoiseRangeXYZ.x * tc.x / _maxAreaR,
+        _InitNoiseXYZ.y + _NoiseRangeXYZ.y * tc.y / _maxAreaR - _noiseStepT * _count,
+        _InitNoiseXYZ.z + _NoiseRangeXYZ.z * tc.z / _maxAreaR
+        )), d) * 1 + 0;
 
-      let threshold = 0.1;
-      let ratio = (noiseVal-threshold)/(1-threshold);
+      float threshold = 0.1;
+      float ratio = (noiseVal-threshold)/(1.0f-threshold);
       if (noiseVal > threshold) {
         push();
-        translate(_arySphereCenter[j][0], _arySphereCenter[j][1], _arySphereCenter[j][2]);
-        rotateZ(-PI/2);
-        rotateX(_aryCentRotYZ[j][i][0]);
-        rotateZ(_aryCentRotYZ[j][i][1]);
-        let coneRatio = 0.07;
-        let coneHeight = _sphereR * ratio;
+        translate(bt._SphereCenter.x, bt._SphereCenter.y, bt._SphereCenter.z);
+        rotateZ(-PI/2.0f);
+        PVector crYZ = bt._aryCentRotYZ.get(i);
+        rotateX(crYZ.y);
+        rotateZ(crYZ.z);
+        float coneRatio = 0.07;
+        float coneHeight = _sphereR * ratio;
         translate(0, _maxSphereR, 0);
-        translate(0, coneHeight/2, 0);
+        translate(0, coneHeight/2.0f, 0);
         fill(i%255, 255, 255);
-        cone(coneHeight / coneRatio, coneHeight);
+        //cone(coneHeight / coneRatio, coneHeight);
+        //PShape cone = createCone(coneHeight / coneRatio, coneHeight);
+        scale(coneHeight / coneRatio, coneHeight, coneHeight / coneRatio);
+        shape(cone);
         pop();
       }
     }
   }
 
-  _count ++;
+  _count++;
 }
 
 class BaseTriangle {
@@ -136,8 +144,8 @@ class BaseTriangle {
       triangles[1] = new Triangle(newMidXYZ.t[0], XYZ2, newMidXYZ.t[1]);
       triangles[2] = new Triangle(newMidXYZ.t[2], newMidXYZ.t[1], XYZ3);
       triangles[3] = new Triangle(newMidXYZ.t[0], newMidXYZ.t[1], newMidXYZ.t[2]);
-      for (int i = 0; i < this.triangles.length; i++) {
-        subTriangle(this.triangles[i], this.countObj + 1, r);
+      for (int i = 0; i < triangles.length; i++) {
+        subTriangle(triangles[i], countObj + 1, r);
       }
     } else {
       this.addCenter(triangle); //[[x1, y1, z1], [x2, y2, z2], [x3, y3, z3]] -> [ave.x, ave.y, ave.z]
@@ -162,7 +170,7 @@ class BaseTriangle {
       (XYZ3.z + XYZ1.z)/2.0f
       );
     float distMid_1_2 = pow(
-      pow(midXYZ_1_2.x - _SphereCenter.x), 2) +
+      pow(midXYZ_1_2.x - _SphereCenter.x, 2) +
       pow(midXYZ_1_2.y - _SphereCenter.y, 2) +
       pow(midXYZ_1_2.z - _SphereCenter.z, 2), 0.5);
     float distMid_2_3 = pow(
