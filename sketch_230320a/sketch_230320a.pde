@@ -21,7 +21,8 @@ class Triangle {
 }
 float _count;
 final int _limitCount = 3;
-final int _numSphere = 5;
+//final int _numSphere = 5;
+final int _numSphere = 1;
 BaseTriangle _bt[] = new BaseTriangle[_numSphere];
 
 final float _noiseStepT = 0.008f;
@@ -68,9 +69,9 @@ void draw() {
   directionalLight(105, 0, 150, -1, 1, -1);
   //specularMaterial(0);  // あきらめる
 
-  rotateX(_InitRot.x + _count/300.0f);
-  rotateY(_InitRot.y + _count/100.0f);
-  rotateZ(_InitRot.z + _count/200.0f);
+  //rotateX(_InitRot.x + _count/300.0f);
+  //rotateY(_InitRot.y + _count/100.0f);
+  //rotateZ(_InitRot.z + _count/200.0f);
   float freq = 4;
   float d = 2;
   for (int j = 0; j < _numSphere; j++) {

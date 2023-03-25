@@ -30,7 +30,8 @@ function setup() {
 
   _limitCount = 3;
   _maxAreaR = width/2.5;
-  _numSphere = 5;
+  //_numSphere = 5;
+  _numSphere = 1;
   let maxSphereR = width/5;
   for (let i = 0; i < _numSphere; i++) {
     _aryR[i] = maxSphereR;
@@ -61,9 +62,9 @@ function draw() {
   directionalLight(105, 0, 150, -1, 1, -1);
   specularMaterial(0);
 
-  rotateX(_aryInitRot[0] + _count/300);
-  rotateY(_aryInitRot[1] + _count/100);
-  rotateZ(_aryInitRot[2] + _count/200);
+  //rotateX(_aryInitRot[0] + _count/300);
+  //rotateY(_aryInitRot[1] + _count/100);
+  //rotateZ(_aryInitRot[2] + _count/200);
   let freq = 4;
   let d = 2;
   for (let j = 0; j < _numSphere; j++) {
