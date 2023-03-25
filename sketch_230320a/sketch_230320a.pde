@@ -5,15 +5,22 @@
 
 class Triangle {
   PVector t[3];
-  Triangle(float x1, float y1, float z1,
+  void setup(float x1, float y1, float z1,
     float x2, float y2, float z2, float x3, float y3, float z3) {
     t[0] = new PVector(x1, y1, z1);
     t[1] = new PVector(x2, y2, z2);
     t[2] = new PVector(x3, y3, z3);
   }
+  Triangle(float x1, float y1, float z1,
+    float x2, float y2, float z2, float x3, float y3, float z3) {
+    setup(x1, y1, z1, x2, y2, z2, x3, y3, z3);
+  }
+  Triangle(PVector p1, PVector p2, PVector p3) {
+    setup(p1.x, p1.y, p1.z, p2.x, p2.y, p2.z, p3.x, p3.y, p3.z);
+  }
 }
 float _count;
-final float _limitCount = 3;
+final int _limitCount = 3;
 final int _numSphere = 5;
 BaseTriangle _bt[] = new BaseTriangle[_numSphere];
 PVector _InitRot = new PVector();
@@ -113,133 +120,97 @@ class BaseTriangle {
     triangles[5] = new Triangle(-r+aryCentXYZ.x, 0+aryCentXYZ.y, 0+aryCentXYZ.z, 0+aryCentXYZ.x, 0+aryCentXYZ.y, r+aryCentXYZ.z, 0+aryCentXYZ.x, r+aryCentXYZ.y, 0+aryCentXYZ.z);
     triangles[6] = new Triangle(r+aryCentXYZ.x, 0+aryCentXYZ.y, 0+aryCentXYZ.z, 0+aryCentXYZ.x, 0+aryCentXYZ.y, -r+aryCentXYZ.z, 0+aryCentXYZ.x, r+aryCentXYZ.y, 0+aryCentXYZ.z);
     triangles[7] = new Triangle(-r+aryCentXYZ.x, 0+aryCentXYZ.y, 0+aryCentXYZ.z, 0+aryCentXYZ.x, 0+aryCentXYZ.y, -r+aryCentXYZ.z, 0+aryCentXYZ.x, r+aryCentXYZ.y, 0+aryCentXYZ.z);
-    let countObj = 0;
-    for (let i = 0; i < triangles.length; i++) {
-      let newSubTriangle = new SubTriangle(triangles[i], countObj + 1, r, index);
+    int countObj = 0;
+    for (int i = 0; i < triangles.length; i++) {
+      subTriangle(triangles[i], countObj + 1, r);
     }
   }
-}
-
-class SubTriangle {
-  constructor(triangle, countObj, r, index) { //triangle = [[x1, y1, z1], [x2, y2, z2], [x3, y3, z3]]
-    this.countObj = countObj;
-    if (this.countObj <= _limitCount) {
-      this.XYZ1 = triangle[0];
-      this.XYZ2 = triangle[1];
-      this.XYZ3 = triangle[2];
-      this.divide(this.XYZ1, this.XYZ2, this.XYZ3, r, index);
-      let newTriangle1 = [this.XYZ1, this.newMidXYZ_1_2, this.newMidXYZ_3_1];
-      let newTriangle2 = [this.newMidXYZ_1_2, this.XYZ2, this.newMidXYZ_2_3];
-      let newTriangle3 = [this.newMidXYZ_3_1, this.newMidXYZ_2_3, this.XYZ3];
-      let newTriangle4 = [this.newMidXYZ_1_2, this.newMidXYZ_2_3, this.newMidXYZ_3_1];
-      this.triangles = [newTriangle1, newTriangle2, newTriangle3, newTriangle4];
-      for (let i = 0; i < this.triangles.length; i++) {
-        let newSubTriangle = new SubTriangle(this.triangles[i], this.countObj + 1, r, index);
+  void subTriangle(Triangle triangle, int countObj, float r) { //triangle = [[x1, y1, z1], [x2, y2, z2], [x3, y3, z3]]
+    if (countObj <= _limitCount) {
+      PVector XYZ1 = triangle.t[0];
+      PVector XYZ2 = triangle.t[1];
+      PVector XYZ3 = triangle.t[2];
+      Triangle newMidXYZ = divide(XYZ1, XYZ2, XYZ3, r);
+      Triangle[] triangles = new Triangle[4];
+      triangles[0] = new Triangle(XYZ1, newMidXYZ.t[0], newMidXYZ.t[2]);
+      triangles[1] = new Triangle(newMidXYZ.t[0], XYZ2, newMidXYZ.t[1]);
+      triangles[2] = new Triangle(newMidXYZ.t[2], newMidXYZ.t[1], XYZ3);
+      triangles[3] = new Triangle(newMidXYZ.t[0], newMidXYZ.t[1], newMidXYZ.t[2]);
+      for (int i = 0; i < this.triangles.length; i++) {
+        subTriangle(this.triangles[i], this.countObj + 1, r);
       }
     } else {
-      this.addCenter(triangle, index); //[[x1, y1, z1], [x2, y2, z2], [x3, y3, z3]] -> [ave.x, ave.y, ave.z]
-      this.addCentRotYZ(index); //angle X-Z plane, angle X-Y plane
-      _aryTriangle[index].push(triangle);
+      this.addCenter(triangle); //[[x1, y1, z1], [x2, y2, z2], [x3, y3, z3]] -> [ave.x, ave.y, ave.z]
+      this.addCentRotYZ(); //angle X-Z plane, angle X-Y plane
+      _aryTriangle.add(triangle);
     }
   }
-  addCenter(triangle, index) {
-    let centX = 0;
-    let centY = 0;
-    let centZ = 0;
-    for (let i = 0; i < triangle.length; i++) {
-      centX += triangle[i][0];
-      centY += triangle[i][1];
-      centZ += triangle[i][2];
+  Triangle divide(PVector XYZ1, PVector XYZ2, PVector XYZ3, float r) {
+    PVector midXYZ_1_2 = new PVector(
+      (XYZ1.x + XYZ2.x)/2.0f,
+      (XYZ1.y + XYZ2.y)/2.0f,
+      (XYZ1.z + XYZ2.z)/2.0f
+      );
+    PVector midXYZ_2_3 = new PVector(
+      (XYZ2.x + XYZ3.x)/2.0f,
+      (XYZ2.y + XYZ3.y)/2.0f,
+      (XYZ2.z + XYZ3.z)/2.0f
+      );
+    PVector midXYZ_3_1 = new PVector(
+      (XYZ3.x + XYZ1.x)/2.0f,
+      (XYZ3.y + XYZ1.y)/2.0f,
+      (XYZ3.z + XYZ1.z)/2.0f
+      );
+    float distMid_1_2 = pow(
+      pow(midXYZ_1_2.x - _SphereCenter.x), 2) +
+      pow(midXYZ_1_2.y - _SphereCenter.y, 2) +
+      pow(midXYZ_1_2.z - _SphereCenter.z, 2), 0.5);
+    float distMid_2_3 = pow(
+      pow(midXYZ_2_3.x - _SphereCenter.x, 2) +
+      pow(midXYZ_2_3.y - _SphereCenter.y, 2) +
+      pow(midXYZ_2_3.z - _SphereCenter.z, 2), 0.5);
+    float distMid_3_1 = pow(
+      pow(midXYZ_3_1.x - _SphereCenter.x, 2) +
+      pow(midXYZ_3_1.y - _SphereCenter.y, 2) +
+      pow(midXYZ_3_1.z - _SphereCenter.z, 2), 0.5);
+    PVector newMidXYZ_1_2 = new PVector(
+      (midXYZ_1_2.x - _SphereCenter.x) / distMid_1_2 * r + _SphereCenter.x,
+      (midXYZ_1_2.y - _SphereCenter.y) / distMid_1_2 * r + _SphereCenter.y,
+      (midXYZ_1_2.z - _SphereCenter.z) / distMid_1_2 * r + _SphereCenter.z
+      );
+    PVector newMidXYZ_2_3 = new PVector(
+      (midXYZ_2_3.x - _SphereCenter.x) / distMid_2_3 * r + _SphereCenter.x,
+      (midXYZ_2_3.y - _SphereCenter.y) / distMid_2_3 * r + _SphereCenter.y,
+      (midXYZ_2_3.z - _SphereCenter.z) / distMid_2_3 * r + _SphereCenter.z
+      );
+    PVector newMidXYZ_3_1 = new PVector(
+      (midXYZ_3_1.x - _SphereCenter.x) / distMid_3_1 * r + _SphereCenter.x,
+      (midXYZ_3_1.y - _SphereCenter.y) / distMid_3_1 * r + _SphereCenter.y,
+      (midXYZ_3_1.z - _SphereCenter.z) / distMid_3_1 * r + _SphereCenter.z
+      );
+    return new Triangle(newMidXYZ_1_2, newMidXYZ_2_3, newMidXYZ_3_1);
+  }
+  void addCenter(Triangle triangle) {
+    PVector t0 = triangle.t[0];
+    PVector t1 = triangle.t[1];
+    PVector t2 = triangle.t[2];
+    float centX = t0.x + t1.x + t2.x;
+    float centY = t0.y + t1.y + t2.y;
+    float centZ = t0.z + t1.z + t2.z;
+    centX /= (float)triangle.t.length;
+    centY /= (float)triangle.t.length;
+    centZ /= (float)triangle.t.length;
+    _aryTriCenter.add(new PVector(centX, centY, centZ));
+  }
+  void addCentRotYZ() {
+    for (PVector tc : _aryTriCenter) {
+      float rotY = atan2(
+        tc.z - _SphereCenter.z,
+        tc.x - _SphereCenter.x);
+      float rx = pow(pow(tc.z - _SphereCenter.z, 2) + pow(tc.x - _SphereCenter.x, 2), 0.5);
+      float ry = tc.y - _SphereCenter.y;
+      float rotZ = atan2(ry, rx);
+      _aryCentRotYZ.add(new PVector(0, rotY, rotZ));
     }
-    centX /= triangle.length;
-    centY /= triangle.length;
-    centZ /= triangle.length;
-    _aryTriCenter[index].push([centX, centY, centZ]);
   }
-  addCentRotYZ(index) {
-    for (let i = 0; i < _aryTriCenter[index].length; i++) {
-      let rotY = atan2(
-        _aryTriCenter[index][i][2] - _arySphereCenter[index][2],
-        _aryTriCenter[index][i][0] - _arySphereCenter[index][0]);
-      let rx = (
-        (_aryTriCenter[index][i][2] - _arySphereCenter[index][2])**2 +
-        (_aryTriCenter[index][i][0] - _arySphereCenter[index][0])**2
-        )**0.5;
-      let ry = _aryTriCenter[index][i][1] - _arySphereCenter[index][1];
-      let rotZ = atan2(ry, rx);
-      _aryCentRotYZ[index][i] = [rotY, rotZ];
-    }
-  }
-  divide(XYZ1, XYZ2, XYZ3, r, index) {
-    let midXYZ_1_2 = [
-      (XYZ1[0] + XYZ2[0])/2,
-      (XYZ1[1] + XYZ2[1])/2,
-      (XYZ1[2] + XYZ2[2])/2
-    ];
-    let midXYZ_2_3 = [
-      (XYZ2[0] + XYZ3[0])/2,
-      (XYZ2[1] + XYZ3[1])/2,
-      (XYZ2[2] + XYZ3[2])/2
-    ];
-    let midXYZ_3_1 = [
-      (XYZ3[0] + XYZ1[0])/2,
-      (XYZ3[1] + XYZ1[1])/2,
-      (XYZ3[2] + XYZ1[2])/2
-    ];
-    let distMid_1_2 = (
-      (midXYZ_1_2[0] - _arySphereCenter[index][0])**2 +
-      (midXYZ_1_2[1] - _arySphereCenter[index][1])**2 +
-      (midXYZ_1_2[2] - _arySphereCenter[index][2])**2)**0.5;
-    let distMid_2_3 = (
-      (midXYZ_2_3[0] - _arySphereCenter[index][0])**2 +
-      (midXYZ_2_3[1] - _arySphereCenter[index][1])**2 +
-      (midXYZ_2_3[2] - _arySphereCenter[index][2])**2)**0.5;
-    let distMid_3_1 = (
-      (midXYZ_3_1[0] - _arySphereCenter[index][0])**2 +
-      (midXYZ_3_1[1] - _arySphereCenter[index][1])**2 +
-      (midXYZ_3_1[2] - _arySphereCenter[index][2])**2)**0.5;
-    this.newMidXYZ_1_2 = [
-      (midXYZ_1_2[0] - _arySphereCenter[index][0]) / distMid_1_2 * r + _arySphereCenter[index][0],
-      (midXYZ_1_2[1] - _arySphereCenter[index][1]) / distMid_1_2 * r + _arySphereCenter[index][1],
-      (midXYZ_1_2[2] - _arySphereCenter[index][2]) / distMid_1_2 * r + _arySphereCenter[index][2]
-    ];
-    this.newMidXYZ_2_3 = [
-      (midXYZ_2_3[0] - _arySphereCenter[index][0]) / distMid_2_3 * r + _arySphereCenter[index][0],
-      (midXYZ_2_3[1] - _arySphereCenter[index][1]) / distMid_2_3 * r + _arySphereCenter[index][1],
-      (midXYZ_2_3[2] - _arySphereCenter[index][2]) / distMid_2_3 * r + _arySphereCenter[index][2]
-    ];
-    this.newMidXYZ_3_1 = [
-      (midXYZ_3_1[0] - _arySphereCenter[index][0]) / distMid_3_1 * r + _arySphereCenter[index][0],
-      (midXYZ_3_1[1] - _arySphereCenter[index][1]) / distMid_3_1 * r + _arySphereCenter[index][1],
-      (midXYZ_3_1[2] - _arySphereCenter[index][2]) / distMid_3_1 * r + _arySphereCenter[index][2]
-    ];
-  }
-}
-
-function mouseReleased() {
-  _aryTriangle = [];
-  _aryTriCenter = [];
-  _aryInitRot = [];
-  _aryCentRotYZ = [];
-  _arySphereCenter = [];
-  _aryInitNoiseXYZ = [];
-  _aryNoiseRangeXYZ = [];
-
-  for (let i = 0; i < _numSphere; i++) {
-    let maxCentX = _maxAreaR - _maxSphereR;
-    let maxCentY = _maxAreaR - _maxSphereR;
-    let maxCentZ = _maxAreaR - _maxSphereR;
-    _arySphereCenter[i] = [maxCentX*random(-1, 1), maxCentY*random(-1, 1), maxCentZ*random(-1, 1)];
-    let createTriangle = new BaseTriangle(_maxSphereR, i, _arySphereCenter[i]);
-  }
-
-  for (let i = 0; i < 3; i++) {
-    _aryInitNoiseXYZ[i] = random(100);
-    _aryInitRot[i] = random(360);
-  }
-  _aryNoiseRangeXYZ[0] = 1.0/1.5/2;
-  _aryNoiseRangeXYZ[1] = 1.0/1.5/2;
-  _aryNoiseRangeXYZ[2] = 1.0/1.5/2;
-
-  _count = 0;
 }
