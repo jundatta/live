@@ -20,8 +20,8 @@ class Triangle {
   }
 }
 float _count;
-final int _limitCount = 3;
-//final int _numSphere = 5;
+//final int _limitCount = 3;
+final int _limitCount = 2;
 final int _numSphere = 1;
 BaseTriangle _bt[] = new BaseTriangle[_numSphere];
 
@@ -220,6 +220,7 @@ class BaseTriangle {
     _aryTriCenter.add(new PVector(centX, centY, centZ));
   }
   void addCentRotYZ() {
+    _aryCentRotYZ = new ArrayList();
     for (PVector tc : _aryTriCenter) {
       float rotY = atan2(
         tc.z - _SphereCenter.z,

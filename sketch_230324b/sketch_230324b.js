@@ -80,9 +80,9 @@ function draw() {
       if (noiseVal > threshold) {
         push();
         translate(_arySphereCenter[j][0], _arySphereCenter[j][1], _arySphereCenter[j][2]);
-        rotateZ(-PI/2);
+        //rotateZ(-PI/2);
         rotateX(_aryCentRotYZ[j][i][0]);
-        rotateZ(_aryCentRotYZ[j][i][1]);
+        //rotateZ(_aryCentRotYZ[j][i][1]);
         let coneRatio = 0.07;
         let coneHeight = _sphereR * ratio;
         translate(0, _aryR[j], 0);
