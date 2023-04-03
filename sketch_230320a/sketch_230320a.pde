@@ -66,6 +66,7 @@ void setup() {
 void draw() {
   translate(width * 0.5f, height * 0.5f);
   //background(200);
+  colorMode(HSB, 255, 255, 255, 255);
   background(0);
   directionalLight(105, 0, 150, -1, 1, -1);
   directionalLight(105, 0, 150, -1, 1, -1);
