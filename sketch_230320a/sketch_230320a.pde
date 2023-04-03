@@ -22,7 +22,8 @@ class Triangle {
 float _count;
 //final int _limitCount = 3;
 final int _limitCount = 2;
-final int _numSphere = 1;
+//final int _numSphere = 1;
+final int _numSphere = 5;
 BaseTriangle _bt[] = new BaseTriangle[_numSphere];
 
 final float _noiseStepT = 0.008f;
@@ -70,7 +71,7 @@ void draw() {
   background(0);
   directionalLight(105, 0, 150, -1, 1, -1);
   directionalLight(105, 0, 150, -1, 1, -1);
-  directionalLight(105, 0, 150, -1, 1, -1);
+  ambientLight(255, 0, 192);  // 環境光に白を入れて色を飛ばしてみた＼(^_^)／
   //specularMaterial(0);  // あきらめる
 
   //rotateX(_InitRot.x + _count/300.0f);
@@ -109,7 +110,7 @@ void draw() {
         cone.setTexture(tex);
         //cone(coneHeight / coneRatio, coneHeight);
         //PShape cone = createCone(coneHeight / coneRatio, coneHeight);
-        scale(coneHeight / coneRatio, coneHeight, coneHeight / coneRatio);
+        scale(coneHeight / coneRatio * 1.5f, coneHeight, coneHeight / coneRatio * 1.5f);
         shape(cone);
         pop();
       }

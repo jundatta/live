@@ -30,8 +30,8 @@ function setup() {
 
   _limitCount = 3;
   _maxAreaR = width/2.5;
-  //_numSphere = 5;
-  _numSphere = 1;
+  _numSphere = 5;
+  //_numSphere = 1;
   let maxSphereR = width/5;
   for (let i = 0; i < _numSphere; i++) {
     _aryR[i] = maxSphereR;
@@ -88,6 +88,7 @@ function draw() {
         translate(0, _aryR[j], 0);
         translate(0, coneHeight/2, 0);
         fill(i%255, 255, 255);
+        console.log(coneHeight + " : " + coneHeight / coneRatio);
         cone(coneHeight / coneRatio, coneHeight);
         pop();
       }
@@ -212,41 +213,4 @@ class SubTriangle {
       (midXYZ_3_1[2] - _arySphereCenter[index][2]) / distMid_3_1 * r + _arySphereCenter[index][2]
     ];
   }
-}
-
-function mouseReleased() {
-  _aryR = [];
-  _aryTriangle = [];
-  _aryTriCenter = [];
-  _aryInitRot = [];
-  _aryCentRotYZ = [];
-  _arySphereCenter = [];
-  _aryInitNoiseXYZ = [];
-  _aryNoiseRangeXYZ = [];
-
-  _limitCount = 3;
-  _maxAreaR = width/2.5;
-  _numSphere = 5;
-  let maxSphereR = width/5;
-  for (let i = 0; i < _numSphere; i++) {
-    _aryR[i] = maxSphereR;
-    let maxCentX = _maxAreaR - _aryR[i];
-    let maxCentY = _maxAreaR - _aryR[i];
-    let maxCentZ = _maxAreaR - _aryR[i];
-    _arySphereCenter[i] = [maxCentX*random(-1, 1), maxCentY*random(-1, 1), maxCentZ*random(-1, 1)];
-    let createTriangle = new BaseTriangle(_aryR[i], i, _arySphereCenter[i]);
-  }
-
-  for (let i = 0; i < 3; i++) {
-    _aryInitNoiseXYZ[i] = random(100);
-    _aryInitRot[i] = random(360);
-  }
-  _aryNoiseRangeXYZ[0] = 1.0/1.5/2;
-  _aryNoiseRangeXYZ[1] = 1.0/1.5/2;
-  _aryNoiseRangeXYZ[2] = 1.0/1.5/2;
-  _noiseStepT = 0.008;
-
-  _sphereR = width/1000;
-
-  _count = 0;
 }

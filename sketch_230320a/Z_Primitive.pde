@@ -92,8 +92,8 @@ PShape createCone(float r, float h, int detail) {
     float z = cos(i * angle);
     float u = float(i) / detail;
     sh.normal(-x, -0, -z);
-    sh.vertex(x * r, -h/2, z * r, u, 0);
-    sh.vertex(x * 0, +h/2, z * 0, u, 1);
+    sh.vertex(x * r, -h/2.0f, z * r, u, 0);
+    sh.vertex(x * 0, +h/2.0f, z * 0, u, 1);
   }
   sh.endShape();
   return sh;
