@@ -10,74 +10,70 @@ ArrayList<PVector> location_list = new ArrayList();
 void setup() {
   size(720, 720, P3D);
 
-  this->radius = 16;
-  auto x_span = radius * sqrt(3);
-  auto flg = true;
+  radius = 16;
+  var x_span = radius * sqrt(3);
+  var flg = true;
   for (float y = -650; y < 650; y += radius * 1.5) {
-
     for (float x = -650; x < 650; x += x_span) {
-
-      glm::vec2 location;
+      PVector location;
       if (flg) {
-
-        location = glm::vec2(x, y);
+        location = new PVector(x, y);
       } else {
-
-        location = glm::vec2(x + (x_span / 2), y);
+        location = new PVector(x + (x_span / 2), y);
       }
-
-      this->location_list.push_back(location);
+      location_list.add(location);
     }
     flg = !flg;
   }
 }
 //--------------------------------------------------------------
-void ofApp::update() {
-
+void update() {
   ofSeedRandom(39);
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
   update();
 
   translate(width * 0.5, height * 0.5);
 
   background(0);
   ofSetLineWidth(1.5);
-  ofEnableBlendMode(ofBlendMode::OF_BLENDMODE_ADD);
+  blendMode(ADD);
 
-  vector<ofColor> color_list = { ofColor(255, 0, 0), ofColor(0, 255, 0), ofColor(0, 0, 255) };
+  IntList color_list = new IntList();
+  color_list.append(color(255, 0, 0));
+  color_list.append(color(0, 255, 0));
+  color_list.append(color(0, 0, 255));
 
-  for (auto& color : color_list) {
-
-    auto noise_seed = ofRandom(1000);
-    for (auto& location : this->location_list) {
-
-      vector<glm::vec2> vertices;
+  for (var cc : color_list) {
+    var noise_seed = random(1000);
+    for (var location : location_list) {
+      ArrayList<PVector> vertices = new ArrayList();
       for (int deg = 90; deg < 450; deg += 60) {
-
-        vertices.push_back(location + glm::vec2(this->radius * cos(deg * DEG_TO_RAD), this->radius * sin(deg * DEG_TO_RAD)));
+        //vertices.push_back(location + glm::vec2(radius * cos(deg * DEG_TO_RAD), radius * sin(deg * DEG_TO_RAD)));
+        float x = radius * cos(deg * DEG_TO_RAD);
+        float y = radius * sin(deg * DEG_TO_RAD);
+        PVector v = new PVector(location.x + x, location.y + y);
+        vertices.add(v);
       }
+      var noise_y = map(openFrameworksNoise.ofNoise(noise_seed, location.x * 0.001 + ofGetFrameNum() * 0.005), 0, 1, -200, 200);
+      float distance = abs(location.y - noise_y);
 
-      auto noise_y = ofMap(ofNoise(noise_seed, location.x * 0.001 + ofGetFrameNum() * 0.005), 0, 1, -200, 200);
-      auto distance = abs(location.y - noise_y);
+      if (distance < radius * 6) {
+        //ofNoFill();
+        //ofSetColor(color, ofMap(distance, 0, radius * 6, 255, 0));
+        stroke(red(cc), green(cc), blue(cc), map(distance, 0, radius * 6, 255, 0));
 
-      if (distance < this->radius * 6) {
+        //ofFill();
+        //ofSetColor(color, ofMap(distance, 0, radius * 6, 128, 0));
+        fill(red(cc), green(cc), blue(cc), map(distance, 0, radius * 6, 128, 0));
 
-        ofNoFill();
-        ofSetColor(color, ofMap(distance, 0, this->radius * 6, 255, 0));
-
-        ofBeginShape();
-        ofVertices(vertices);
-        ofEndShape(true);
-
-        ofFill();
-        ofSetColor(color, ofMap(distance, 0, this->radius * 6, 128, 0));
-
-        ofBeginShape();
-        ofVertices(vertices);
-        ofEndShape(true);
+        beginShape();
+        for (PVector v : vertices) {
+          vertex(v.x, v.y);
+        }
+        endShape(CLOSE);
       }
     }
   }
