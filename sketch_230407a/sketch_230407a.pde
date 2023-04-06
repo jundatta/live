@@ -4,17 +4,11 @@
 // https://junkiyoshi.com/2023/03/27/
 
 float radius;
-vector<glm::vec2> location_list;
+ArrayList<PVector> location_list = new ArrayList();
 
 //--------------------------------------------------------------
-void ofApp::setup() {
-
-  ofSetFrameRate(60);
-  ofSetWindowTitle("openFrameworks");
-
-  ofBackground(0);
-  ofSetLineWidth(1.5);
-  ofEnableBlendMode(ofBlendMode::OF_BLENDMODE_ADD);
+void setup() {
+  size(720, 720, P3D);
 
   this->radius = 16;
   auto x_span = radius * sqrt(3);
@@ -45,8 +39,13 @@ void ofApp::update() {
 
 //--------------------------------------------------------------
 void ofApp::draw() {
+  update();
 
-  ofTranslate(ofGetWindowSize() * 0.5);
+  translate(width * 0.5, height * 0.5);
+
+  background(0);
+  ofSetLineWidth(1.5);
+  ofEnableBlendMode(ofBlendMode::OF_BLENDMODE_ADD);
 
   vector<ofColor> color_list = { ofColor(255, 0, 0), ofColor(0, 255, 0), ofColor(0, 0, 255) };
 
@@ -82,11 +81,4 @@ void ofApp::draw() {
       }
     }
   }
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
