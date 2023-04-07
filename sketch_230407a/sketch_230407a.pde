@@ -3,81 +3,79 @@
 // 【作品名】Square ring. Draw by openFrameworks
 // https://junkiyoshi.com/2023/04/03/
 
-ofMesh face, frame;
+ofMesh face = new ofMesh();
+ofMesh frame = new ofMesh();
 
 //--------------------------------------------------------------
-void ofApp::setup() {
-
-  ofSetFrameRate(60);
-  ofSetWindowTitle("openframeworks");
-
-  ofBackground(239);
-  ofSetLineWidth(1.5);
-  ofEnableDepthTest();
-
-  this->frame.setMode(ofPrimitiveMode::OF_PRIMITIVE_LINES);
+void setup() {
+  size(720, 720, P3D);
 }
 //--------------------------------------------------------------
-void ofApp::update() {
-
+void update() {
   ofSeedRandom(39);
 
-  this->face.clear();
-  this->frame.clear();
+  face.clear();
+  frame.clear();
 
-  auto noise_seed = glm::vec2(ofRandom(1000), ofRandom(1000));
-  for (auto radius = 60; radius <= 360; radius += 15) {
+  var noise_seed = new PVector(random(1000), random(1000));
+  for (var radius = 60; radius <= 360; radius += 15) {
 
-    auto angle_x = ofMap(ofNoise(noise_seed.x, ofGetFrameNum() * -0.004 + radius * 0.005), 0, 1, -45, 45);
-    auto angle_y = ofMap(ofNoise(noise_seed.y, ofGetFrameNum() * -0.004 + radius * 0.005), 0, 1, -45, 45);
-    this->setRingToMesh(this->face, this->frame, glm::vec3(), radius, 10, 20, angle_x * DEG_TO_RAD, angle_y * DEG_TO_RAD);
+    var angle_x = map(openFrameworksNoise.ofNoise(noise_seed.x, ofGetFrameNum() * -0.004 + radius * 0.005), 0, 1, -45, 45);
+    var angle_y = map(openFrameworksNoise.ofNoise(noise_seed.y, ofGetFrameNum() * -0.004 + radius * 0.005), 0, 1, -45, 45);
+    setRingToMesh(face, frame, new PVector(), radius, 10, 20, angle_x * DEG_TO_RAD, angle_y * DEG_TO_RAD);
   }
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void draw() {
+  update();
 
-  this->cam.begin();
+  translate(width * 0.5f, height * 0.5f);
+  background(239);
+  ofSetLineWidth(1.5);
+
   ofRotateX(180);
   ofRotateY(ofGetFrameNum());
 
-  ofSetColor(0);
-  this->face.draw();
+  face.draw(color(0));
 
-  ofSetColor(255);
-  this->frame.drawWireframe();
-
-  this->cam.end();
+  frame.drawWireframe(color(255));
 }
 
 //--------------------------------------------------------------
-void ofApp::setRingToMesh(ofMesh& face_target, ofMesh& frame_target, glm::vec3 location, float radius, float width, float height, float angle_x, float angle_y) {
-
-  auto rotation_x = glm::rotate(glm::mat4(), angle_x, glm::vec3(1, 0, 0));
-  auto rotation_y = glm::rotate(glm::mat4(), angle_y, glm::vec3(0, 1, 0));
+void setRingToMesh(ofMesh face_target, ofMesh frame_target, PVector location, float radius, float width, float height, float angle_x, float angle_y) {
+  //var rotation_x = glm::rotate(glm::mat4(), angle_x, glm::vec3(1, 0, 0));
+  //var rotation_y = glm::rotate(glm::mat4(), angle_y, glm::vec3(0, 1, 0));
+  PMatrix3D rotation_x = new PMatrix3D();
+  rotation_x.rotateX(angle_x);
+  PMatrix3D rotation_y = new PMatrix3D();
+  rotation_y.rotateY(angle_y);
 
   int deg_span = 90;
   for (int deg = 0; deg < 360; deg += deg_span) {
+    var face_index = face_target.getNumVertices();
 
-    auto face_index = face_target.getNumVertices();
+    ArrayList<PVector> vertices = new ArrayList();
+    vertices.add(new PVector((radius + width * 0.5) * cos(deg * DEG_TO_RAD), (radius + width * 0.5) * sin(deg * DEG_TO_RAD), height * -0.5));
+    vertices.add(new PVector((radius + width * 0.5) * cos((deg + deg_span) * DEG_TO_RAD), (radius + width * 0.5) * sin((deg + deg_span) * DEG_TO_RAD), height * -0.5));
+    vertices.add(new PVector((radius + width * 0.5) * cos((deg + deg_span) * DEG_TO_RAD), (radius + width * 0.5) * sin((deg + deg_span) * DEG_TO_RAD), height * 0.5));
+    vertices.add(new PVector((radius + width * 0.5) * cos(deg * DEG_TO_RAD), (radius + width * 0.5) * sin(deg * DEG_TO_RAD), height * 0.5));
 
-    vector<glm::vec3> vertices;
-    vertices.push_back(glm::vec3((radius + width * 0.5) * cos(deg * DEG_TO_RAD), (radius + width * 0.5) * sin(deg * DEG_TO_RAD), height * -0.5));
-    vertices.push_back(glm::vec3((radius + width * 0.5) * cos((deg + deg_span) * DEG_TO_RAD), (radius + width * 0.5) * sin((deg + deg_span) * DEG_TO_RAD), height * -0.5));
-    vertices.push_back(glm::vec3((radius + width * 0.5) * cos((deg + deg_span) * DEG_TO_RAD), (radius + width * 0.5) * sin((deg + deg_span) * DEG_TO_RAD), height * 0.5));
-    vertices.push_back(glm::vec3((radius + width * 0.5) * cos(deg * DEG_TO_RAD), (radius + width * 0.5) * sin(deg * DEG_TO_RAD), height * 0.5));
+    vertices.add(new PVector((radius - width * 0.5) * cos(deg * DEG_TO_RAD), (radius - width * 0.5) * sin(deg * DEG_TO_RAD), height * -0.5));
+    vertices.add(new PVector((radius - width * 0.5) * cos((deg + deg_span) * DEG_TO_RAD), (radius - width * 0.5) * sin((deg + deg_span) * DEG_TO_RAD), height * -0.5));
+    vertices.add(new PVector((radius - width * 0.5) * cos((deg + deg_span) * DEG_TO_RAD), (radius - width * 0.5) * sin((deg + deg_span) * DEG_TO_RAD), height * 0.5));
+    vertices.add(new PVector((radius - width * 0.5) * cos(deg * DEG_TO_RAD), (radius - width * 0.5) * sin(deg * DEG_TO_RAD), height * 0.5));
 
-    vertices.push_back(glm::vec3((radius - width * 0.5) * cos(deg * DEG_TO_RAD), (radius - width * 0.5) * sin(deg * DEG_TO_RAD), height * -0.5));
-    vertices.push_back(glm::vec3((radius - width * 0.5) * cos((deg + deg_span) * DEG_TO_RAD), (radius - width * 0.5) * sin((deg + deg_span) * DEG_TO_RAD), height * -0.5));
-    vertices.push_back(glm::vec3((radius - width * 0.5) * cos((deg + deg_span) * DEG_TO_RAD), (radius - width * 0.5) * sin((deg + deg_span) * DEG_TO_RAD), height * 0.5));
-    vertices.push_back(glm::vec3((radius - width * 0.5) * cos(deg * DEG_TO_RAD), (radius - width * 0.5) * sin(deg * DEG_TO_RAD), height * 0.5));
-
-    for (auto& vertex : vertices) {
-
-      vertex = location + glm::vec4(vertex, 0) * rotation_y * rotation_x;
+    ArrayList<PVector> newVertices = new ArrayList();
+    for (var vertex : vertices) {
+      // vertexの中身を書き換えることに注意
+      //vertex = location + glm::vec4(vertex, 0) * rotation_y * rotation_x;
+      vertex = rotation_y.mult(vertex, null);
+      vertex = rotation_x.mult(vertex, null);
+      newVertices.add(vertex);
     }
 
-    face_target.addVertices(vertices);
+    face_target.addVertices(newVertices);
 
     face_target.addIndex(face_index + 0);
     face_target.addIndex(face_index + 1);
@@ -107,9 +105,9 @@ void ofApp::setRingToMesh(ofMesh& face_target, ofMesh& frame_target, glm::vec3 l
     face_target.addIndex(face_index + 6);
     face_target.addIndex(face_index + 2);
 
-    auto frame_index = frame_target.getNumVertices();
+    var frame_index = frame_target.getNumVertices();
 
-    frame_target.addVertices(vertices);
+    frame_target.addVertices(newVertices);
 
     frame_target.addIndex(frame_index + 0);
     frame_target.addIndex(frame_index + 1);
@@ -123,11 +121,4 @@ void ofApp::setRingToMesh(ofMesh& face_target, ofMesh& frame_target, glm::vec3 l
     frame_target.addIndex(frame_index + 0);
     frame_target.addIndex(frame_index + 3);
   }
-}
-
-//--------------------------------------------------------------
-int main() {
-
-  ofSetupOpenGL(720, 720, OF_WINDOW);
-  ofRunApp(new ofApp());
 }
