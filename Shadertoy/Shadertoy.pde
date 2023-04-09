@@ -1,7 +1,7 @@
 // こちらがオリジナルです。
 // 【作者】panna_pudiさん
-// 【作品名】Disco Sewers
-// https://www.shadertoy.com/view/7sGBRD
+// 【作品名】Tatami Walk
+// https://www.shadertoy.com/view/ctXGRS
 
 PShader sd;
 int startMillis;
