@@ -21,7 +21,7 @@ Cloud[] clouds = new Cloud[10];
 void setup() {
   size(500, 500, P3D);
   for (int i = 0; i < clouds.length; i++) {
-    clouds[i] = new Cloud(random(-300, 300), random(-10, -200),
+    clouds[i] = new Cloud(random(-300, 300), random(-200, -10),
       random(2) + 0.2, random(50, 200), random(100, 400), -300.0f);
   }
 }
