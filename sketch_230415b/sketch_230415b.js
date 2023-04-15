@@ -15,6 +15,8 @@ draw=_=> {
   for (i=-200; i<1000; i+=100) {
     push();
     translate(i-f%100-50, 200-i+f%100);
+    y = 200-i+f%100;
+    console.log(y);
     box(100, 200, 1000);
     pop();
   }
