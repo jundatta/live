@@ -7,7 +7,7 @@ draw=_=> {
   background(0);
   rotateY(1);
   //[-1, -1, 1].map(i=>spotLight(200, 200, 200, -400, 400*i, 100, 1, -i, -.2));
-  [-1,-1,1].map(i=>spotLight(200, 200, 200, -400, 400*i, 100, 1, -i, -.2));
+  [-1, -1, 1].map(i=>spotLight(200, 200, 200, -400, 400*i, 100, 1, -i, -.2));
   push();
   translate(0, 30-abs(cos(f/31.8))*200);
   sphere(30);
