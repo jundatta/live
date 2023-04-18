@@ -1,4 +1,4 @@
-// これがp5.js から Processing Java に書き換えてもらったソースコードです。
+// chatGPTが書き換えたコードになります。
 
 float f = 0;
 
@@ -14,7 +14,7 @@ void draw() {
   rotateY(PI/2.0);
   int[] arr = {-1, -1, 1};
   for (int i = 0; i < arr.length; i++) {
-    spotLight(200, 200, 200, -400, 400*arr[i], 100, 1, -arr[i], -.2, PI/2, 2);
+    spotLight(200, 200, 200, -400, 400*arr[i], 100, 1, -arr[i], -.2, PI/2, 30);
   }
   pushMatrix();
   translate(0, 30-abs(cos(f/31.8))*200, 0);
