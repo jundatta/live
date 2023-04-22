@@ -1,15 +1,26 @@
 float n;
 void setup() {
   size(800, 600, P3D);
-  noStroke();
   n = 0.0f;
 }
 
 void draw() {
-  translate(width * 0.5f, height * 0.5f);
+  // 原点を画面中央に移動しておく
+  translate(width * 0.5f, height * 0.5f, 0.0f);
+
   background(0);
-  //spotLight(200, 200, 200, 0, 0, 1000, 0, 0, -1, PI/3.0f, 20);
-  spotLight(200, 200, 200, 0, 0, 1000, sin(n), 0, cos(n), PI/3.0f, 20);
+
+  // スポットライトを置く
+  // 光の色は紫色にする
+  // ライトの位置は原点から画面手前（z座標）500.0fにする
+  // ライトの向きを横にぐるぐる回す
+  // コーンの広がりを60度、よくわかりゃん値を20.0fにする
+  spotLight(255, 0, 255, 0, 0, 500, sin(n), 0, cos(n), PI/3.0f, 20);
+
+  // 白い板にスポットライトを当てる
+  noStroke();
+  fill(255);
   box(600, 500, 10);
+  
   n+=0.02f;
 }
