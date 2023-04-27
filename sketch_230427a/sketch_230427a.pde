@@ -21,12 +21,18 @@ void setup() {
   textAlign(CENTER, CENTER);
 
   //cylinder(height/2.3, 20);
-  cylinder = createCan(height/2.3, 20);
+  cylinder = createCan(height/2.3, 20, 24, true, true);
+  cylinder.setStroke(false);
+  cylinder.setFill(color(160, 100, 100));
   //torus(height/2.2, 15);
   torus = createTorus(height/2.2, 15);
+  torus.setStroke(false);
+  torus.setFill(color(20, 20, 20));
 }
 
 void draw() {
+  translate(width * 0.5f, height * 0.5f);
+
   //  orbitControl();
   background(0.0, 0.0, 90.0);
   push();
@@ -36,7 +42,7 @@ void draw() {
   fill(255);
   rotateX(PI/2.0f);
   translate(0, -20, 0);
-//  ambientMaterial(80);
+  //  ambientMaterial(80);
   ambient(80);
   //cylinder(height/2.3, 20);
   shape(cylinder);
@@ -47,13 +53,14 @@ void draw() {
   //torus(height/2.2, 15);
   shape(torus);
   pop();
+  noLights();
   fill(0.0, 0.0, 20.0, 100.0);
   noStroke();
   ellipse(0.0, 0.0, 40.0, 40.0);
   final float dialRadius = width * 0.27;
   for (float dial = 0; dial < 12; dial++) {
     float dialRadian = TWO_PI * dial / 12.0 - PI / 3.0;
-    text(dial + 1, dialRadius * cos(dialRadian), dialRadius * sin(dialRadian) - 15.0);
+    text((int)dial + 1, dialRadius * cos(dialRadian), dialRadius * sin(dialRadian) - 15.0);
   }
 
   // draw clock hands
