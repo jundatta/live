@@ -33,6 +33,7 @@ void setup() {
   textAlign(CENTER, CENTER);
 
   holidays = new ArrayList<MonthDay>();
+  holidays.add(new Holiday("00:00\nStudio", 4, 28));
   holidays.add(new Holiday("New Year's Day", 1, 1));
   holidays.add(new Holiday("Independence\nDay", 7, 4));
   holidays.add(new Holiday("Halloween", 10, 31));
@@ -145,13 +146,9 @@ void draw() {
   int daysInMonth = int(monthDays[currentMonth]);
   if (currentMonth == 1 && isLeapYear(currentYear)) daysInMonth ++;
   int dayOfMonth = -1;
-  int dayOfWeek = -1;
-  String dayOfWeekName = "";
 
   if (currentMonth == month() - 1 && currentYear == year()) {
     dayOfMonth = day();
-    dayOfWeek = int((new Date()).getDay());
-    dayOfWeekName = weekDays[dayOfWeek];
   }
 
   var date = new Date();
@@ -160,17 +157,16 @@ void draw() {
   date.setDate(1);
 
   int startingDayOfMonth = date.getDay(); //int(7 - (dayOfMonth % 7)); //NOT WORKING!
-  String startingDayOfMonthName = weekDays[startingDayOfMonth];
 
   //Calendar Metrics
-  int numRows = ceil((startingDayOfMonth + daysInMonth) / 7);
+  int numRows = ceil((startingDayOfMonth + daysInMonth) / 7.0f);
   margin = 50;
   topLabelMargin = 100;
   calendarWidth = width - plannerWidth - (margin * 2);
   calendarHeight = height - (margin * 2) - topLabelMargin;
   spacing = 5;
-  float boxWidth = (calendarWidth - (6 * spacing)) / 7;
-  float boxHeight = (calendarHeight - ((numRows - 1) * spacing)) / numRows;
+  float boxWidth = (calendarWidth - (6 * spacing)) / 7.0f;
+  float boxHeight = (calendarHeight - ((numRows - 1) * spacing)) / (float)numRows;
 
   background(102, 102, 140);
 
@@ -179,19 +175,19 @@ void draw() {
 
     if (mouseOverArrow(-1) || mouseOverArrow(-2)) fill(255);
     else fill(204);
-    triangle((width - plannerWidth) / 2 - (width - plannerWidth) / 10 * 3.5, margin + topLabelMargin / 10 * 3, (width - plannerWidth) / 2 - (width - plannerWidth) / 10 * 3, margin + topLabelMargin / 10 * 2, (width - plannerWidth) / 2 - (width - plannerWidth) / 10 * 3, margin + topLabelMargin / 10 * 4);
+    triangle((width - plannerWidth) / 2.0f - (width - plannerWidth) / 10.0f * 3.5, margin + topLabelMargin / 10.0f * 3, (width - plannerWidth) / 2.0f - (width - plannerWidth) / 10.0f * 3, margin + topLabelMargin / 10.0f * 2, (width - plannerWidth) / 2.0f - (width - plannerWidth) / 10.0f * 3, margin + topLabelMargin / 10.0f * 4);
 
     if (mouseOverArrow(1) || mouseOverArrow(2)) fill(255);
     else fill(204);
-    triangle((width - plannerWidth) / 2 + (width - plannerWidth) / 10 * 3.5, margin + topLabelMargin / 10 * 3, (width - plannerWidth) / 2 + (width - plannerWidth) / 10 * 3, margin + topLabelMargin / 10 * 2, (width - plannerWidth) / 2 + (width - plannerWidth) / 10 * 3, margin + topLabelMargin / 10 * 4);
+    triangle((width - plannerWidth) / 2.0f + (width - plannerWidth) / 10.0f * 3.5, margin + topLabelMargin / 10.0f * 3, (width - plannerWidth) / 2.0f + (width - plannerWidth) / 10.0f * 3, margin + topLabelMargin / 10.0f * 2, (width - plannerWidth) / 2.0f + (width - plannerWidth) / 10.0f * 3, margin + topLabelMargin / 10.0f * 4);
 
     if (mouseOverArrow(-2)) fill(255);
     else fill(204);
-    triangle((width - plannerWidth) / 2 - (width - plannerWidth) / 10 * 4.1, margin + topLabelMargin / 10 * 3, (width - plannerWidth) / 2 - (width - plannerWidth) / 10 * 3.6, margin + topLabelMargin / 10 * 2, (width - plannerWidth) / 2 - (width - plannerWidth) / 10 * 3.6, margin + topLabelMargin / 10 * 4);
+    triangle((width - plannerWidth) / 2.0f - (width - plannerWidth) / 10.0f * 4.1, margin + topLabelMargin / 10.0f * 3, (width - plannerWidth) / 2.0f - (width - plannerWidth) / 10.0f * 3.6, margin + topLabelMargin / 10.0f * 2, (width - plannerWidth) / 2.0f - (width - plannerWidth) / 10.0f * 3.6, margin + topLabelMargin / 10.0f * 4);
 
     if (mouseOverArrow(2)) fill(255);
     else fill(204);
-    triangle((width - plannerWidth) / 2 + (width - plannerWidth) / 10 * 4.1, margin + topLabelMargin / 10 * 3, (width - plannerWidth) / 2 + (width - plannerWidth) / 10 * 3.6, margin + topLabelMargin / 10 * 2, (width - plannerWidth) / 2 + (width - plannerWidth) / 10 * 3.6, margin + topLabelMargin / 10 * 4);
+    triangle((width - plannerWidth) / 2.0f + (width - plannerWidth) / 10.0f * 4.1, margin + topLabelMargin / 10.0f * 3, (width - plannerWidth) / 2.0f + (width - plannerWidth) / 10.0f * 3.6, margin + topLabelMargin / 10.0f * 2, (width - plannerWidth) / 2.0f + (width - plannerWidth) / 10.0f * 3.6, margin + topLabelMargin / 10.0f * 4);
   }
 
   fill(255);
@@ -204,9 +200,9 @@ void draw() {
   textSize(16);
 
   for (int i = 0; i < weekDays.length; i ++)
-    text(weekDays[i], margin + (spacing * i) + (boxWidth * i) + boxWidth / 2, margin + topLabelMargin / 10 * 7);
+    text(weekDays[i], margin + (spacing * i) + (boxWidth * i) + boxWidth / 2.0f, margin + topLabelMargin / 10.0f * 7);
 
-  line(margin, margin + topLabelMargin / 10 * 8.5, width - plannerWidth - margin, margin + topLabelMargin / 10 * 8.5);
+  line(margin, margin + topLabelMargin / 10.0f * 8.5, width - plannerWidth - margin, margin + topLabelMargin / 10.0f * 8.5);
 
   stroke(0);
 
@@ -230,14 +226,14 @@ void draw() {
     fill(0);
     textSize(24);
 
-    text(i + 1, x + boxWidth / 2, y + boxHeight / 2);
+    text(i + 1, x + boxWidth / 2.0f, y + boxHeight / 2.0f);
 
     textSize(9);
 
     float yH = 0;
     for (MonthDay holiday : holidays) {
       if (currentMonth + 1 == holiday.getMonth() && i + 1 == holiday.getDay()) {
-        text(holiday.getName(), x + boxWidth / 2, y + boxHeight / 20 * 17 - (textAscent() + textAscent()) * yH);
+        text(holiday.getName(), x + boxWidth / 2.0f, y + boxHeight / 20.0f * 17 - (textAscent() + textAscent()) * yH);
         yH ++;
       }
     }
@@ -251,17 +247,12 @@ void draw() {
     else fill(204);
     textSize(12);
 
-    text("Today", (width - plannerWidth) / 2, height - margin / 2);
+    text("Today", (width - plannerWidth) / 2.0f, height - margin / 2.0f);
 
     if (mousePressed && overTodayButton()) goToToday();
   }
 
   noStroke();
-
-  //if(overPlannerScroller() || pressedPlannerScroller) fill(255);
-  //else fill(204);
-  //
-  //rect(width - plannerWidth - 10, margin + topLabelMargin + calendarHeight / 5, 10, calendarHeight / 5 * 3);
 
   if (plannerWidth > 50) {
     fill(51);
@@ -273,28 +264,25 @@ void draw() {
 
     rect(width - plannerWidth, margin + topLabelMargin, plannerWidth - margin, height - margin * 2 - topLabelMargin);
   }
-
-  //if(!mousePressed) pressedPlannerScroller = false;
-  //if(pressedPlannerScroller) plannerWidth = constrain(width - mouseX, 0, 350);
 }
 
 boolean mouseOverArrow(int arrow) {
   switch(arrow) {
   case -2:
-    return (mouseInArrowRange() && mouseX > ((width - plannerWidth) / 2 - (width - plannerWidth) / 10 * 4.1) && (mouseX < (width - plannerWidth) / 2 - (width - plannerWidth) / 10 * 3.6));
+    return (mouseInArrowRange() && mouseX > ((width - plannerWidth) / 2.0f - (width - plannerWidth) / 10.0f * 4.1) && (mouseX < (width - plannerWidth) / 2.0f - (width - plannerWidth) / 10.0f * 3.6));
   case -1:
-    return (mouseInArrowRange() && mouseX > ((width - plannerWidth) / 2 - (width - plannerWidth) / 10 * 3.5) && (mouseX < (width - plannerWidth) / 2 - (width - plannerWidth) / 10 * 3));
+    return (mouseInArrowRange() && mouseX > ((width - plannerWidth) / 2.0f - (width - plannerWidth) / 10.0f * 3.5) && (mouseX < (width - plannerWidth) / 2.0f - (width - plannerWidth) / 10.0f * 3));
   case 1:
-    return (mouseInArrowRange() && mouseX < ((width - plannerWidth) / 2 + (width - plannerWidth) / 10 * 3.5) && (mouseX > (width - plannerWidth) / 2 + (width - plannerWidth) / 10 * 3));
+    return (mouseInArrowRange() && mouseX < ((width - plannerWidth) / 2.0f + (width - plannerWidth) / 10.0f * 3.5) && (mouseX > (width - plannerWidth) / 2.0f + (width - plannerWidth) / 10.0f * 3));
   case 2:
-    return (mouseInArrowRange() && mouseX < ((width - plannerWidth) / 2 + (width - plannerWidth) / 10 * 4.1) && (mouseX > (width - plannerWidth) / 2 + (width - plannerWidth) / 10 * 3.6));
+    return (mouseInArrowRange() && mouseX < ((width - plannerWidth) / 2.0f + (width - plannerWidth) / 10.0f * 4.1) && (mouseX > (width - plannerWidth) / 2.0f + (width - plannerWidth) / 10.0f * 3.6));
   }
 
   return false;
 }
 
 boolean mouseInArrowRange() {
-  return (mouseY > (margin + topLabelMargin / 10 * 2) && mouseY < (margin + topLabelMargin / 10 * 4));
+  return (mouseY > (margin + topLabelMargin / 10.0f * 2) && mouseY < (margin + topLabelMargin / 10.0f * 4));
 }
 
 boolean isLeapYear(int year) {
@@ -323,12 +311,6 @@ void mousePressed() {
     }
     if (mouseOverArrow(2)) currentYear ++;
   }
-
-  //if(overPlannerScroller()) pressedPlannerScroller = true;
-}
-
-void mouseReleased() {
-  //pressedPlannerScroller = false;
 }
 
 int getDayInMonth(int year, int month, int dayOfWeek, int num) {
@@ -370,7 +352,7 @@ boolean overTodayButton() {
   float textWidth = 60;
   float textHeight = textAscent() + textDescent() + 20;
 
-  return (mouseX > (width - plannerWidth) / 2 - textWidth / 2 && mouseX < (width - plannerWidth) / 2 + textWidth / 2 && mouseY > height - margin / 2 - textHeight / 2 && mouseY < height - margin / 2 + textHeight / 2);
+  return (mouseX > (width - plannerWidth) / 2.0f - textWidth / 2.0f && mouseX < (width - plannerWidth) / 2.0f + textWidth / 2.0f && mouseY > height - margin / 2.0f - textHeight / 2.0f && mouseY < height - margin / 2.0f + textHeight / 2.0f);
 }
 
 boolean overPlannerScroller() {
