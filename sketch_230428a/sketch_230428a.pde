@@ -19,18 +19,26 @@ int currentYear;
 
 float plannerWidth = 0;
 
+PGraphics pg;
+int orgW = 888;
+int orgH = 666;
+
 float margin = 50;
 float topLabelMargin = 100;
-float calendarWidth = width - plannerWidth - (margin * 2);
-float calendarHeight = height - (margin * 2) - topLabelMargin;
+float calendarWidth = orgW - plannerWidth - (margin * 2);
+float calendarHeight = orgH - (margin * 2) - topLabelMargin;
 float spacing = 5;
 
 void setup() {
-  size(888, 666);
-  smooth();
+  size(540, 960, P3D);
+  //size(888, 666, P3D);
+
+  pg = createGraphics(orgW, orgH);
+  pg.beginDraw();
+  pg.smooth();
 
   //textFont(createFont("ArialMT-48", 12));
-  textAlign(CENTER, CENTER);
+  pg.textAlign(CENTER, CENTER);
 
   holidays = new ArrayList<MonthDay>();
   holidays.add(new Holiday("00:00\nStudio", 4, 28));
@@ -138,9 +146,11 @@ void setup() {
 
   currentMonth = month() - 1;
   currentYear = year();
+  pg.endDraw();
 }
 
 void draw() {
+  pg.beginDraw();
   //Date Metrics
   String monthName = monthNames[currentMonth];
   int daysInMonth = int(monthDays[currentMonth]);
@@ -162,49 +172,49 @@ void draw() {
   int numRows = ceil((startingDayOfMonth + daysInMonth) / 7.0f);
   margin = 50;
   topLabelMargin = 100;
-  calendarWidth = width - plannerWidth - (margin * 2);
-  calendarHeight = height - (margin * 2) - topLabelMargin;
+  calendarWidth = orgW - plannerWidth - (margin * 2);
+  calendarHeight = orgH - (margin * 2) - topLabelMargin;
   spacing = 5;
   float boxWidth = (calendarWidth - (6 * spacing)) / 7.0f;
   float boxHeight = (calendarHeight - ((numRows - 1) * spacing)) / (float)numRows;
 
-  background(102, 102, 140);
+  pg.background(102, 102, 140);
 
   if (mouseInArrowRange()) {
-    noStroke();
+    pg.noStroke();
 
-    if (mouseOverArrow(-1) || mouseOverArrow(-2)) fill(255);
-    else fill(204);
-    triangle((width - plannerWidth) / 2.0f - (width - plannerWidth) / 10.0f * 3.5, margin + topLabelMargin / 10.0f * 3, (width - plannerWidth) / 2.0f - (width - plannerWidth) / 10.0f * 3, margin + topLabelMargin / 10.0f * 2, (width - plannerWidth) / 2.0f - (width - plannerWidth) / 10.0f * 3, margin + topLabelMargin / 10.0f * 4);
+    if (mouseOverArrow(-1) || mouseOverArrow(-2)) pg.fill(255);
+    else pg.fill(204);
+    pg.triangle((orgW - plannerWidth) / 2.0f - (orgW - plannerWidth) / 10.0f * 3.5, margin + topLabelMargin / 10.0f * 3, (orgW - plannerWidth) / 2.0f - (orgW - plannerWidth) / 10.0f * 3, margin + topLabelMargin / 10.0f * 2, (orgW - plannerWidth) / 2.0f - (orgW - plannerWidth) / 10.0f * 3, margin + topLabelMargin / 10.0f * 4);
 
-    if (mouseOverArrow(1) || mouseOverArrow(2)) fill(255);
-    else fill(204);
-    triangle((width - plannerWidth) / 2.0f + (width - plannerWidth) / 10.0f * 3.5, margin + topLabelMargin / 10.0f * 3, (width - plannerWidth) / 2.0f + (width - plannerWidth) / 10.0f * 3, margin + topLabelMargin / 10.0f * 2, (width - plannerWidth) / 2.0f + (width - plannerWidth) / 10.0f * 3, margin + topLabelMargin / 10.0f * 4);
+    if (mouseOverArrow(1) || mouseOverArrow(2)) pg.fill(255);
+    else pg.fill(204);
+    pg.triangle((orgW - plannerWidth) / 2.0f + (orgW - plannerWidth) / 10.0f * 3.5, margin + topLabelMargin / 10.0f * 3, (orgW - plannerWidth) / 2.0f + (orgW - plannerWidth) / 10.0f * 3, margin + topLabelMargin / 10.0f * 2, (orgW - plannerWidth) / 2.0f + (orgW - plannerWidth) / 10.0f * 3, margin + topLabelMargin / 10.0f * 4);
 
-    if (mouseOverArrow(-2)) fill(255);
-    else fill(204);
-    triangle((width - plannerWidth) / 2.0f - (width - plannerWidth) / 10.0f * 4.1, margin + topLabelMargin / 10.0f * 3, (width - plannerWidth) / 2.0f - (width - plannerWidth) / 10.0f * 3.6, margin + topLabelMargin / 10.0f * 2, (width - plannerWidth) / 2.0f - (width - plannerWidth) / 10.0f * 3.6, margin + topLabelMargin / 10.0f * 4);
+    if (mouseOverArrow(-2)) pg.fill(255);
+    else pg.fill(204);
+    pg.triangle((orgW - plannerWidth) / 2.0f - (orgW - plannerWidth) / 10.0f * 4.1, margin + topLabelMargin / 10.0f * 3, (orgW - plannerWidth) / 2.0f - (orgW - plannerWidth) / 10.0f * 3.6, margin + topLabelMargin / 10.0f * 2, (orgW - plannerWidth) / 2.0f - (orgW - plannerWidth) / 10.0f * 3.6, margin + topLabelMargin / 10.0f * 4);
 
-    if (mouseOverArrow(2)) fill(255);
-    else fill(204);
-    triangle((width - plannerWidth) / 2.0f + (width - plannerWidth) / 10.0f * 4.1, margin + topLabelMargin / 10.0f * 3, (width - plannerWidth) / 2.0f + (width - plannerWidth) / 10.0f * 3.6, margin + topLabelMargin / 10.0f * 2, (width - plannerWidth) / 2.0f + (width - plannerWidth) / 10.0f * 3.6, margin + topLabelMargin / 10.0f * 4);
+    if (mouseOverArrow(2)) pg.fill(255);
+    else pg.fill(204);
+    pg.triangle((orgW - plannerWidth) / 2.0f + (orgW - plannerWidth) / 10.0f * 4.1, margin + topLabelMargin / 10.0f * 3, (orgW - plannerWidth) / 2.0f + (orgW - plannerWidth) / 10.0f * 3.6, margin + topLabelMargin / 10.0f * 2, (orgW - plannerWidth) / 2.0f + (orgW - plannerWidth) / 10.0f * 3.6, margin + topLabelMargin / 10.0f * 4);
   }
 
-  fill(255);
-  stroke(204);
-  textSize(42);
+  pg.fill(255);
+  pg.stroke(204);
+  pg.textSize(42);
 
-  text(monthName + " " + currentYear, (width - plannerWidth) / 2, margin + topLabelMargin / 10 * 3);
+  pg.text(monthName + " " + currentYear, (orgW - plannerWidth) / 2, margin + topLabelMargin / 10 * 3);
 
-  fill(204);
-  textSize(16);
+  pg.fill(204);
+  pg.textSize(16);
 
   for (int i = 0; i < weekDays.length; i ++)
-    text(weekDays[i], margin + (spacing * i) + (boxWidth * i) + boxWidth / 2.0f, margin + topLabelMargin / 10.0f * 7);
+    pg.text(weekDays[i], margin + (spacing * i) + (boxWidth * i) + boxWidth / 2.0f, margin + topLabelMargin / 10.0f * 7);
 
-  line(margin, margin + topLabelMargin / 10.0f * 8.5, width - plannerWidth - margin, margin + topLabelMargin / 10.0f * 8.5);
+  pg.line(margin, margin + topLabelMargin / 10.0f * 8.5, orgW - plannerWidth - margin, margin + topLabelMargin / 10.0f * 8.5);
 
-  stroke(0);
+  pg.stroke(0);
 
   float xoff = startingDayOfMonth;
   float yoff = 0;
@@ -212,28 +222,28 @@ void draw() {
     float x = margin + (spacing * xoff) + (boxWidth * xoff);
     float y = margin + topLabelMargin + (spacing * yoff) + (boxHeight * yoff);
 
-    noStroke();
-    fill(51);
+    pg.noStroke();
+    pg.fill(51);
 
-    rect(x + 3, y + 3, boxWidth, boxHeight);
+    pg.rect(x + 3, y + 3, boxWidth, boxHeight);
 
-    stroke(0);
-    if ((i + 1) == dayOfMonth) fill(255);
-    else fill(204);
+    pg.stroke(0);
+    if ((i + 1) == dayOfMonth) pg.fill(255);
+    else pg.fill(204);
 
-    rect(x, y, boxWidth, boxHeight);
+    pg.rect(x, y, boxWidth, boxHeight);
 
-    fill(0);
-    textSize(24);
+    pg.fill(0);
+    pg.textSize(24);
 
-    text(i + 1, x + boxWidth / 2.0f, y + boxHeight / 2.0f);
+    pg.text(i + 1, x + boxWidth / 2.0f, y + boxHeight / 2.0f);
 
-    textSize(9);
+    pg.textSize(9);
 
     float yH = 0;
     for (MonthDay holiday : holidays) {
       if (currentMonth + 1 == holiday.getMonth() && i + 1 == holiday.getDay()) {
-        text(holiday.getName(), x + boxWidth / 2.0f, y + boxHeight / 20.0f * 17 - (textAscent() + textAscent()) * yH);
+        pg.text(holiday.getName(), x + boxWidth / 2.0f, y + boxHeight / 20.0f * 17 - (pg.textAscent() + pg.textAscent()) * yH);
         yH ++;
       }
     }
@@ -243,46 +253,50 @@ void draw() {
   }
 
   if (!isToday()) {
-    if (overTodayButton()) fill(255);
-    else fill(204);
-    textSize(12);
+    if (overTodayButton(pg)) pg.fill(255);
+    else pg.fill(204);
+    pg.textSize(12);
 
-    text("Today", (width - plannerWidth) / 2.0f, height - margin / 2.0f);
+    pg.text("Today", (orgW - plannerWidth) / 2.0f, orgH - margin / 2.0f);
 
-    if (mousePressed && overTodayButton()) goToToday();
+    if (mousePressed && overTodayButton(pg)) goToToday();
   }
 
-  noStroke();
+  pg.noStroke();
 
   if (plannerWidth > 50) {
-    fill(51);
+    pg.fill(51);
 
-    rect(width - plannerWidth + 3, margin + topLabelMargin + 3, plannerWidth - margin, height - margin * 2 - topLabelMargin);
+    pg.rect(orgW - plannerWidth + 3, margin + topLabelMargin + 3, plannerWidth - margin, orgH - margin * 2 - topLabelMargin);
 
-    stroke(0);
-    fill(204);
+    pg.stroke(0);
+    pg.fill(204);
 
-    rect(width - plannerWidth, margin + topLabelMargin, plannerWidth - margin, height - margin * 2 - topLabelMargin);
+    pg.rect(orgW - plannerWidth, margin + topLabelMargin, plannerWidth - margin, orgH - margin * 2 - topLabelMargin);
   }
+  pg.endDraw();
+  image(pg, 0, 0, width, height);
 }
 
 boolean mouseOverArrow(int arrow) {
+  int mX = (int)map(mouseX, 0, width, 0, orgW);
   switch(arrow) {
   case -2:
-    return (mouseInArrowRange() && mouseX > ((width - plannerWidth) / 2.0f - (width - plannerWidth) / 10.0f * 4.1) && (mouseX < (width - plannerWidth) / 2.0f - (width - plannerWidth) / 10.0f * 3.6));
+    return (mouseInArrowRange() && mX > ((orgW - plannerWidth) / 2.0f - (orgW - plannerWidth) / 10.0f * 4.1) && (mX < (orgW - plannerWidth) / 2.0f - (orgW - plannerWidth) / 10.0f * 3.6));
   case -1:
-    return (mouseInArrowRange() && mouseX > ((width - plannerWidth) / 2.0f - (width - plannerWidth) / 10.0f * 3.5) && (mouseX < (width - plannerWidth) / 2.0f - (width - plannerWidth) / 10.0f * 3));
+    return (mouseInArrowRange() && mX > ((orgW - plannerWidth) / 2.0f - (orgW - plannerWidth) / 10.0f * 3.5) && (mX < (orgW - plannerWidth) / 2.0f - (orgW - plannerWidth) / 10.0f * 3));
   case 1:
-    return (mouseInArrowRange() && mouseX < ((width - plannerWidth) / 2.0f + (width - plannerWidth) / 10.0f * 3.5) && (mouseX > (width - plannerWidth) / 2.0f + (width - plannerWidth) / 10.0f * 3));
+    return (mouseInArrowRange() && mX < ((orgW - plannerWidth) / 2.0f + (orgW - plannerWidth) / 10.0f * 3.5) && (mX > (orgW - plannerWidth) / 2.0f + (orgW - plannerWidth) / 10.0f * 3));
   case 2:
-    return (mouseInArrowRange() && mouseX < ((width - plannerWidth) / 2.0f + (width - plannerWidth) / 10.0f * 4.1) && (mouseX > (width - plannerWidth) / 2.0f + (width - plannerWidth) / 10.0f * 3.6));
+    return (mouseInArrowRange() && mX < ((orgW - plannerWidth) / 2.0f + (orgW - plannerWidth) / 10.0f * 4.1) && (mX > (orgW - plannerWidth) / 2.0f + (orgW - plannerWidth) / 10.0f * 3.6));
   }
 
   return false;
 }
 
 boolean mouseInArrowRange() {
-  return (mouseY > (margin + topLabelMargin / 10.0f * 2) && mouseY < (margin + topLabelMargin / 10.0f * 4));
+  int mY = (int)map(mouseY, 0, height, 0, orgH);
+  return (mY > (margin + topLabelMargin / 10.0f * 2) && mY < (margin + topLabelMargin / 10.0f * 4));
 }
 
 boolean isLeapYear(int year) {
@@ -347,16 +361,20 @@ boolean isToday() {
   return (currentYear == year() && currentMonth == month() - 1);
 }
 
-boolean overTodayButton() {
-  textSize(12);
+boolean overTodayButton(PGraphics pg) {
+  pg.textSize(12);
   float textWidth = 60;
-  float textHeight = textAscent() + textDescent() + 20;
+  float textHeight = pg.textAscent() + pg.textDescent() + 20;
 
-  return (mouseX > (width - plannerWidth) / 2.0f - textWidth / 2.0f && mouseX < (width - plannerWidth) / 2.0f + textWidth / 2.0f && mouseY > height - margin / 2.0f - textHeight / 2.0f && mouseY < height - margin / 2.0f + textHeight / 2.0f);
+  int mX = (int)map(mouseX, 0, width, 0, orgW);
+  int mY = (int)map(mouseY, 0, height, 0, orgH);
+  return (mX > (orgW - plannerWidth) / 2.0f - textWidth / 2.0f && mX < (orgW - plannerWidth) / 2.0f + textWidth / 2.0f && mY > orgH - margin / 2.0f - textHeight / 2.0f && mY < orgH - margin / 2.0f + textHeight / 2.0f);
 }
 
 boolean overPlannerScroller() {
-  return (mouseY > margin + topLabelMargin && mouseY < margin + topLabelMargin + calendarHeight && mouseX > width - plannerWidth - 15 && mouseX < width - plannerWidth + 5);
+  int mX = (int)map(mouseX, 0, width, 0, orgW);
+  int mY = (int)map(mouseY, 0, height, 0, orgH);
+  return (mY > margin + topLabelMargin && mY < margin + topLabelMargin + calendarHeight && mX > orgW - plannerWidth - 15 && mX < orgW - plannerWidth + 5);
 }
 
 class Holiday extends MonthDay {
