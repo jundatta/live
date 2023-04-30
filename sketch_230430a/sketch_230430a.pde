@@ -3,32 +3,31 @@
 // 【作品名】Windy
 // https://openprocessing.org/sketch/1891974
 
-let img;
-let imx = 10;
-let imy = 20;
+PImage img;
+float imx = 10;
+float imy = 20;
 
-
-function preload() {
-  img = loadImage('./download.png');
+void preload() {
+  img = loadImage("./download.png");
 }
 
-function setup() {
-  createCanvas(1112, 834);
+void setup() {
+  preload();
+  
+  size(1112, 834);
   img.resize(width, height);
   background(100);
 }
 
-function draw() {
-  for (let i = 0; i < 1000; i++) {
-    let x = int(random(width));
-    let y = int(random(height));
-    let col = img.get(x, y);
+void draw() {
+  for (var i = 0; i < 1000; i++) {
+    var x = int(random(width));
+    var y = int(random(height));
+    color col = img.get(x, y);
     noStroke();
-    let rotation
+    var rotation
       = map(saturation(col), 0, 255, 0, 360);
-    let length
-      = map(brightness(col), 0, 255, 0, 100);
-    fill(red(col), green(col), blue(col), 128);
+    fill((int)(red(col)*1.2f), (int)(green(col)*1.2f), (int)(blue(col)*1.2f), 128);
     push();
     translate(x, y);
     rotate(radians(rotation));
