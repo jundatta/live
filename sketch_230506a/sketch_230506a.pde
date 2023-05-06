@@ -21,7 +21,8 @@ class Actor {
     return false;
   }
   //Actor(vector<glm::vec3>& location_list, vector<vector<int>>& next_index_list, vector<int>& destination_list);
-  Actor(ArrayList<PVector> location_list, IntList destination_list) {
+  // コンストラクタの引数に色も追加して生成時に色もセットする
+  Actor(ArrayList<PVector> location_list, IntList destination_list, color c) {
     this.select_index = (int)random(location_list.size());
     // select_indexと同じ値がdestination_listになければ追加する
     // select_indexと同じ値がある場合は(select_index+1)で改めてdestination_listを走査する
@@ -35,6 +36,8 @@ class Actor {
       this.select_index = (this.select_index + 1) % location_list.size();
     }
     this.next_index = this.select_index;
+
+    this.c = c;
   }
   //void update(const int& frame_span, vector<glm::vec3>& location_list, vector<vector<int>>& next_index_list, vector<int>& destination_list);
   void update(int frame_span, ArrayList<PVector> location_list, ArrayList<IntList> next_index_list, IntList destination_list) {
@@ -72,7 +75,7 @@ class Actor {
     //auto distance = location_list[this->next_index] - location_list[this->select_index];
     PVector nV = location_list.get(this.next_index);
     PVector sV = location_list.get(this.select_index);
-    PVector distance = PVector.add(nV, sV);
+    PVector distance = PVector.sub(nV, sV);
     //this->location = location_list[this->select_index] + distance / frame_span * param;
     distance.div(frame_span);
     distance.mult(param);
@@ -80,9 +83,6 @@ class Actor {
   }
   PVector getLocation() {
     return this.location;
-  }
-  void setColor(color value) {
-    this.c = value;
   }
   color getColor() {
     return this.c;
@@ -149,8 +149,8 @@ void setup() {
   }
 
   for (int i = 0; i < 20; i++) {
-    Actor a = new Actor(this.parent_location_group, this.parent_destination_group);
-    a.setColor(base_color_list.get(i % base_color_list.size()));
+    color c = base_color_list.get(i % base_color_list.size());
+    Actor a = new Actor(this.parent_location_group, this.parent_destination_group, c);
     this.parent_actor_group.add(a);
   }
 
@@ -191,9 +191,6 @@ void setup() {
     ArrayList<Actor> actor_group = new ArrayList();
     IntList destination_group = new IntList();
     for (int i = 0; i < 100; i++) {
-      var a = new Actor(location_group, destination_group);
-      actor_group.add(a);
-
       //color.setHsb((int)(this->parent_actor_group[g]->getColor().getHue() + ofRandom(30)) % 255, 255, 255);
       //actor_group.back()->setColor(color);
       Actor aa = this.parent_actor_group.get(g);
@@ -201,8 +198,11 @@ void setup() {
       push();
       colorMode(HSB, 255, 255, 255);
       int h = ((int)hue(c) + (int)random(30)) % 255;
-      aa.setColor(color(h, 255, 255));
+      c = color(h, 255, 255);
       pop();
+
+      var a = new Actor(location_group, destination_group, c);
+      actor_group.add(a);
     }
 
     this.actor_group_list.add(actor_group);
@@ -270,8 +270,6 @@ void draw() {
     translate(loc.x, loc.y, loc.z);
 
     for (var actor : this.actor_group_list.get(g)) {
-      color c = actor.getColor();
-      println(hue(c) + " : " + saturation(c) + " : " + brightness(c));
       fill(actor.getColor());
       stroke(239);
       push();
