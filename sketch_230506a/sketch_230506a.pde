@@ -56,7 +56,12 @@ class Actor {
           }
         }
         //this->next_index = next_index_list[this->select_index][(this->next_index + 1) % next_index_list[this->select_index].size()];
-        this.next_index = ixList.get(this.next_index + 1) % ixList.size();
+        // いやいや、chatなんちゃらさんの指摘は間違ってない。
+        //  ⇒this.next_index = (this.next_index + 1) % ixList.size();
+        //    ixList.get()が抜けてるだけで俺の置き換え間違い...orz
+        //    （うぎゃぁぁあああああああ＼(^_^)／）
+        //this.next_index = ixList.get(this.next_index + 1) % ixList.size();
+        this.next_index = ixList.get((this.next_index + 1) % ixList.size());
       }
       if (retry <= 0) {
         destination_list.append(this.select_index);
@@ -265,6 +270,8 @@ void draw() {
     translate(loc.x, loc.y, loc.z);
 
     for (var actor : this.actor_group_list.get(g)) {
+      color c = actor.getColor();
+      println(hue(c) + " : " + saturation(c) + " : " + brightness(c));
       fill(actor.getColor());
       stroke(239);
       push();
