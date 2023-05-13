@@ -63,11 +63,17 @@ void draw() {
   //image(ch1, 0, 0);
 
   // iChannel0～2までの幅、高さを渡す
-  PVector[] iChannelResolution = new PVector[3];
-  iChannelResolution[0] = new PVector(ch0.width, ch0.height, 0.0f);
-  iChannelResolution[1] = new PVector(ch1.width, ch1.height, 0.0f);
-  iChannelResolution[2] = new PVector(iChannel2.width, iChannel2.height, 0.0f);
-  sd.set("iChannelResolution", iChannelResolution, iChannelResolution.length);
+  //PVector[] iChannelResolution = new PVector[3];
+  //iChannelResolution[0] = new PVector(ch0.width, ch0.height, 0.0f);
+  //iChannelResolution[1] = new PVector(ch1.width, ch1.height, 0.0f);
+  //iChannelResolution[2] = new PVector(iChannel2.width, iChannel2.height, 0.0f);
+  //sd.set("iChannelResolution", iChannelResolution, iChannelResolution.length);
+  // ⇒「Shadertoy」の「iChannelResolution[4]」を渡すのはムリっぽい？
+  // 　⇒PVectorなら１つだけしか渡せない？
+
+  // 「iChannel2.png」の幅、高さだけ渡すように「Shadertoy.glsl」のロジックも変える
+  PVector iChannel2WH = new PVector(iChannel2.width, iChannel2.height, 0.0f);
+  sd.set("iChannel2WH", iChannel2WH);
 
   sd.set("iTime", (millis() - startMillis) / 1000.0f);
   sd.set("iMouse", (float)mouseX, (float)mouseY, 0.0f, 0.0f);

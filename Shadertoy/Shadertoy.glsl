@@ -11,6 +11,10 @@ uniform sampler2D iChannel0;
 uniform sampler2D iChannel1;
 uniform sampler2D iChannel2;
 
+// 「iChannel2.png」の幅、高さだけ渡すように「Shadertoy.glsl」のロジックも変える
+uniform vec3 iChannel2WH;
+
+
 //======== vvvvv common vvvvv
 
 /*
@@ -647,7 +651,12 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 #endif
 
     // Dither
+// 「iChannel2.png」の幅、高さだけ渡すように「Shadertoy.glsl」のロジックも変える
+#if 0
     color += texture(iChannel2, mod(fragCoord.xy, iChannelResolution[2].xy) / iChannelResolution[2].xy).xxx / 255.0;
+#else
+    color += texture(iChannel2, mod(fragCoord.xy, iChannel2WH.xy) / iChannel2WH.xy).xxx / 255.0;
+#endif
 
 #ifdef SHOW_BUFFER
     vec2 debugUV = fragCoord / debugWidth;
