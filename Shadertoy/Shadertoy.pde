@@ -1,11 +1,9 @@
 // こちらがオリジナルです。
-// 【作者】Fewesさん
-// 【作品名】Terrain Erosion Noise
-// https://www.shadertoy.com/view/7ljcRW
+// 【作者】HaleyHalcyonさん
+// 【作品名】shader but i pretend to be black
+// https://www.shadertoy.com/view/ctK3zy
 
-PShader sd, bfA, bfB;
-PGraphics ch0, ch1, ch2;
-PImage iChannel2;
+PShader sd;
 int startMillis;
 int startCount;
 
@@ -14,29 +12,11 @@ void setup() {
   noStroke();
   textureWrap(REPEAT);
 
-  ch0 = createGraphics(width, height, P3D);
-  ch0.beginDraw();
-  ch0.noStroke();
-  ch0.textureWrap(REPEAT);
-  ch0.endDraw();
-  bfA = loadShader("bufferA.glsl");
-  bfA.set("iResolution", (float)width, (float)height, 0.0f);
-
-  ch1 = createGraphics(width, height, P3D);
-  ch1.beginDraw();
-  ch1.noStroke();
-  ch1.textureWrap(REPEAT);
-  ch1.endDraw();
-  bfB = loadShader("bufferB.glsl");
-  bfB.set("iResolution", (float)width, (float)height, 0.0f);
-
   sd = loadShader("Shadertoy.glsl");
   sd.set("iResolution", (float)width, (float)height, 0.0f);
-
-  sd.set("iChannel0", ch0);
-  sd.set("iChannel1", ch1);
-  iChannel2 = loadImage("iChannel2.png");
-  sd.set("iChannel2", iChannel2);
+  //sd.set("iChannel0", loadImage("iChannel0.png"));
+  //sd.set("iChannel1", loadImage("iChannel1.png"));
+  //sd.set("iChannel2", loadImage("iChannel2.png"));
 
   // 最初のミリ秒を取り込んでおく
   startMillis = millis();
@@ -44,38 +24,17 @@ void setup() {
 }
 
 void draw() {
-  bfA.set("iTime", (millis() - startMillis) / 1000.0f);
-  bfA.set("iMouse", (float)mouseX, (float)mouseY, 0.0f, 0.0f);
-  ch0.shader(bfA);
-  ch0.beginDraw();
-  ch0.rect(0, 0, width, height);
-  ch0.endDraw();
-  ch0.resetShader();
-  //image(ch0, 0, 0);
-
-  bfB.set("iTime", (millis() - startMillis) / 1000.0f);
-  bfB.set("iMouse", (float)mouseX, (float)mouseY, 0.0f, 0.0f);
-  ch1.shader(bfB);
-  ch1.beginDraw();
-  ch1.rect(0, 0, width, height);
-  ch1.endDraw();
-  ch1.resetShader();
-  //image(ch1, 0, 0);
-
-  // iChannel0～2までの幅、高さを渡す
-  //PVector[] iChannelResolution = new PVector[3];
-  //iChannelResolution[0] = new PVector(ch0.width, ch0.height, 0.0f);
-  //iChannelResolution[1] = new PVector(ch1.width, ch1.height, 0.0f);
-  //iChannelResolution[2] = new PVector(iChannel2.width, iChannel2.height, 0.0f);
-  //sd.set("iChannelResolution", iChannelResolution, iChannelResolution.length);
-  // ⇒「Shadertoy」の「iChannelResolution[4]」を渡すのはムリっぽい？
-  // 　⇒PVectorなら１つだけしか渡せない？
-
-  // 「iChannel2.png」の幅、高さだけ渡すように「Shadertoy.glsl」のロジックも変える
-  PVector iChannel2WH = new PVector(iChannel2.width, iChannel2.height, 0.0f);
-  sd.set("iChannel2WH", iChannel2WH);
-
+  // ※Shadertoyの場合、透明度は指定しても反映されない
+  // void mainImage( out vec4 fragColor, in vec2 fragCoord )の
+  // fragCoordの透明度の指定は反映されない
+  // なのでfragCoordの透明度は1.0（不透明）固定で返すように注意する
+  //  background(0);
+  // 最初からのミリ秒として渡したいのでstartMillisをmillis()から引く
   sd.set("iTime", (millis() - startMillis) / 1000.0f);
+  //sd.set("iFrame", frameCount - startCount);
+  // iMouseのz,wはそれぞれマウスドラッグ時のx,y座標になるが
+  // シミュレートをあきらめる
+  // このためz,wにはそれぞれ0.0fを固定で渡す
   sd.set("iMouse", (float)mouseX, (float)mouseY, 0.0f, 0.0f);
   shader(sd);
   rect(0, 0, width, height);
