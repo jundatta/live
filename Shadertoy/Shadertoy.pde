@@ -1,7 +1,7 @@
 // こちらがオリジナルです。
-// 【作者】HaleyHalcyonさん
-// 【作品名】shader but i pretend to be black
-// https://www.shadertoy.com/view/ctK3zy
+// 【作者】kishimisuさん
+// 【作品名】Neon Core [290 chars]
+// https://www.shadertoy.com/view/dlc3Wl
 
 PShader sd;
 int startMillis;
