@@ -22,16 +22,19 @@ uniform sampler2D iChannel2;
 
 void mainImage(out vec4 O, vec2 F) {   
     vec3  p, R = iResolution;
-    float i, t, k = iTime*.2;
-    
-    for (O *= t; 
+	R.z = 1.0;
+    float i = 0.0, t = 0.0, k = iTime*.2;
+
+	vec4 ooo = vec4(0);
+    for (ooo *= t; 
          i++ < 30.; 
-         O += .005 * (1. + cos(k+k+t+vec4(0,1,2,0))) / L
+         ooo += .005 * (1. + cos(k+k+t+vec4(0,1,2,0))) / L
     ) 
          p = R - vec3(F+F, R.y),
          p = t/L*p - 3./R,
          M(p.zx) M(p.yx)
-         p.x -= 2., t -= L - .1;      
+         p.x -= 2., t -= L - .1,
+		O = ooo;
 }
 
 void main() {
