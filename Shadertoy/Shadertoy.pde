@@ -1,7 +1,7 @@
 // こちらがオリジナルです。
-// 【作者】kishimisuさん
-// 【作品名】Neon Core [290 chars]
-// https://www.shadertoy.com/view/dlc3Wl
+// 【作者】mrangeさん
+// 【作品名】CC0: Atans begone!
+// https://www.shadertoy.com/view/DtGGRd
 
 PShader sd;
 int startMillis;
