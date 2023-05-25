@@ -1,7 +1,7 @@
 // こちらがオリジナルです。
-// 【作者】mrangeさん
-// 【作品名】CC0: Atans begone!
-// https://www.shadertoy.com/view/DtGGRd
+// 【作者】matheusfs2さん
+// 【作品名】cup of wine
+// https://www.shadertoy.com/view/mltSz8
 
 PShader sd;
 int startMillis;
