@@ -4,62 +4,63 @@
 // https://neort.io/art/chqnkfcn70roimkcmt6g
 
 // 範囲
-let rangeHalf = 50;
+int rangeHalf = 50;
 // プロットする点の数
-let sampleR = 10;
-let sampleT = 30;
+int sampleR = 10;
+int sampleT = 30;
 // 点の幅
-let skip = rangeHalf * 2 / sampleR;
+float skip = rangeHalf * 2 / (float)sampleR;
 
-let plotBoxes = [[]];
-let c;
+PlotBox[][] plotBoxes;
 
-function setup() {
-  c = createCanvas(w = 600, w, WEBGL);
+void setup() {
+  size(600, 600, P3D);
 
-  angleMode(DEGREES);
+  //angleMode(DEGREES);
 
-  for (let r = 0; r < sampleR; r++) {
-    let radius = (r + 1) * skip
+  plotBoxes = new PlotBox[sampleR][];
+  for (int r = 0; r < sampleR; r++) {
+    float radius = (r + 1) * skip;
 
-      plotBoxes.push([]);
+    plotBoxes[r] = new PlotBox[sampleT];
 
-    for (let t = 0; t < sampleT; t++) {
-      let theta = t * 360 / sampleT;
+    for (int t = 0; t < sampleT; t++) {
+      float theta = t * 360 / (float)sampleT;
 
-      plotBoxes[r].push(new PlotBox(radius, theta, -0.1));
+      plotBoxes[r][t] = new PlotBox(radius, theta, -0.1);
     }
   }
 }
 
-function draw() {
+void draw() {
+  translate(width * 0.5, height * 0.5);
   camera(
-    cos(1 * frameCount) * 120, 120, sin(1 * frameCount) * 120,
-    // cos(1 * frameCount) * 120, -120, sin(1 * frameCount) * 120, // 動作結果用
+    cos(radians(1 * frameCount)) * 120, 120, sin(radians(1 * frameCount)) * 120,
     0, 0, 0,
     0, -1, 0
     );
 
-  // rotate(180);
   background(0);
 
-  for (let r = 0; r < sampleR; r++) {
-    for (let t = 0; t < sampleT; t++) {
-      plotBoxes[r][t].update(sampleR * skip)
+  for (int r = 0; r < sampleR; r++) {
+    for (int t = 0; t < sampleT; t++) {
+      plotBoxes[r][t].update(sampleR * skip);
     }
   }
 }
 
 class PlotBox {
-  constructor(r, t, v) {
+  float radius, theta, velocity;
+  PVector posi;
+  PlotBox(float r, float t, float v) {
     this.radius = r;
     this.theta = t;
     this.posi = this.PCStoRCS(this.radius, this.theta);
     this.velocity = v;
   }
 
-  update(nextRadius) {
-    if ((this.posi.x ** 2 + this.posi.z ** 2) < 0.5) {
+  void update(float nextRadius) {
+    if ((this.posi.x * this.posi.x) + (this.posi.z * this.posi.z) < 0.5) {
       this.radius = nextRadius;
     }
     //  点の移動
@@ -67,31 +68,28 @@ class PlotBox {
     this.posi = this.PCStoRCS(this.radius, this.theta);
 
     // y座標の計算
-    let denominator = this.posi.x ** 2 + this.posi.z ** 2;
+    float denominator = (this.posi.x * this.posi.x) + (this.posi.z * this.posi.z);
     this.posi = this.getPosition(this.posi.x, this.posi.z, denominator);
 
     push();
-    translate(this.posi);
+    translate(this.posi.x, this.posi.y, this.posi.z);
     stroke(200, 200, 255);
     box(0.5);
     pop();
   }
 
   // 極座標系からデカルト座標系への変換(xz平面)
-  PCStoRCS(r, theta) {
-    return createVector(r * cos(theta), 0, r * sin(theta));
+  PVector PCStoRCS(float r, float theta) {
+    return new PVector(r * cos(radians(theta)), 0, r * sin(radians(theta)));
   }
 
   // 以下の式を返す(denominator: 分母)
   // y = 1000 / (x^2 + z^2)
-  getPosition(x, z, denominator) {
-    let y = 0;
-
+  PVector getPosition(float x, float z, float denominator) {
+    float y = 0;
     if (denominator != 0) {
       y = 10000 / denominator;
     }
-
-    // return createVector(x, -y, z); // 動作結果用
-    return createVector(x, y, z);
+    return new PVector(x, y, z);
   }
 }
